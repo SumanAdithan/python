@@ -1,0 +1,78 @@
+---
+title: def, async def & await
+description: JS async/await panra same idea than — keywords-um almost same than
+---
+
+## def vs. async def
+
+Oru normal function synchronously than run aagum, start-la irundhu end varaikkum, exact-a
+oru normal JS function maadhiri than:
+
+```python
+def get_user():
+    ...
+```
+
+`def`-ku munnadi `async` podradhu, adha oru **asynchronous function**-a maathum — pause
+pannitu resume pannalam, wait pannum bothu program-oda remaining part-a block pannama:
+
+```python
+async def get_user():
+    ...
+```
+
+```js
+async function getUser() {
+  // ...
+}
+```
+
+Same keyword than, same idea than, `function`-ku munnadi ku badhila `def`-ku munnadi than
+podrom.
+
+## await
+
+`async def` function-kulla, `await` andha line-la pause pannum, nee await pannradhu edhu
+mudiyum varaikkum — apparam adhoda result-oda resume pannum. Idhu JS-oda exact same mental
+model than:
+
+```python
+async def get_user():
+    data = await fetch_data()
+    return data
+```
+
+```js
+async function getUser() {
+  const data = await fetchData();
+  return data;
+}
+```
+
+JS maadhiri than, `await`, `async def` function-**kulla** matum than use pannalam — regular
+function-la illa.
+
+## JS-la irundhu oru real difference: async function-a call pannradhu
+
+JS-la, async function-a call pannina, nee result-a `await` pannalum pannalanalum, adhu
+udane run aaga start aagidum. Python-la, `async def` function-a call pannina adhu **run
+aagave aagadhu** — inert-a irukura oru "coroutine" object matum create pannum, edhavadhu
+actual-a adha await pannradhu allathu schedule pannradhu varaikkum:
+
+```python
+get_user()   # ippodikku edhuvum pannadhu! oru coroutine object matum create pannum
+```
+
+Oru plain script-oda top level-la actual-a idha run pannanum-na, Python-ku oru event loop
+venum:
+
+```python
+import asyncio
+
+result = asyncio.run(get_user())
+```
+
+Oru framework-kulla poitta apparam, nee usually `asyncio.run()` eluthave maatta — FastAPI-la,
+nee route handlers-a `async def`-a matum eluthuva, FastAPI-oda sonthamana event loop adha
+run pannikkum. "Await pannama edhuvum nadakkadhu" nu indha behavior than, JS-la irundhu
+Python-ku varra bothu ippove internalize pannikanum, idhu than most common confusion.

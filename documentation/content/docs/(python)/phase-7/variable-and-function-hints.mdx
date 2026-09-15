@@ -1,0 +1,58 @@
+---
+title: Variable & Function Hints
+description: Annotating plain values, and a recap of function type hints
+---
+
+## Variable type hints
+
+TypeScript:
+
+```ts
+let name: string = 'John';
+let age: number = 25;
+let price: number = 99.99;
+let active: boolean = true;
+```
+
+Python:
+
+```python
+name: str = "John"
+age: int = 25
+price: float = 99.99
+active: bool = True
+```
+
+Same idea as TypeScript — `name: type`. You saw these exact four types back in Phase 1
+without the annotation; now you're just labeling them explicitly.
+
+You can also annotate a variable **without** giving it a value yet — this is common in
+places like class bodies (Phase 4) and data models, where you're describing a shape rather
+than assigning something right away:
+
+```python
+name: str
+age: int
+```
+
+## Function hints — a recap
+
+Phase 3 already covered this, so this is just a reminder of the shape, now that you've seen
+the plain-variable version too:
+
+```python
+def get_user(user_id: int) -> dict:
+    ...
+```
+
+```ts
+function getUser(userId: number): object {
+  // ...
+}
+```
+
+`user_id: int` is a parameter hint (same as a variable hint), and `-> dict` is the return
+type — exactly like the return type after `:` in TypeScript.
+
+As a reminder from Phase 3: none of this is enforced by Python itself. It's the frameworks
+you build with — FastAPI especially — that actually read these hints and act on them.

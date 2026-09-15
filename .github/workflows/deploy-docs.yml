@@ -1,0 +1,49 @@
+name: Deploy Docs to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'documentation/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: documentation/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: documentation
+        run: pnpm install --frozen-lockfile
+
+      - name: Build static export
+        working-directory: documentation
+        env:
+          NEXT_PUBLIC_STATIC_EXPORT: 'true'
+        run: pnpm run build
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: documentation/out
+          publish_branch: gh-pages

@@ -1,0 +1,51 @@
+---
+title: enumerate
+description: List-a loop pannum bothu index-um serthu edukradhu
+---
+
+`enumerate()`, oru iterable-a wrap pannum, so ovvoru loop turn-um unakku **index**-um
+**value**-um rendaiyum kudukkum.
+
+```python
+users = ["John", "David"]
+
+for index, user in enumerate(users):
+    print(index, user)
+```
+
+```text
+0 John
+1 David
+```
+
+JS-la idhe result-a edukka rendu ways irukku:
+
+```js
+const users = ['John', 'David'];
+
+users.forEach((user, index) => {
+  console.log(index, user);
+});
+
+// or, real `for` loop venum-na:
+for (const [index, user] of users.entries()) {
+  console.log(index, user);
+}
+```
+
+`arr.entries()` than close-a match aagum — idhu-um `[index, value]` pairs kudukkum, Python
+oda `enumerate()` maadhiri same shape than.
+
+## Vera number-la irundhu start pannradhu
+
+`0`-la count start panna vendam-na `start` pass pannu:
+
+```python
+for index, user in enumerate(users, start=1):
+    print(index, user)
+```
+
+```text
+1 John
+2 David
+```

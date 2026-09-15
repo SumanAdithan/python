@@ -1,0 +1,11 @@
+{
+  "title": "Web Fundamentals",
+  "pages": [
+    "what-is-the-internet",
+    "what-is-a-website",
+    "web-evolution-and-why-react",
+    "why-we-need-a-backend",
+    "what-is-a-database",
+    "how-youtube-works"
+  ]
+}

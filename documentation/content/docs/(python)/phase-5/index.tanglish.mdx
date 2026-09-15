@@ -1,0 +1,44 @@
+---
+title: Phase 5 — Python-specific Features
+description: Indha phase oda goals, mattrum full JS/TS → Python cheat sheet
+---
+
+Estimated time: **~1.5 hours**.
+
+Idhukku clean-a JS/TS equivalent kidayathu, aana real Python code-la idha nee constant-a
+paapa. Hours spend panni perfect panna vendam — goal na idha **comfortable-a read** pannradhu
+matum than.
+
+## Goals
+
+Indha phase mudichadhukku apparam, intha topics ellam nee comfortable-a read pannanum:
+
+- list comprehension
+- dictionary comprehension
+- `enumerate`
+- `zip`
+
+Ovvoru topic-um sidebar-la thani page ah irukku. Ella page-layum JS/TS → Python compare
+panni explain pannirukom, adha followed by oru chinna example.
+
+## Cheat sheet
+
+```text
+JavaScript / TypeScript                        Python
+────────────────────────────────────────────────────────────
+arr.map(x => x * x)                            [x * x for x in arr]
+
+arr.filter(x => x % 2 === 0)                   [x for x in arr if x % 2 == 0]
+   .map(x => x * x)                                x * x
+
+Object.fromEntries(                            {x: x * x for x in range(5)}
+  Array.from({ length: 5 },
+    (_, x) => [x, x * x])
+)
+
+arr.forEach((v, i) => { ... })                 for i, v in enumerate(arr):
+for (const [i, v] of arr.entries())
+
+manual index loop /                            for a, b in zip(arr1, arr2):
+lodash zip(arr1, arr2)
+```

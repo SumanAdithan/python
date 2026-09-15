@@ -1,0 +1,13 @@
+{
+  "title": "Phase 2 — Collections",
+  "pages": [
+    "index",
+    "lists",
+    "list-methods",
+    "tuples",
+    "sets",
+    "dictionaries",
+    "dictionary-methods",
+    "nested-data-and-in"
+  ]
+}

@@ -1,0 +1,50 @@
+---
+title: Methods
+description: Class-kulla irukura functions — mattrum self yen innum varudhu
+---
+
+**Method** na class-kulla define pannina oru function than. `__init__`-um technically oru
+method than — create aagum bothu run aagura oru special method matum than.
+
+TypeScript:
+
+```ts
+class User {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  greet(): string {
+    return `Hello ${this.name}`;
+  }
+}
+
+const user = new User('John');
+console.log(user.greet());
+```
+
+Python:
+
+```python
+class User:
+    def __init__(self, name):
+        self.name = name
+
+    def greet(self):
+        return f"Hello {self.name}"
+
+user = User("John")
+print(user.greet())
+```
+
+## self innum varudhu
+
+Ovvoru method-um `self`-a adhoda first parameter-a venum, object oda instance variables
+(indha `self.name`) read pannradhukku. Idhu munnadi page-la paartha same `self` than —
+Python matum idha ovvoru method signature-layum explicit-a name pannanum-nu solum.
+
+**Aana method-a call pannum bothu, `self`-a nee pass panna vendam** — `user.greet()`,
+`user.greet(user)` illa. Dot-ku munnadi irukura object-a vechi Python `self`-a automatic-a
+fill pannikkum; nee **remaining** parameters-a matum than pass pannanum.

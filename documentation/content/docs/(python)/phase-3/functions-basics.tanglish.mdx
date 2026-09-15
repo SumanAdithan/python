@@ -1,0 +1,69 @@
+---
+title: Defining Functions
+description: function ku badhila def, parameters, mattrum return
+---
+
+## Function define pannradhu
+
+JavaScript:
+
+```js
+function add(a, b) {
+  return a + b;
+}
+```
+
+Python:
+
+```python
+def add(a, b):
+    return a + b
+```
+
+Munnadi phases-la nee paartha pattern than kavanikanum:
+
+| JS/TS | Python |
+| --- | --- |
+| `function` | `def` |
+| `{ }` | `:` + indentation |
+| `;` | thevai illa |
+
+## Function-a call pannradhu
+
+JS maadhiri exact-a same:
+
+```python
+result = add(2, 3)
+print(result)   # 5
+```
+
+## Parameters
+
+Mேlе irukura `a` mattrum `b` **parameters** — function call pannum bothu adhu expect pannura
+values. Python-la type declare pannanum-nu thevai illa (adha type hints vechi next-la
+paapom), edhu value pass pannalum adha use pannikkum.
+
+## return
+
+`return`, JS maadhiri than exact-a work aagum — caller-ku oru value return pannitu, function-a
+udane exit pannidum.
+
+```python
+def is_adult(age):
+    if age >= 18:
+        return True
+    return False
+
+print(is_adult(20))   # True
+```
+
+Python function-la `return` statement illana, adhu `None` return pannum — JS-la `return`
+illatha function `undefined` return panradhu maadhiri than idea.
+
+```python
+def greet(name):
+    print(f"Hello {name}")
+
+result = greet("John")
+print(result)   # None
+```

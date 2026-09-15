@@ -1,0 +1,54 @@
+---
+title: Phase 2 — Collections
+description: Indha phase oda goals, mattrum full JS/TS → Python cheat sheet
+---
+
+Estimated time: **~2 hours**.
+
+Idhu probably backend development ku romba important-ana Python section. Nee eluthura almost
+ella API-um data-va list mattrum dict vazhiye than pass pannum.
+
+## Goals
+
+Indha phase mudichadhukku apparam, intha topics ellam unakku comfortable ah irukanum:
+
+- `list`
+- `tuple`
+- `set`
+- `dict` (idha especially)
+- indexing
+- slicing
+- `append`, `remove`, `pop`
+- `get`, `keys`, `values`, `items`
+- `in`
+
+Ovvoru topic-um sidebar-la thani page ah irukku. Ella page-layum JS/TS → Python compare
+panni explain pannirukom, adha followed by oru chinna example.
+
+## Cheat sheet
+
+```text
+JavaScript / TypeScript        Python
+──────────────────────────────────────────
+Array                          list
+Object                         dict
+Set                            set
+frozen array / tuple-like       tuple
+
+arr.push(x)                    list.append(x)
+arr.pop()                      list.pop()
+arr.splice(i, 1)                del list[i]
+arr.filter(v => v !== x)        list.remove(x)
+
+arr[0]                         list[0]
+arr.at(-1)                      list[-1]
+arr.slice(1, 3)                  list[1:3]
+
+Object.keys(obj)                dict.keys()
+Object.values(obj)               dict.values()
+Object.entries(obj)              dict.items()
+obj.x ?? obj["x"]                 dict.get("x")
+
+'x' in obj                       'x' in dict
+arr.includes(x)                   x in list
+```

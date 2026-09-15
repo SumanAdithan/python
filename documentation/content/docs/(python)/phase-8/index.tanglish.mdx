@@ -1,0 +1,40 @@
+---
+title: Phase 8 — async / await
+description: Indha phase oda goals, mattrum JS/TS → Python cheat sheet
+---
+
+Estimated time: **~45 minutes**. ⭐⭐⭐ — inniku ku last thing.
+
+Indha concept unakku already JS-la irundhu theriyum — Python oda version almost same
+keywords than use pannum.
+
+## Goals
+
+```python
+async def get_user():
+    data = await fetch_data()
+    return data
+```
+
+Puriyanum:
+
+- `def` — oru normal function
+- `async def` — oru asynchronous function
+- `await` — async operation mudiyum varaikkum wait pannradhu
+
+Naalaikku idhu genuinely podhum — idhu pathi innoru page, apparam inniku ku over.
+
+## Cheat sheet
+
+```text
+JavaScript / TypeScript                    Python
+───────────────────────────────────────────────────────
+function getUser() { }                     def get_user():
+
+async function getUser() {                 async def get_user():
+  const data = await fetchData();              data = await fetch_data()
+  return data;                                 return data
+}
+
+await getUser()                             await get_user()   (async def-kulla matum)
+```

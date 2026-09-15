@@ -1,0 +1,54 @@
+---
+title: Phase 4 — Python OOP
+description: Indha phase oda goals, mattrum full TypeScript → Python cheat sheet
+---
+
+Estimated time: **~1.5 hours**.
+
+Idhula deep-a poga vendam — simple classes padikkaradhukku, eluthuradhukku podhuma irundha
+OOP than venum. Unakku TypeScript theriyum-nu bothu idhu easy-a irukum, Python classes almost
+same maadhiri than work aagum.
+
+## Goals
+
+Indha phase mudichadhukku apparam, intha topics ellam unakku puriyanum:
+
+- `class`
+- object
+- `__init__`
+- `self`
+- instance variables
+- methods
+- inheritance
+- `super()`
+
+Ovvoru topic-um sidebar-la thani page ah irukku. Ella page-layum TypeScript → Python compare
+panni explain pannirukom, adha followed by oru chinna example.
+
+## Cheat sheet
+
+```text
+TypeScript                             Python
+──────────────────────────────────────────────────
+class User {                           class User:
+  name: string;
+
+  constructor(name: string) {              def __init__(self, name):
+    this.name = name;                          self.name = name
+  }
+
+  greet(): string {                        def greet(self):
+    return `Hello ${this.name}`;              return f"Hello {self.name}"
+  }
+}
+
+new User("John")                       User("John")
+
+this.name                              self.name
+
+class Dog extends Animal {             class Dog(Animal):
+  constructor(name: string) {              def __init__(self, name):
+    super(name);                               super().__init__(name)
+  }
+}
+```

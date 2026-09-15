@@ -1,0 +1,5 @@
+{
+  "title": "Backend with FastAPI",
+  "root": true,
+  "pages": ["index", "web-fundamentals", "getting-started", "todo-api"]
+}

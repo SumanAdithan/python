@@ -1,0 +1,80 @@
+---
+title: Operators
+description: Arithmetic, comparison, logical operators — &&, ||, ! ku badhila and, or, not
+---
+
+## Arithmetic operators
+
+```python
+a = 10
+b = 3
+
+print(a + b)    # 13
+print(a - b)    # 7
+print(a * b)    # 30
+print(a / b)    # 3.3333333333333335
+```
+
+JS/TS-la direct-a illatha rendu operators Python-la irukku:
+
+**Floor division** — divide pannitu, whole number ku round down pannum:
+
+```python
+10 // 3   # 3
+```
+
+**Modulus** — division apparam migum remainder:
+
+```python
+10 % 3   # 1
+```
+
+**Power** — exponent:
+
+```python
+2 ** 3   # 8
+```
+
+Full list:
+
+| Operator | Artham |
+| --- | --- |
+| `+` | addition |
+| `-` | subtraction |
+| `*` | multiplication |
+| `/` | division |
+| `//` | floor division |
+| `%` | remainder |
+| `**` | power |
+
+## Comparison operators
+
+Idhu ellam familiar ah than irukum:
+
+```python
+a == b
+a != b
+a > b
+a < b
+a >= b
+a <= b
+```
+
+**Important:** Python-la `===` maadhiri strict-equality operator kidayathu. `==` matum than
+irukku.
+
+## Logical operators
+
+JS/TS symbols use pannum; Python words use pannum.
+
+| JS/TS | Python |
+| --- | --- |
+| `&&` | `and` |
+| `\|\|` | `or` |
+| `!` | `not` |
+
+```python
+age >= 18 and is_active
+is_admin or is_manager
+not is_active
+```

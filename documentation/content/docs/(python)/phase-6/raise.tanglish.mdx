@@ -1,0 +1,65 @@
+---
+title: raise
+description: Python oda throw — generic Error ku badhila built-in exception types
+---
+
+`raise` na Python oda `throw` — idhu current code-a stop pannitu, close-la irukura matching
+`except`-ku control-a kudukkum.
+
+JavaScript:
+
+```js
+throw new Error('Invalid value');
+```
+
+Python:
+
+```python
+raise ValueError("Invalid value")
+```
+
+## Oru generic Error ku badhila built-in exception types
+
+JS mostly oru `Error` class than kudukkum, adhoda message allathu oru custom subclass vechi
+nee errors-a distinguish pannuva. Python-la, common situations ku several **built-in
+exception types** irukku, nee match aagura onnu pick pannikanum:
+
+```python
+raise ValueError("age must be positive")
+raise TypeError("expected a string")
+raise KeyError("user_id")
+```
+
+Idhu than munnadi page specific exception types-a catch pannu-nu solradhukku exact reason —
+`raise` mattrum `except` rendu side-layum same names than.
+
+## Nee raise pannadha catch pannradhu
+
+```python
+def set_age(age):
+    if age < 0:
+        raise ValueError("age must be positive")
+    return age
+
+try:
+    set_age(-5)
+except ValueError as e:
+    print(e)   # age must be positive
+```
+
+JS-um same pattern than:
+
+```js
+function setAge(age) {
+  if (age < 0) {
+    throw new Error('age must be positive');
+  }
+  return age;
+}
+
+try {
+  setAge(-5);
+} catch (error) {
+  console.log(error.message); // age must be positive
+}
+```

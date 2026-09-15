@@ -1,0 +1,159 @@
+---
+title: "Create Todo — Your First Endpoint"
+description: The FastAPI app, the database session dependency, and your first route
+---
+
+You have a model and a schema. Now it's time to actually serve requests: `main.py` is where
+your FastAPI app comes together, and where you'll write your first real endpoint.
+
+## The app
+
+```python
+from fastapi import FastAPI, Depends
+from schemas import Todo as TodoSchema, TodoCreate
+from sqlalchemy.orm import Session
+from database import SessionLocal, Base, engine
+from models import Todo
+
+Base.metadata.create_all(bind = engine)
+app = FastAPI()
+```
+
+`app = FastAPI()` creates the actual application object. Every route you write attaches to
+this `app`, and it's this object that `uvicorn` (installed back in Project Setup) actually
+runs as a server.
+
+## Creating the table for real
+
+`models.py` only ever *described* the `todo` table — nothing had told the database to
+actually create it, until now:
+
+```python
+Base.metadata.create_all(bind = engine)
+```
+
+`Base.metadata` knows about every model that inherits from `Base` — `Todo`, in this case,
+registered simply because `main.py` imports it above. `create_all(bind=engine)` checks the
+database behind that `engine` and creates any of those tables that don't already exist yet.
+It's safe to leave running every time the app starts: existing tables are left alone, and
+only what's missing gets created.
+
+<Callout title="MySQL and column lengths">
+
+If a model's `String` columns don't specify a length, this exact line is where you'd find out
+— MySQL requires an explicit length on every `VARCHAR` column, so `create_all` fails with
+`VARCHAR requires a length on dialect mysql` until every `String` in `models.py` is given one
+(`String(200)`, for example).
+
+</Callout>
+
+## The database session dependency
+
+```python
+# Dependency for DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+```
+
+This is the function the Database Connection lesson promised was coming. It's a **FastAPI
+dependency** — a function a route can ask for something from, without worrying about how
+that something is created or cleaned up.
+
+Notice it uses `yield` instead of `return` (Phase 5 and 8 of Python Notes covered generators
+and `async`/`await` — this is a related idea): calling `SessionLocal()` creates a new
+session, `yield db` hands that session to whichever route asked for it, and once that route
+finishes — successfully *or* with an error — execution resumes right after the `yield`, and
+`finally: db.close()` guarantees the session gets closed either way.
+
+## Depends — wiring the dependency into a route
+
+```python
+def create(todo: TodoCreate, db: Session = Depends(get_db)):
+```
+
+`db: Session = Depends(get_db)` tells FastAPI: *before running this route, call `get_db()`,
+wait for its `yield`, and pass whatever it yields in as `db`.* You never call `get_db()`
+yourself — FastAPI calls it for you, for every request that needs a database session.
+
+## The route
+
+```python
+# POST - Create TODO
+@app.post("/todos", response_model=TodoSchema)
+def create(todo: TodoCreate, db:Session = Depends(get_db)):
+    db_todo = Todo(**todo.dict())
+    db.add(db_todo)
+    db.commit()
+    db.refresh(db_todo)
+    return db_todo
+```
+
+**`@app.post("/todos", response_model=TodoSchema)`** — a decorator that registers this
+function to handle `POST` requests to `/todos`. `response_model=TodoSchema` tells FastAPI
+what shape the returned data should be validated and serialized into before it's sent back —
+and it's also what shows up in your auto-generated docs for this endpoint.
+
+**`todo: TodoCreate`** — the request body. FastAPI reads the incoming JSON and validates it
+against `TodoCreate` automatically — the same automatic validation from the very first
+FastAPI lesson, now applied to a real request. This is the payoff from the Creating the Todo
+Schema lesson: the **input** type (`TodoCreate`) has no `id`, so a client can't send one —
+while the **output** type (`response_model=TodoSchema`) does, since only the database can
+assign it. Input and output finally use two different shapes, exactly as planned.
+
+**`db_todo = Todo(**todo.dict())`** — `todo` is a Pydantic schema instance; `.dict()` turns it
+into a plain dict, and `**` unpacks that dict as keyword arguments into `Todo(...)` — turning
+validated request data into an actual SQLAlchemy model instance, ready to be saved.
+
+**`db.add(db_todo)`** stages the new row. **`db.commit()`** actually writes it to the
+database. **`db.refresh(db_todo)`** reloads `db_todo` with the values the database assigned
+during commit — most importantly, the auto-generated `id`, which `db_todo` doesn't have until
+this line runs.
+
+**`return db_todo`** — returning the SQLAlchemy object directly, which FastAPI converts into
+the `response_model` shape before sending it back as JSON.
+
+<Callout title="For you, coming from Express/Nest">
+
+`Depends(get_db)` is FastAPI's version of dependency injection — the same idea as a Nest
+provider injected into a controller's constructor, or an Express middleware that attaches
+`req.db` before your handler runs. `@app.post("/todos")` is the same job as Nest's `@Post()`
+decorator or Express's `router.post()`. And `response_model` is what a Nest response DTO (or
+manual `class-transformer` serialization) does — controlling exactly what shape leaves your
+API, separate from your internal database object.
+
+</Callout>
+
+## `main.py` so far
+
+```python title="main.py"
+from fastapi import FastAPI, Depends
+from schemas import Todo as TodoSchema, TodoCreate
+from sqlalchemy.orm import Session
+from database import SessionLocal, Base, engine
+from models import Todo
+
+Base.metadata.create_all(bind = engine)
+app = FastAPI()
+
+# Dependency for DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# POST - Create TODO
+@app.post("/todos", response_model=TodoSchema)
+def create(todo: TodoCreate, db:Session = Depends(get_db)):
+    db_todo = Todo(**todo.dict())
+    db.add(db_todo)
+    db.commit()
+    db.refresh(db_todo)
+    return db_todo
+```

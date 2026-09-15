@@ -1,0 +1,62 @@
+---
+title: Optional & Nested Types
+description: None aaga vaaippu irukura value, mattrum container hints-a serthu combine pannradhu
+---
+
+## Optional — None aaga vaaippu irukura value
+
+Idha Phase 3-lame chinna-a paartha. `| None` oru value-a optional-nu mark pannum:
+
+```python
+name: str | None = None
+```
+
+TypeScript:
+
+```ts
+let name: string | null = null;
+```
+
+`str | None`-a "oru string, illana `None`"-nu padi — TypeScript-oda `string | null` maadhiri
+than same union-type idea, Python-oda sonthamana "value edhuvum illa" (Phase 1) matum
+`null`-ku badhila irukku.
+
+Idhu, "value edhuvum kudukkalana" nu oru sensible default irukura function parameters-la
+constant-a varum:
+
+```python
+def get_user(user_id: int, name: str | None = None) -> dict:
+    ...
+```
+
+## Nested types
+
+Container hints-a serthu combine pannalam — dicts oda list, lists oda dict, appadi. Idha
+**inside-out** padi: first innermost type-a find pannu, apparam outward-a wrap pannu.
+
+```python
+users: list[dict[str, str]]
+```
+
+Inside-out padikkalam:
+
+1. `dict[str, str]` — keys mattrum values rendum strings-a irukura oru dict
+2. `list[...]` — andha dicts oda oru list
+
+So whole thing oda artham: **"oru list, adhula ovvoru item-um string-to-string dict."**
+
+TypeScript:
+
+```ts
+let users: Array<Record<string, string>>;
+```
+
+Idha exact shape-a nee constant-a paapa — "pala records"-a most APIs represent pannradhu
+idhu than, oru list of dicts, ovvoru record-um oru dict (Phase 2-oda nested-data example,
+ippo hints-oda).
+
+## Ippodikku idhu podhum
+
+`str | None`, `list[...]`, mattrum `dict[...]` — nee daily eluthura vast majority of type
+hints-a cover pannidum. Generics, `Protocol`, allathu `Callable` types maadhiri things,
+adha unakku actual-a thevai padra case hit aana apparam kathukalam — adhukku munnadi illa.

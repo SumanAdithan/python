@@ -1,0 +1,73 @@
+---
+title: try / except
+description: Python oda try/catch — aana specific error-a name pannanum-nu solum
+---
+
+## Basic shape
+
+JavaScript:
+
+```js
+try {
+  doSomethingRisky();
+} catch (error) {
+  console.log('Something went wrong');
+}
+```
+
+Python:
+
+```python
+try:
+    result = 10 / 0
+except ZeroDivisionError:
+    print("Cannot divide by zero")
+```
+
+`except` na Python oda `catch`. Baaki ellam same than padikkalam: fail aaga vaaippu irukura
+code first block-la, recovery logic second block-la irukum.
+
+**JS-la irundhu varra oru gotcha:** JavaScript-la `10 / 0` throw pannadhu — quietly
+`Infinity` kudukkum. Python-la, zero-la divide pannina **exception raise aagum**. Different
+languages-ku, error-nu enna count aagum-nu different rules.
+
+## Everything-a illa, specific errors-a matum catch pannu
+
+JS oda `catch (error)`, edhuvum question kekama catch pannidum. Python, mele example-la
+irukura `ZeroDivisionError` maadhiri, nee expect pannura **specific exception type**-a name
+panna encourage pannum. Nee frequent-a paakura built-in ones:
+
+```text
+ZeroDivisionError   zero-la divide pannradhu
+ValueError          value-oda type correct-a irukku, aana bad value (example: int("abc"))
+KeyError            dict-la oru key illa
+IndexError           list index range-a mīra irukku
+TypeError            operation-ku wrong type kudutha
+```
+
+`except Exception` vechi broad-a-um catch pannalaam, `str(e)` vechi message-a read
+pannalaam — JS-la `error.message` read panradhu maadhiri than:
+
+```python
+try:
+    result = 10 / 0
+except Exception as e:
+    print(str(e))   # "division by zero"
+```
+
+Enna guard pannuroam-nu theriyum bothu, specific exception-a name pannradha prefer pannu —
+idhu than idiomatic Python style, adhoda mela, unrelated bug-a accidental-a swallow
+pannradha idhu stop pannum.
+
+## finally
+
+JS maadhiri than, `finally` eppovum run aagum, exception aaganalum aagalanalum:
+
+```python
+try:
+    result = 10 / 0
+except ZeroDivisionError:
+    print("Cannot divide by zero")
+finally:
+    print("Done trying")
+```

@@ -1,0 +1,65 @@
+---
+title: get, keys, values & items
+description: dict-a safe-a read pannradhukku, loop pannradhukku use pannura methods
+---
+
+## get — safe access
+
+`.get()` oru key illana error throw pannama read pannum.
+
+```python
+user = {"id": 1, "name": "John"}
+
+user.get("name")            # "John"
+user.get("phone")           # None
+user.get("phone", "N/A")    # "N/A" — key illana idhu default value
+```
+
+Idhu basically JS oda `??` fallback oda Python version:
+
+```js
+user.phone ?? 'N/A';
+```
+
+Key irukka-illaya-nu sure illana `user["key"]` ku badhila `.get()` use pannu.
+
+## keys — keys matum
+
+```python
+user = {"id": 1, "name": "John"}
+
+print(user.keys())   # dict_keys(['id', 'name'])
+```
+
+JS oda `Object.keys(user)` maadhiri than.
+
+## values — values matum
+
+```python
+print(user.values())   # dict_values([1, 'John'])
+```
+
+JS oda `Object.values(user)` maadhiri than.
+
+## items — key mattrum value onnaaga
+
+`.items()` than nee mostly use pannuva, especially `for` loop-la:
+
+```python
+for key, value in user.items():
+    print(key, value)
+```
+
+```text
+id 1
+name John
+```
+
+Idhu JS oda `Object.entries(user)`, array destructuring oda serthu use pannuvadhu maadhiri
+than:
+
+```js
+for (const [key, value] of Object.entries(user)) {
+  console.log(key, value);
+}
+```

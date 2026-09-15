@@ -1,0 +1,70 @@
+---
+title: Phase 7 — Type Hints
+description: Indha phase oda goals, mattrum full TypeScript → Python cheat sheet
+---
+
+Estimated time: **~1 hour**. ⭐⭐⭐
+
+Idhula real-a time spend pannu — naalaikku irundhu, nee touch pannura almost ella function
+mattrum data model-layum type hints paapa, especially FastAPI-la.
+
+Phase 3-lame type hints-a function parameters mattrum return values-la introduce pannirukom.
+Indha phase adha wider-a extend pannum: plain variables-a annotate pannradhu, mattrum
+list, dict maadhiri containers oda **shape**-a describe pannradhu — "idhu oru list"-nu matum
+illa, "yenna list"-nu.
+
+## Goals
+
+Indha phase mudichadhukku apparam, intha type hints-a nee comfortable-a padikkanum,
+eluthanum:
+
+```python
+name: str
+age: int
+price: float
+active: bool
+```
+
+```python
+def get_user(user_id: int) -> dict:
+    ...
+```
+
+```python
+users: list[str]
+```
+
+```python
+users: dict[int, str]
+```
+
+```python
+name: str | None = None
+```
+
+```python
+users: list[dict[str, str]]
+```
+
+Idhu ku mela edhuvum worry panna vendam ippodikku — generics, `Protocol`, `Callable`
+maadhiri things, unakku actual-a thevai padra bothu kathukalam.
+
+## Cheat sheet
+
+```text
+TypeScript                                   Python
+──────────────────────────────────────────────────────────
+let name: string                             name: str
+let age: number                              age: int
+let price: number                            price: float
+let active: boolean                          active: bool
+
+function getUser(id: number): object         def get_user(user_id: int) -> dict:
+
+string[]  /  Array<string>                    list[str]
+Record<number, string>                        dict[int, str]
+
+string | null                                 str | None
+
+Array<Record<string, string>>                 list[dict[str, str]]
+```

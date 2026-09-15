@@ -1,0 +1,50 @@
+---
+title: Methods
+description: Functions that belong to a class — and why self still shows up
+---
+
+A **method** is just a function defined inside a class. `__init__` is technically a method
+too — just a special one that runs on creation.
+
+TypeScript:
+
+```ts
+class User {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  greet(): string {
+    return `Hello ${this.name}`;
+  }
+}
+
+const user = new User('John');
+console.log(user.greet());
+```
+
+Python:
+
+```python
+class User:
+    def __init__(self, name):
+        self.name = name
+
+    def greet(self):
+        return f"Hello {self.name}"
+
+user = User("John")
+print(user.greet())
+```
+
+## self shows up again
+
+Every method needs `self` as its first parameter, so it can read the object's instance
+variables (`self.name` here). This is the same `self` from the last page — Python just
+requires you to name it explicitly in every method's signature.
+
+**But you don't pass it yourself when calling the method** — `user.greet()`, not
+`user.greet(user)`. Python fills in `self` automatically with whatever object is before the
+dot; you only ever pass the *remaining* parameters.

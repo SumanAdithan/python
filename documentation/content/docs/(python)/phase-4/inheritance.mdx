@@ -1,0 +1,83 @@
+---
+title: Inheritance & super()
+description: extends becomes parentheses, and super() works almost the same
+---
+
+## Inheritance
+
+TypeScript's `extends` becomes **parentheses after the class name** in Python.
+
+TypeScript:
+
+```ts
+class Animal {
+  name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  speak(): string {
+    return `${this.name} makes a sound`;
+  }
+}
+
+class Dog extends Animal {
+  speak(): string {
+    return `${this.name} barks`;
+  }
+}
+```
+
+Python:
+
+```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        return f"{self.name} makes a sound"
+
+class Dog(Animal):
+    def speak(self):
+        return f"{self.name} barks"
+
+dog = Dog("Rex")
+print(dog.speak())   # Rex barks
+```
+
+`Dog` inherits everything from `Animal` — including `__init__` — and only overrides
+`speak()`.
+
+## super()
+
+If a child class needs its **own** `__init__` but still wants the parent's setup logic to
+run, call `super()` — same idea as TypeScript's `super(...)` inside a constructor.
+
+TypeScript:
+
+```ts
+class Dog extends Animal {
+  breed: string;
+
+  constructor(name: string, breed: string) {
+    super(name);
+    this.breed = breed;
+  }
+}
+```
+
+Python:
+
+```python
+class Dog(Animal):
+    def __init__(self, name, breed):
+        super().__init__(name)
+        self.breed = breed
+```
+
+The difference: TypeScript calls `super(name)` directly; Python calls `super()` first (no
+arguments) to get a reference to the parent, then calls `.__init__(name)` on it. Same result
+— the parent's constructor runs and sets up `self.name` before `Dog` adds anything of its
+own.

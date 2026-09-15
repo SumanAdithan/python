@@ -1,0 +1,75 @@
+---
+title: Syntax & Indentation
+description: JS/TS-la irundhu varra unakku Python oda periya rule — indentation than block-a define pannum
+---
+
+Idhu than probably first-a nee habituate aganum, JS/TS-la irundhu varra bothu.
+
+JavaScript-la, `{ }` block-a mark pannum:
+
+```js
+if (age >= 18) {
+  console.log('Adult');
+}
+```
+
+Python-la, `:` block-a start pannum, aana **indentation** (space) than andha block-kulla
+enna irukku-nu decide pannum. Curly braces edhuvum kidayathu.
+
+```python
+if age >= 18:
+    print("Adult")
+```
+
+Multiple lines ellam same block-kulla irukalam:
+
+```python
+if age >= 18:
+    print("Adult")
+    print("Can vote")
+
+print("Done")
+```
+
+Idha break pannu paathaa:
+
+```text
+if block
+├── print("Adult")
+└── print("Can vote")
+
+outside block
+└── print("Done")
+```
+
+Python usually **4 spaces** than indentation ku use pannum.
+
+### Wrong vs. right
+
+```python
+# ❌ Wrong — indentation illa
+if age >= 18:
+print("Adult")
+```
+
+```python
+# ❌ Idhuvum wrong — indentation consistent ah illa
+if age >= 18:
+    print("Adult")
+        print("Can vote")
+```
+
+```python
+# ✅ Correct
+if age >= 18:
+    print("Adult")
+    print("Can vote")
+```
+
+### Quick comparison
+
+| JS/TS | Python |
+| --- | --- |
+| `{ }` | indentation |
+| condition-ku `( )` | thevai illa |
+| `;` | thevai illa |

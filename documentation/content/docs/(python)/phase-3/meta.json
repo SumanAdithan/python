@@ -1,0 +1,10 @@
+{
+  "title": "Phase 3 — Functions",
+  "pages": [
+    "index",
+    "functions-basics",
+    "type-hints",
+    "default-and-keyword-arguments",
+    "args-and-kwargs"
+  ]
+}

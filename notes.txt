@@ -1,0 +1,46 @@
+fastapi:
+    - og micro framework created for python web development
+    - writing api in fastapi is more flexible
+    - starlette and pydantic is already available so automatic validation and documentation
+    - more performance then nodejs and go
+    - less code and more power
+    - great for ml and data apps
+    - build on openapi standard so swagger ui supported
+
+project  setup:
+    - create a virtual environment
+    - run "python -m venv venv"
+    - run ".\venv\Scripts\activate"
+
+install required dependencies:
+    - run "pip install fastapi uvicon sqlalchemy"
+    - fastapi - web framework (routing, validation, etc)
+    - uvicorn - web server 
+    - sqlalchemy - orm
+    - psycopg2-binary - postgress
+    - python-dotenv - for environment variables
+    - mysqlclient - mysql
+
+env configuration:
+    - create .env and create a new database and add db url to .env
+    DATABASE_URL=mysql://app_user:test@localhost:3306/todo
+
+database connection:
+    - create database.py
+
+creating todo model
+
+creating schema
+
+create todo
+
+running and testing fastapi
+    - run "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+
+fetch all todos
+
+get single todo
+
+update todo
+
+delete todo

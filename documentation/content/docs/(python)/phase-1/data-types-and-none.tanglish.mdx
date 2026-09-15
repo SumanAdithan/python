@@ -1,0 +1,60 @@
+---
+title: Data Types & None
+description: str, int, float, bool, None, mattrum type() vechi type check pannradhu
+---
+
+## Basic data types
+
+Idhu nalu than every day thevai padum.
+
+```python
+name = "John"       # str
+age = 25             # int
+price = 99.50        # float
+is_active = True     # bool
+is_admin = False      # bool
+```
+
+JS/TS-la irundhu capitalization different-a kavanikanum:
+
+| Python | JavaScript |
+| --- | --- |
+| `True` | `true` |
+| `False` | `false` |
+| `None` | `null` |
+
+## None
+
+Python-la `null`-oda equivalent `None`:
+
+```python
+user = None
+```
+
+Backend code-la (example-ku FastAPI) idha romba frequent-a paapa. Check panna:
+
+```python
+if user is None:
+    print("User not found")
+```
+
+Ippodikku, idha ninaivula vechiko: **`None` na "value edhuvum illa"**. `is` pathi apparam
+properly paapom.
+
+## Type check pannradhu
+
+Python-la `type()` nu oru built-in function irukku:
+
+```python
+name = "John"
+age = 25
+
+print(type(name))   # <class 'str'>
+print(type(age))    # <class 'int'>
+```
+
+`isinstance()` vechi kooda type check pannalam:
+
+```python
+isinstance(age, int)   # True
+```

@@ -1,0 +1,105 @@
+---
+title: for, range() & while
+description: Python-la loop pannradhu — JS/TS-la irundhu periya syntax change
+---
+
+## for loop
+
+Idhu JS-la irundhu varra periya syntax changes-la onnu.
+
+JavaScript:
+
+```js
+const users = ['John', 'David'];
+
+for (const user of users) {
+  console.log(user);
+}
+```
+
+Python:
+
+```python
+users = ["John", "David"]
+
+for user in users:
+    print(user)
+```
+
+Romba clean ah irukku — `const` illa, `of` keyword-um illa.
+
+## range()
+
+Python-la number based loops ku `range()` commonly use pannuvom.
+
+```python
+for i in range(5):
+    print(i)
+```
+
+```text
+0
+1
+2
+3
+4
+```
+
+**Important:** `range(5)` na 5 varaikkum than, 5-a *include pannadhu* — `for (let i = 0; i < 5; i++)` maadhiri than.
+
+### Start and end
+
+```python
+for i in range(2, 6):
+    print(i)
+```
+
+```text
+2
+3
+4
+5
+```
+
+### Step
+
+```python
+for i in range(0, 10, 2):
+    print(i)
+```
+
+```text
+0
+2
+4
+6
+8
+```
+
+Idha `range(start, stop, step)` nu ninaicho.
+
+## while
+
+JavaScript:
+
+```js
+let count = 0;
+
+while (count < 5) {
+  console.log(count);
+  count++;
+}
+```
+
+Python:
+
+```python
+count = 0
+
+while count < 5:
+    print(count)
+    count += 1
+```
+
+Kavanikanum: `count++` Python-la valid syntax **illa**. Adhukku badhila `count += 1`
+use pannanum.

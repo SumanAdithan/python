@@ -1,0 +1,62 @@
+---
+title: "__init__ & self"
+description: Python oda constructor, mattrum this-ku explicit stand-in
+---
+
+## __init__ — constructor
+
+`__init__` na Python oda constructor — nee object create pannum bothu idhu automatic-a run
+aagum, TypeScript oda `constructor` maadhiri than.
+
+TypeScript:
+
+```ts
+class User {
+  name: string;
+  age: number;
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
+  }
+}
+
+const user = new User('John', 25);
+```
+
+Python:
+
+```python
+class User:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+user = User("John", 25)
+```
+
+## self — Python oda this
+
+`self`, current object-a refer pannum, TypeScript-la `this` panra same job than. Key
+difference: **`self`-a ovvoru method-oda first parameter-a explicit-a eluthanum** — JS/TS
+maadhiri `this`-a Python automatic-a invisible-a add pannadhu.
+
+```python
+def __init__(self, name, age):
+    self.name = name   # self.<edhuvum> = oru instance variable
+    self.age = age
+```
+
+## Instance variables
+
+`self.name` mattrum `self.age` **instance variables** — andha specific object-ku matum
+sonthamana data, TS class-la `this.name` maadhiri exact-a. Nee create pannura ovvoru
+object-um adhoda own copy-a vechikkum:
+
+```python
+john = User("John", 25)
+david = User("David", 30)
+
+print(john.name)    # John
+print(david.name)   # David
+```

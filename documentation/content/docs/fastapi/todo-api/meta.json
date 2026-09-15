@@ -1,0 +1,13 @@
+{
+  "title": "Building the Todo API",
+  "pages": [
+    "creating-the-todo-model",
+    "creating-the-todo-schema",
+    "create-todo-endpoint",
+    "running-and-testing",
+    "fetch-all-todos",
+    "fetch-single-todo",
+    "update-todo",
+    "delete-todo"
+  ]
+}

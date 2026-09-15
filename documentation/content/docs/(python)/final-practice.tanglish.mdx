@@ -1,0 +1,163 @@
+---
+title: Final Practice — Build a User Store
+description: Tutorial-a close pannitu idha nee build pannu — FastAPI ku best prep
+---
+
+Estimated time: **~1–2 hours**. 🧪 Idhukku videos paakama irunga.
+
+Phase 1–8 padichadhukku apparam, baaki ellathayum close pannitu, idha memory-la irundhu
+build pannu, stuck aana matum lookup pannu. Keela irukura finished code-a type pannama
+copy pannina, real-a stick aagura part-a nee skip pannuvi.
+
+Naalaikku, indha exact functions-a FastAPI HTTP endpoints-a maathuvom — so ippove idha
+comfortable-a eluthardhu real prep than, busywork illa.
+
+## The store
+
+Phase 2-oda nested-data example maadhiri than, oru single in-memory list:
+
+```python
+users = []
+```
+
+## Given — idha first study pannu
+
+Idha rendum worked examples. Padi, *yen* idha ippadi eluthirukanga-nu puriyum vaari padi,
+apparam baaki-a try pannradhukku munnadi indha page-a close pannu.
+
+```python
+def add_user(name: str, email: str):
+    user = {
+        "id": len(users) + 1,
+        "name": name,
+        "email": email,
+        "active": True
+    }
+
+    users.append(user)
+    return user
+```
+
+```python
+def get_user(user_id: int):
+    for user in users:
+        if user["id"] == user_id:
+            return user
+
+    return None
+```
+
+Indha rendu, munnadi phases-la irundhu enna use pannirukku-nu kavanikanum: type hints
+(Phase 3 & 7), oru "record"-a dict (Phase 2), mattrum `for` + `if` vechi list-a manual-a
+search pannradhu (Phase 1 & 2).
+
+## Nee turn
+
+Indha aidhaiyum nee eluthu. Keela irukura ovvondrum oru spec — signature mattrum adhu
+exact-a enna pannanum-nu — code illa. Bottom-la irukura solution-a paakradhukku munnadi
+body-a eluthu.
+
+**1. Get all users**
+
+```python
+def get_all_users():
+    ...
+```
+
+Store-la irukura ovvoru user-um return pannu.
+
+**2. Update user**
+
+```python
+def update_user(user_id: int, name: str | None = None, email: str | None = None):
+    ...
+```
+
+`user_id` vechi user-a find pannu. `name` mattrum/allathu `email`, new value actual-a pass
+pannirundhale matum update pannu — argument `None`-nu irundha andha field-a touch panna
+vendam. Update panniya user-a return pannu, andha id-la user illana `None` return pannu.
+
+**3. Delete user**
+
+```python
+def delete_user(user_id: int):
+    ...
+```
+
+Andha id-oda user-a `users`-la irundhu remove pannu. Oru user delete aana `True` return
+pannu, andha id-la user illana `False` return pannu.
+
+**4. Search users**
+
+```python
+def search_users(query: str):
+    ...
+```
+
+`name`-la `query` irukura ovvoru user-um return pannu (case-insensitive).
+
+**5. Filter active users**
+
+```python
+def filter_active_users():
+    ...
+```
+
+`active` `True`-a irukura users-a matum return pannu.
+
+<details>
+<summary>Solution — genuinely try pannitu than idha open pannu</summary>
+
+```python
+def get_all_users():
+    return users
+
+
+def update_user(user_id: int, name: str | None = None, email: str | None = None):
+    user = get_user(user_id)
+
+    if user is None:
+        return None
+
+    if name is not None:
+        user["name"] = name
+    if email is not None:
+        user["email"] = email
+
+    return user
+
+
+def delete_user(user_id: int):
+    user = get_user(user_id)
+
+    if user is None:
+        return False
+
+    users.remove(user)
+    return True
+
+
+def search_users(query: str):
+    return [user for user in users if query.lower() in user["name"].lower()]
+
+
+def filter_active_users():
+    return [user for user in users if user["active"]]
+```
+
+</details>
+
+## Naalaikku idhu enga poidum
+
+Indha ovvoru function-um oru FastAPI route aagum — same logic than, oru endpoint-la wrap
+panniruppom:
+
+```text
+add_user             → POST   /users
+get_all_users        → GET    /users
+get_user             → GET    /users/{user_id}
+update_user          → PUT    /users/{user_id}
+delete_user          → DELETE /users/{user_id}
+search_users         → GET    /users/search?q=...
+filter_active_users  → GET    /users/active
+```

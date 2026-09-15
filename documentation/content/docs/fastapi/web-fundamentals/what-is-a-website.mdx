@@ -1,0 +1,45 @@
+---
+title: What is a Website?
+description: HTML, CSS, and JS — and what actually happens when a page loads
+---
+
+In the last lesson you saw that a **server** answers requests from a **client**. A website is
+simply what most servers send back as their answer.
+
+## The three building blocks
+
+Every website, no matter how complex it looks, is built from three things:
+
+- **HTML** — the structure and content (the text, images, buttons — what's on the page)
+- **CSS** — the styling (colors, spacing, fonts — how it looks)
+- **JavaScript** — the behavior (what happens when you click, type, or scroll)
+
+The server's job is to send these files to whichever browser asks for them. The browser's job
+is to read them and turn them into the page you actually see.
+
+## What happens when you visit a page
+
+Opening a single webpage is rarely just *one* request — it's usually several, one after
+another:
+
+<Mermaid
+  chart="
+graph TD
+  A[Browser requests index.html] --> B[Server sends the HTML file]
+  B --> C[Browser reads the HTML]
+  C --> D[Browser sees a link to style.css and requests it]
+  C --> E[Browser sees a link to script.js and requests it]
+  D --> F[Page is styled and interactive]
+  E --> F
+"
+/>
+
+1. The browser asks for the page itself (`index.html`).
+2. While reading that HTML, the browser notices it references a stylesheet and a script file.
+3. It sends **separate requests** for those too.
+4. Once everything has arrived, the browser combines them into the page you see on screen.
+
+This matters later: every one of those arrows in the diagram is a full round trip across the
+internet — a request, then a response. Keeping that number small (and not repeating it
+unnecessarily) is a big part of why the web has evolved the way it has, which is exactly
+what the next lesson is about.

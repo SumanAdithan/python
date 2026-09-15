@@ -1,0 +1,53 @@
+---
+title: Container Hints
+description: list allathu dict-kulla enna irukku-nu describe pannradhu, idhu oru list-nu matum illa
+---
+
+Idhu varaikkum type hints oru single value-a describe pannirukku. Containers-ku oru extra
+piece of information venum: **adhukulla enna irukku**.
+
+## list[...]
+
+TypeScript:
+
+```ts
+let users: string[] = ['John', 'David'];
+// or: Array<string>
+```
+
+Python:
+
+```python
+users: list[str] = ["John", "David"]
+```
+
+`list[str]` na "oru list, strings oda"-nu padikanum — brackets-kulla irukura type, list-la
+irukura ovvoru item-a-um describe pannum.
+
+## dict[...]
+
+TypeScript-la close-a irukura match `Record<KeyType, ValueType>`:
+
+```ts
+const users: Record<number, string> = {
+  1: 'John',
+  2: 'David',
+};
+```
+
+Python:
+
+```python
+users: dict[int, str] = {1: "John", 2: "David"}
+```
+
+General shape `dict[KeyType, ValueType]` than — key type first, value type second, andha
+order-la.
+
+```text
+list[ItemType]
+dict[KeyType, ValueType]
+```
+
+Indha reading habit-a vechiko — next page-la nested types build up pannradhukku same
+pattern-a than use pannuvom.

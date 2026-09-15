@@ -1,0 +1,14 @@
+{
+  "title": "Phase 1 — Core Foundations",
+  "pages": [
+    "index",
+    "syntax-and-indentation",
+    "variables-and-constants",
+    "data-types-and-none",
+    "printing-and-strings",
+    "operators",
+    "conditionals",
+    "loops",
+    "loop-control"
+  ]
+}

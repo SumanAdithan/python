@@ -1,0 +1,64 @@
+---
+title: get, keys, values & items
+description: The methods you'll use to safely read and loop over a dict
+---
+
+## get — safe access
+
+`.get()` reads a key without raising an error if it's missing.
+
+```python
+user = {"id": 1, "name": "John"}
+
+user.get("name")            # "John"
+user.get("phone")           # None
+user.get("phone", "N/A")    # "N/A" — a default value if the key is missing
+```
+
+This is basically Python's version of JS's `??` fallback:
+
+```js
+user.phone ?? 'N/A';
+```
+
+Prefer `.get()` over `user["key"]` whenever the key might not exist.
+
+## keys — just the keys
+
+```python
+user = {"id": 1, "name": "John"}
+
+print(user.keys())   # dict_keys(['id', 'name'])
+```
+
+Same as JS's `Object.keys(user)`.
+
+## values — just the values
+
+```python
+print(user.values())   # dict_values([1, 'John'])
+```
+
+Same as JS's `Object.values(user)`.
+
+## items — key and value together
+
+`.items()` is what you'll use most, especially in a `for` loop:
+
+```python
+for key, value in user.items():
+    print(key, value)
+```
+
+```text
+id 1
+name John
+```
+
+This is the same shape as JS's `Object.entries(user)` combined with array destructuring:
+
+```js
+for (const [key, value] of Object.entries(user)) {
+  console.log(key, value);
+}
+```

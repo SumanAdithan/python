@@ -1,0 +1,75 @@
+---
+title: Type Hints
+description: TypeScript oda parameter mattrum return types oda Python equivalent
+---
+
+Function work aana apparam, adha **type hints** vechi annotate pannalaam — ovvoru
+parameter-um return value-um enna type-nu describe pannum.
+
+```python
+def add(a: int, b: int) -> int:
+    return a + b
+```
+
+- `a: int` mattrum `b: int` — ovvoru parameter-oda expected type
+- `-> int` — return type
+
+Idhu TypeScript-la irundhu varra unakku romba familiar ah irukum:
+
+```ts
+function add(a: number, b: number): number {
+  return a + b;
+}
+```
+
+## TypeScript-la irundhu important difference
+
+TypeScript oda types **compile time**-la check pannappadum — andha rules violate pannura
+code-a compiler build panna refuse pannidum. Python oda type hints, language-e enforce
+pannadhu:
+
+```python
+def add(a: int, b: int) -> int:
+    return a + b
+
+add("2", "3")   # correct-a run aagum, "23" return pannum — Python hints-a check pannadhu
+```
+
+Idhu crash aagadhu — Python code-a eppadi eluthiruko adha appadiye run pannum. Andha hints,
+adha padikura tools-ku matum than matter aagum.
+
+## FastAPI ku yen important
+
+Idhu than periya point: **FastAPI unga type hints-a runtime-la read pannum** mattrum adha
+vechi incoming requests-a validate pannum, data-va automatic-a convert pannum, interactive
+API docs generate pannum — nee extra validation code onnume eluthama. So plain Python type
+hints-a ignore pannalum, nee poga poravu frameworks adha definitely ignore pannadhu.
+
+## Nee use pannura common types
+
+```python
+def example(
+    name: str,
+    age: int,
+    price: float,
+    is_active: bool,
+    tags: list,
+    metadata: dict,
+) -> None:
+    pass
+```
+
+## Optional values
+
+Oru value `None` aaga vaaippu irundha, adha explicit-a mark pannu:
+
+```python
+def greet(name: str | None = None):
+    if name is None:
+        print("Hello stranger")
+    else:
+        print(f"Hello {name}")
+```
+
+`str | None` na "oru string, illana `None`"-nu padikalam — TypeScript oda `string | null`
+maadhiri than idea.

@@ -1,0 +1,49 @@
+---
+title: List Comprehension
+description: A one-line way to build a list — Python's version of .map() and .filter()
+---
+
+A list comprehension builds a new list from an existing iterable, in a single line.
+
+JavaScript:
+
+```js
+const numbers = [1, 2, 3, 4, 5];
+const squares = numbers.map((x) => x * x);
+```
+
+Python:
+
+```python
+numbers = [1, 2, 3, 4, 5]
+
+squares = [x * x for x in numbers]
+```
+
+Read it as: **"`x * x`, for every `x` in `numbers`"**. The general shape is:
+
+```text
+[expression for item in iterable]
+```
+
+Same idea as `.map()`, just written as one expression instead of a callback.
+
+## With a condition
+
+Add `if` at the end to filter values as you go — combining what `.filter().map()` would take
+two steps to do in JS:
+
+```js
+const evenSquares = numbers.filter((x) => x % 2 === 0).map((x) => x * x);
+```
+
+```python
+even_squares = [x * x for x in numbers if x % 2 == 0]
+```
+
+```text
+[expression for item in iterable if condition]
+```
+
+You'll see this shape constantly once you start reading real Python code — it looks unusual
+at first, but it's just a compact `for` loop that builds a list.

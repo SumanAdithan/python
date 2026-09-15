@@ -1,0 +1,83 @@
+---
+title: Fetch All Todos
+description: A GET endpoint that returns a list, and querying every row with SQLAlchemy
+---
+
+With creating a todo working, the next endpoint reads them back — every todo in the
+database.
+
+## The route
+
+```python
+# GET - All Todos
+@app.get("/todos", response_model = list[TodoSchema])
+def read_todos(db:Session = Depends(get_db)):
+    return db.query(Todo).all()
+```
+
+## Walking through it
+
+**`@app.get("/todos", ...)`** — same decorator pattern as `create`, but `@app.get` instead of
+`@app.post`. A `GET` request doesn't carry a request body, which is why `read_todos` doesn't
+take a `todo` parameter the way `create` did.
+
+**`response_model = list[TodoSchema]`** — this is the container type hints from Phase 7 of
+Python Notes, now doing real work: `list[TodoSchema]` tells FastAPI "the response is a list,
+where every item is a `TodoSchema`." It validates and serializes every item in the returned
+list the same way a single `response_model=TodoSchema` handles one.
+
+**`db:Session = Depends(get_db)`** — the same database dependency from the `create` route.
+Reading data still needs a session, exactly like writing it did.
+
+**`db.query(Todo).all()`** — SQLAlchemy's query syntax: `db.query(Todo)` starts a query
+against the `todo` table, and `.all()` runs it and returns every matching row, as a list of
+`Todo` (SQLAlchemy) instances. With no filtering added, that means every row in the table.
+
+**`return db.query(Todo).all()`** — same as `create`: returning SQLAlchemy objects directly,
+and `orm_mode` (from the schema lesson) is what lets FastAPI convert each one into a
+`TodoSchema` automatically.
+
+<Callout title="For you, coming from Express/Nest">
+
+`db.query(Todo).all()` is the same job as `Model.findAll()` in Sequelize, `repository.find()`
+in TypeORM, or `prisma.todo.findMany()` in Prisma — "give me every row," with no filter
+applied yet. You'll narrow this down with actual filters once you get to fetching a single
+todo by id.
+
+</Callout>
+
+## `main.py` so far
+
+```python title="main.py"
+from fastapi import FastAPI, Depends
+from schemas import Todo as TodoSchema, TodoCreate
+from sqlalchemy.orm import Session
+from database import SessionLocal, Base, engine
+from models import Todo
+
+Base.metadata.create_all(bind = engine)
+app = FastAPI()
+
+# Dependency for DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# POST - Create TODO
+@app.post("/todos", response_model=TodoSchema)
+def create(todo: TodoCreate, db:Session = Depends(get_db)):
+    db_todo = Todo(**todo.dict())
+    db.add(db_todo)
+    db.commit()
+    db.refresh(db_todo)
+    return db_todo
+
+# GET - All Todos
+@app.get("/todos", response_model = list[TodoSchema])
+def read_todos(db:Session = Depends(get_db)):
+    return db.query(Todo).all()
+```

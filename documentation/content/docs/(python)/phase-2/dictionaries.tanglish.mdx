@@ -1,0 +1,64 @@
+---
+title: dict
+description: Python oda object — backend work ku probably most important type
+---
+
+`dict` (dictionary) **key-value pairs** store pannum. Idhu JS object oda equivalent, nee idha
+everywhere use pannuva — request bodies, JSON responses, database rows, config values.
+
+JavaScript:
+
+```js
+const user = {
+  id: 1,
+  name: 'John',
+  email: 'john@example.com',
+};
+
+console.log(user.name);
+
+user.age = 25;
+```
+
+Python:
+
+```python
+user = {
+    "id": 1,
+    "name": "John",
+    "email": "john@example.com"
+}
+
+print(user["name"])
+
+user["age"] = 25
+```
+
+## JS object-la irundhu key differences
+
+**Python-la bracket access matum than use pannuvom — dot notation kidayathu.**
+
+```python
+user["name"]   # ✅ work aagum
+user.name      # ❌ AttributeError
+```
+
+JS-la `user.name` allathu `user["name"]` — rendum interchangeable ah use pannalaam. Python
+dicts bracket form matum than support pannum.
+
+**New key add pannradhu** rendu languages-layum same way than — illatha key-ku assign
+pannina podhum:
+
+```python
+user["age"] = 25
+```
+
+**Illatha key-a access pannina** different-a behave pannum:
+
+```python
+user["phone"]
+# ❌ KeyError: 'phone'
+```
+
+JS-la, `user.phone` quietly `undefined`-a kudukkum. Python error throw pannum — idhu than
+next page-la paakura `.get()` method yen irukku-nu exact reason.

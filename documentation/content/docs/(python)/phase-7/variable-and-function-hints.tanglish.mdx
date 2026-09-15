@@ -1,0 +1,58 @@
+---
+title: Variable & Function Hints
+description: Plain values-a annotate pannradhu, mattrum function type hints recap
+---
+
+## Variable type hints
+
+TypeScript:
+
+```ts
+let name: string = 'John';
+let age: number = 25;
+let price: number = 99.99;
+let active: boolean = true;
+```
+
+Python:
+
+```python
+name: str = "John"
+age: int = 25
+price: float = 99.99
+active: bool = True
+```
+
+TypeScript maadhiri than same idea — `name: type`. Indha exact naalu types Phase 1-la
+annotation illama nee paartha; ippo adha explicit-a label pannuroam matum than.
+
+Value edhuvum kudukkama-um oru variable-a annotate pannalam — idhu class bodies (Phase 4)
+mattrum data models maadhiri idangala-la common, andha idangala-la nee oru shape-a describe
+pannuroam, udane edhavadhu assign pannama:
+
+```python
+name: str
+age: int
+```
+
+## Function hints — oru recap
+
+Phase 3-lame idha cover pannirukom, so idhu shape-a ninaivupaduthara matum than, ippo nee
+plain-variable version-um paartha apparam:
+
+```python
+def get_user(user_id: int) -> dict:
+    ...
+```
+
+```ts
+function getUser(userId: number): object {
+  // ...
+}
+```
+
+`user_id: int` na oru parameter hint (variable hint maadhiri than), `-> dict` na return
+type — TypeScript-la `:` apparam varra return type maadhiri exact-a.
+
+Phase 3-la irundhu oru reminder: idhu ellam Python-e enforce pannadhu. Nee build pannura
+frameworks than — especially FastAPI — indha hints-a actual-a read panni act pannum.

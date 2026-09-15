@@ -1,0 +1,74 @@
+---
+title: Modules & Imports
+description: Python files eppadi pesikkum — export keyword edhuvum thevai illa
+---
+
+## Ovvoru file-um oru module
+
+JS/TS-la, oru file edhavadhu share pannanum-na explicit-a `export` pannanum:
+
+```js
+// users.js
+export function getUser() {
+  // ...
+}
+```
+
+```js
+// main.js
+import { getUser } from './users.js';
+```
+
+Python-la, **ovvoru `.py` file-um automatic-a oru module** — top level-la define
+pannirukura edhuvum (functions, classes, variables) vera file import panniikalam, `export`
+keyword edhuvum illama:
+
+```python
+# users.py
+def get_user():
+    ...
+```
+
+```python
+# main.py
+from users import get_user
+```
+
+Module oda name na, filename-la irundhu `.py` remove pannitta than — `users.py` na module
+`users` aagum.
+
+## Import panna rendu ways
+
+**Specific name import pannradhu** — direct-a use pannu, prefix edhuvum illa:
+
+```python
+from users import get_user
+
+get_user()
+```
+
+**Whole module import pannradhu** — adhoda name vechi ellathayum access pannu:
+
+```python
+import json
+
+json.dumps({"name": "John"})
+```
+
+Idhu rendaavadhu style, JS oda namespace import maadhiri than:
+
+```js
+import * as fs from 'fs';
+
+fs.readFileSync('file.txt');
+```
+
+Indha `json`, Python oda **built-in modules**-la onnu — Python-oda vandhe irukum, install
+pannanum-nu thevai illa (Node oda built-in `fs` allathu `path` maadhiri than).
+
+## Convention vazhi "private" — enforce pannadhu
+
+Underscore-la start aagura oru name (`_helper`), idhu internal, vera edho import pannak
+koodadhu-nu oru signal — aana Phase 1-la paartha `MAX_USERS` constant convention maadhiri
+than, Python idha import panna actual-a stop pannadhu. Idhu vera developers rely aagura oru
+convention than, hard rule illa.

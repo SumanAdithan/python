@@ -1,0 +1,47 @@
+---
+title: zip
+description: Rendu lists-a onnaaga, pair by pair loop pannradhu
+---
+
+`zip()`, rendu (allathu adhukku mela) lists-la irundhu items-a position vechi pair pannum,
+so nee adha onnaaga loop pannalam.
+
+```python
+names = ["John", "David"]
+ages = [25, 30]
+
+for name, age in zip(names, ages):
+    print(name, age)
+```
+
+```text
+John 25
+David 30
+```
+
+JS/TS-la direct-a built-in equivalent kidayathu — usually index vechi loop pannuvom:
+
+```js
+const names = ['John', 'David'];
+const ages = [25, 30];
+
+for (let i = 0; i < names.length; i++) {
+  console.log(names[i], ages[i]);
+}
+```
+
+`zip()` direct-a padikka easy ("indha rendu lists-a onnaaga loop pannu") — index-a manual-a
+manage panna vendam.
+
+## Lengths match aagatha bothu
+
+Lists same length illana, `zip()` **chinna** list mudinja stop aagidum — error edhuvum
+throw pannadhu:
+
+```python
+names = ["John", "David", "Sam"]
+ages = [25, 30]
+
+list(zip(names, ages))
+# [("John", 25), ("David", 30)]  — "Sam" quietly drop aagidum
+```

@@ -1,0 +1,53 @@
+---
+title: tuple
+description: A list that can't be changed after it's created
+---
+
+A `tuple` looks like a list, but once it's created, it **can't be changed** — no adding,
+removing, or replacing items.
+
+JS doesn't have a true built-in equivalent — the closest is `Object.freeze()` on an array:
+
+```js
+const point = Object.freeze([4, 5]);
+```
+
+Python has a dedicated syntax for this — parentheses instead of square brackets:
+
+```python
+point = (4, 5)
+```
+
+Indexing and slicing work exactly the same as with a list:
+
+```python
+point[0]     # 4
+point[-1]    # 5
+```
+
+But trying to change it fails:
+
+```python
+point[0] = 10
+# ❌ TypeError: 'tuple' object does not support item assignment
+```
+
+## Why use a tuple?
+
+Use a tuple when a value shouldn't change after it's created — for example, coordinates, an
+RGB color, or a fixed pair of values returned from a function. It signals to anyone reading
+the code: "this is a fixed collection, not something to mutate."
+
+```python
+def get_coordinates():
+    return (12.9716, 77.5946)
+
+lat, lng = get_coordinates()
+```
+
+That last line — unpacking a tuple straight into two variables — is something JS can also do,
+via array destructuring:
+
+```js
+const [lat, lng] = getCoordinates();
+```

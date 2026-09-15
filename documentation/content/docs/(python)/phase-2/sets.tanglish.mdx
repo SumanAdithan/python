@@ -1,0 +1,53 @@
+---
+title: set
+description: Automatic-a duplicates-a remove pannura collection
+---
+
+`set` na **unique values matum** than store pannum — duplicates automatic-a drop aagidum,
+order edhuvum guarantee illa.
+
+JavaScript:
+
+```js
+const numbers = new Set([1, 2, 2, 3]);
+```
+
+Python:
+
+```python
+numbers = {1, 2, 2, 3}
+
+print(numbers)   # {1, 2, 3}
+```
+
+Kavanikanum — sets curly braces `{ }` use pannum, dict maadhiri than — aana key-value pairs
+ku badhila plain values than irukkum. (Python-la empty `{}` na yeppovume `dict` than
+create pannum, set illa — empty set ku `set()` use pannanum.)
+
+## Add pannradhu, remove pannradhu
+
+```python
+numbers = {1, 2, 3}
+
+numbers.add(4)
+print(numbers)   # {1, 2, 3, 4}
+
+numbers.remove(2)
+print(numbers)   # {1, 3, 4}
+```
+
+JS oda `set.add()` mattrum `set.delete()` maadhiri than same idea.
+
+## Set yen use pannanum?
+
+Romba common reason: list-la irundhu duplicates-a remove pannradhu.
+
+```python
+fruits = ["apple", "banana", "apple", "cherry"]
+
+unique_fruits = list(set(fruits))
+print(unique_fruits)   # ["apple", "banana", "cherry"] (order guarantee illa)
+```
+
+Oru value irukka-nu check pannradhukku-um sets romba fast — idha indha phase-oda last-la
+`in` keyword oda serthu paapom.

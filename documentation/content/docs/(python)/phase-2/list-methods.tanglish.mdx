@@ -1,0 +1,65 @@
+---
+title: append, remove & pop
+description: Nee constant-a use pannura moonu list methods
+---
+
+## append — end-la add pannradhu
+
+JavaScript:
+
+```js
+const fruits = ['apple', 'banana'];
+fruits.push('cherry');
+```
+
+Python:
+
+```python
+fruits = ["apple", "banana"]
+fruits.append("cherry")
+
+print(fruits)   # ["apple", "banana", "cherry"]
+```
+
+`append()` na Python oda `push()` than — idhu eppovum list oda **end**-la than add pannum.
+
+## remove — value vechi delete pannradhu
+
+Python oda `remove()`, **first matching value**-a delete pannum, index illa.
+
+```python
+fruits = ["apple", "banana", "cherry"]
+fruits.remove("banana")
+
+print(fruits)   # ["apple", "cherry"]
+```
+
+JS-la direct-a "value vechi remove pannu" nu oru method kidayathu — usually
+`arr.filter(f => f !== 'banana')` vechi andha value illama oru new array create pannuvom.
+
+**Note:** andha value list-la illana, `remove()` error throw pannum, so first andha value
+irukka-nu check pannikonga (idha `in` vechi eppadi check pannaradhu-nu indha phase-oda
+last-la paapom).
+
+## pop — remove pannitu return pannradhu
+
+`pop()` oru item-a remove pannitu, adha unakku thirumba kudukkum.
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+last = fruits.pop()
+print(last)      # "cherry"
+print(fruits)    # ["apple", "banana"]
+```
+
+JS oda `arr.pop()` maadhiri than. Aana Python oda `pop()`, oru **index**-um accept pannum,
+adha JS oda `pop()` direct-a support pannadhu:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+first = fruits.pop(0)
+print(first)     # "apple"
+print(fruits)    # ["banana", "cherry"]
+```

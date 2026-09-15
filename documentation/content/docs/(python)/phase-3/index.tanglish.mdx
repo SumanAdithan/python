@@ -1,0 +1,45 @@
+---
+title: Phase 3 — Functions
+description: Indha phase oda goals, mattrum full JS/TS → Python cheat sheet
+---
+
+Estimated time: **~1 hour**.
+
+## Goals
+
+Indha phase mudichadhukku apparam, intha topics ellam unakku comfortable ah irukanum:
+
+- parameters
+- `return`
+- default parameters
+- keyword arguments
+- type hints
+- `*args`
+- `**kwargs` basics
+
+Type hints indha phase-la romba important — **FastAPI idha read pannum** requests-a validate
+pannradhukku mattrum docs automatic-a generate pannradhukku, so ippove idha comfortable ah
+kathukittaa apparam romba use aagum.
+
+Ovvoru topic-um sidebar-la thani page ah irukku. Ella page-layum JS/TS → Python compare
+panni explain pannirukom, adha followed by oru chinna example.
+
+## Cheat sheet
+
+```text
+JavaScript / TypeScript                       Python
+────────────────────────────────────────────────────────────
+function add(a, b) {                          def add(a, b):
+  return a + b;                                   return a + b
+}
+
+function add(a = 1) { }                        def add(a=1):
+
+function add(...rest) { }                      def add(*args):
+
+function add({ ...obj }) { }                   def add(**kwargs):
+
+function add(a: number, b: number): number {   def add(a: int, b: int) -> int:
+  return a + b;                                    return a + b
+}
+```

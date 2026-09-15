@@ -1,0 +1,62 @@
+---
+title: Printing & String Interpolation
+description: console.log() ku badhila print(), template literal ku badhila f-string
+---
+
+## Printing
+
+JavaScript:
+
+```js
+console.log('Hello');
+```
+
+Python:
+
+```python
+print("Hello")
+```
+
+Comma podi multiple values-a onnu serthu print pannalam:
+
+```python
+name = "John"
+age = 25
+
+print(name, age)
+```
+
+## String interpolation
+
+Idha nee constant-a use pannuva.
+
+JavaScript:
+
+```js
+const name = 'John';
+console.log(`Hello ${name}`);
+```
+
+Python:
+
+```python
+name = "John"
+
+print(f"Hello {name}")
+```
+
+Quotes-ku munnadi irukura `f` na **formatted string** ("f-string") nu artham. Onnukku
+mela values-um podalaam:
+
+```python
+name = "John"
+age = 25
+
+print(f"{name} is {age} years old")
+```
+
+Idha ippadi ninaicho:
+
+| JS/TS | Python |
+| --- | --- |
+| Template literal `` `${x}` `` | f-string `f"{x}"` |

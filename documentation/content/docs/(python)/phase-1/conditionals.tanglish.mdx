@@ -1,0 +1,65 @@
+---
+title: if / elif / else
+description: Conditionals, nested conditions sagitham
+---
+
+## if
+
+JavaScript:
+
+```js
+if (age >= 18) {
+  console.log('Adult');
+}
+```
+
+Python:
+
+```python
+if age >= 18:
+    print("Adult")
+```
+
+Kavanikanum:
+
+| JS/TS | Python |
+| --- | --- |
+| `{ }` | indentation |
+| condition-ku `( )` | thevai illa |
+| `;` | thevai illa |
+
+## elif
+
+JavaScript oda `else if`, Python-la `elif` aagum.
+
+```js
+if (age >= 18) {
+  console.log('Adult');
+} else if (age >= 13) {
+  console.log('Teen');
+} else {
+  console.log('Child');
+}
+```
+
+```python
+if age >= 18:
+    print("Adult")
+elif age >= 13:
+    print("Teen")
+else:
+    print("Child")
+```
+
+## Nested conditions
+
+Idhu maadhiri logic-a backend code-la nee romba paapa.
+
+```python
+age = 25
+is_active = True
+
+if age >= 18:
+    if is_active:
+        print("Active adult user")
+```

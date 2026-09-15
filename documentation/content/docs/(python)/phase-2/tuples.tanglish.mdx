@@ -1,0 +1,55 @@
+---
+title: tuple
+description: Create pannina apparam change panna mudiyatha list
+---
+
+`tuple` na paakumbothu list maadhiri than irukkum, aana oru vaati create pannitta, adha
+**change panna mudiyathu** — add pannradhu, remove pannradhu, replace pannradhu edhuvum illa.
+
+JS-la idhukku direct-a oru built-in equivalent kidayathu — close-a irukura option array-la
+`Object.freeze()` use pannradhu than:
+
+```js
+const point = Object.freeze([4, 5]);
+```
+
+Python-la idhukku thani syntax irukku — square brackets ku badhila parentheses:
+
+```python
+point = (4, 5)
+```
+
+Indexing mattrum slicing, list maadhiri exact-a same than work aagum:
+
+```python
+point[0]     # 4
+point[-1]    # 5
+```
+
+Aana change panna try pannina fail aagidum:
+
+```python
+point[0] = 10
+# ❌ TypeError: 'tuple' object does not support item assignment
+```
+
+## Tuple yen use pannanum?
+
+Oru value create panniya apparam change aaga koodadhu-nu bothu tuple use pannu — example-ku,
+coordinates, RGB color, allathu function-la irundhu return aagura fixed pair of values. Idhu
+code padikura yaarukkum "idhu fixed collection, mutate panna vendiya onnu illa"-nu clear-a
+solradhu.
+
+```python
+def get_coordinates():
+    return (12.9716, 77.5946)
+
+lat, lng = get_coordinates()
+```
+
+Andha last line — tuple-a straight-a rendu variables-ku unpack pannradhu — idha JS-um kooda
+array destructuring vechi pannum:
+
+```js
+const [lat, lng] = getCoordinates();
+```

@@ -1,0 +1,89 @@
+---
+title: Nested Data & in
+description: Dicts oda list (backend code-la romba common), mattrum Python oda membership operator
+---
+
+## Nested data — dicts oda list
+
+Idhu backend code-la nee romba paakura shapes-la onnu: oru **list of dictionaries**,
+example-ku database-la irundhu varra users oda list.
+
+JavaScript:
+
+```js
+const users = [
+  { id: 1, name: 'John' },
+  { id: 2, name: 'David' },
+];
+
+for (const user of users) {
+  console.log(user.name);
+}
+```
+
+Python:
+
+```python
+users = [
+    {
+        "id": 1,
+        "name": "John"
+    },
+    {
+        "id": 2,
+        "name": "David"
+    }
+]
+
+for user in users:
+    print(user["name"])
+```
+
+Ovvoru loop iteration-um unakku oru dict-a kudukkum, adha nee bracket vechi read pannuva —
+exact-a oru standalone dict maadhiri than.
+
+## in — membership check
+
+`in` oru collection-kulla edhavadhu irukka-nu check pannum. Idhu list, dict, set, string
+ellathulayum work aagum.
+
+**List check pannradhu** — oru **value** irukka-nu check pannum:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+"banana" in fruits   # True
+"mango" in fruits    # False
+```
+
+**Dict check pannradhu** — oru **key** irukka-nu check pannum (value illa):
+
+```python
+user = {"id": 1, "name": "John"}
+
+"name" in user   # True
+"John" in user   # False — "John" oru value, key illa
+```
+
+**String check pannradhu** — substring irukka-nu check pannum:
+
+```python
+"John" in "John Doe"   # True
+```
+
+### JS-la irundhu varra oru gotcha
+
+JS-la kooda `in` operator irukku, aana **arrays**-ku idhu **index**-a check pannum, value-a
+illa — idhu romba confusion create pannum:
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+
+0 in fruits; // true  — index 0 irukku
+'banana' in fruits; // false — idhu JS-la value check panna correct way illa
+fruits.includes('banana'); // true — idhu than actual-a nee vendradhu JS-la
+```
+
+Python-oda list-la `in`, eppovum **values**-a than check pannum — idhu JS oda
+`arr.includes(x)` oda match aagum, JS-oda `in` operator oda illa. Rendu languages-ku
+switch aagum bothu idha ninaivula vechiko.

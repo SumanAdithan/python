@@ -1,0 +1,50 @@
+---
+title: List Comprehension
+description: Oru list-a build pannradhukku one-line way — Python oda .map() mattrum .filter() version
+---
+
+List comprehension, irukura oru iterable-la irundhu oru new list-a, single line-la build
+pannum.
+
+JavaScript:
+
+```js
+const numbers = [1, 2, 3, 4, 5];
+const squares = numbers.map((x) => x * x);
+```
+
+Python:
+
+```python
+numbers = [1, 2, 3, 4, 5]
+
+squares = [x * x for x in numbers]
+```
+
+Idha ippadi padi: **"`numbers`-la irukura ovvoru `x`-kum, `x * x`"**. General shape idhu than:
+
+```text
+[expression for item in iterable]
+```
+
+`.map()` panra same idea than, callback-ku badhila oru expression-a matum eluthuvom.
+
+## Condition-oda
+
+End-la `if` podu, JS-la `.filter().map()` rendu steps-la pannuradha, oru step-la pannalam:
+
+```js
+const evenSquares = numbers.filter((x) => x % 2 === 0).map((x) => x * x);
+```
+
+```python
+even_squares = [x * x for x in numbers if x % 2 == 0]
+```
+
+```text
+[expression for item in iterable if condition]
+```
+
+Real Python code padikka start pannina apparam, idha nee constant-a paapa — first time
+paakumbothu weird-a irukum, aana idhu oru list-a build pannura compact `for` loop matum
+than.

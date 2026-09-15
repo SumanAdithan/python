@@ -1,0 +1,69 @@
+---
+title: list, Indexing & Slicing
+description: Python's array — ordered, mutable, and allows duplicates
+---
+
+## list
+
+Python's `list` is the equivalent of a JavaScript array. It's ordered, you can change it after
+creating it, and it can hold duplicate values.
+
+JavaScript:
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+```
+
+Python:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+```
+
+Same idea — square brackets, comma-separated values. `len()` gives you the size:
+
+```python
+len(fruits)   # 3
+```
+
+## Indexing
+
+Just like JS arrays, indexing starts at `0`.
+
+```python
+fruits[0]   # "apple"
+fruits[1]   # "banana"
+```
+
+Python also supports **negative indexing** — a clean way to count from the end:
+
+```python
+fruits[-1]   # "cherry" (last item)
+fruits[-2]   # "banana" (second-last item)
+```
+
+In JS you'd reach for `arr.at(-1)` to get the same result; in Python `-1` just works directly
+inside the brackets.
+
+## Slicing
+
+Slicing lets you grab a sub-list using `list[start:stop]`. Just like `range()`, `stop` is
+**not included**.
+
+```python
+fruits = ["apple", "banana", "cherry", "date"]
+
+fruits[1:3]    # ["banana", "cherry"]
+fruits[:2]     # ["apple", "banana"]   (start defaults to 0)
+fruits[2:]     # ["cherry", "date"]    (stop defaults to the end)
+fruits[:]      # ["apple", "banana", "cherry", "date"]  (a full copy)
+```
+
+JavaScript's closest equivalent is `arr.slice(start, stop)` — same start/stop behavior, just a
+method instead of bracket syntax.
+
+A common trick — reverse a list with a slice:
+
+```python
+fruits[::-1]   # ["date", "cherry", "banana", "apple"]
+```

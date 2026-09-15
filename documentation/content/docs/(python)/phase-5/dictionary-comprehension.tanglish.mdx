@@ -1,0 +1,37 @@
+---
+title: Dictionary Comprehension
+description: List comprehension oda same idea than, aana dict build pannum
+---
+
+List comprehension panra same idea than, aana idhu oru `dict`-a build pannum — oru single
+expression-ku badhila ovvoru side-layum `key: value` pair irukum.
+
+```python
+squares = {
+    x: x * x
+    for x in range(5)
+}
+
+print(squares)   # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
+```
+
+```text
+{key: value for item in iterable}
+```
+
+JS-la idha maadhiri clean-a direct equivalent kidayathu — usually `[key, value]` pairs oda
+oru array build pannitu, `Object.fromEntries()` vechi convert pannanum:
+
+```js
+const squares = Object.fromEntries(
+  Array.from({ length: 5 }, (_, x) => [x, x * x]),
+);
+```
+
+Idhu Python, JS/TS-a vida noticeably ergonomic-a irukura cases-la onnu. List comprehension
+maadhiri idhu-um same `if` filter support pannum:
+
+```python
+even_squares = {x: x * x for x in range(10) if x % 2 == 0}
+# {0: 0, 2: 4, 4: 16, 6: 36, 8: 64}
+```

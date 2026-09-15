@@ -1,0 +1,9 @@
+{
+  "title": "Getting Started",
+  "pages": [
+    "what-is-fastapi",
+    "project-setup",
+    "environment-configuration",
+    "database-connection"
+  ]
+}

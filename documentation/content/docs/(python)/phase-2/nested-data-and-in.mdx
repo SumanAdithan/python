@@ -1,0 +1,88 @@
+---
+title: Nested Data & in
+description: A list of dicts (very common in backend code), and Python's membership operator
+---
+
+## Nested data — a list of dicts
+
+This is one of the most common shapes you'll deal with in backend code: a **list of
+dictionaries**, e.g. a list of users from a database.
+
+JavaScript:
+
+```js
+const users = [
+  { id: 1, name: 'John' },
+  { id: 2, name: 'David' },
+];
+
+for (const user of users) {
+  console.log(user.name);
+}
+```
+
+Python:
+
+```python
+users = [
+    {
+        "id": 1,
+        "name": "John"
+    },
+    {
+        "id": 2,
+        "name": "David"
+    }
+]
+
+for user in users:
+    print(user["name"])
+```
+
+Each loop iteration gives you one dict, and you read from it with brackets — exactly like a
+standalone dict.
+
+## in — membership check
+
+`in` checks whether something exists inside a collection. It works on lists, dicts, sets, and
+strings.
+
+**Checking a list** — checks if a **value** is present:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+"banana" in fruits   # True
+"mango" in fruits    # False
+```
+
+**Checking a dict** — checks if a **key** is present (not a value):
+
+```python
+user = {"id": 1, "name": "John"}
+
+"name" in user   # True
+"John" in user   # False — "John" is a value, not a key
+```
+
+**Checking a string** — checks for a substring:
+
+```python
+"John" in "John Doe"   # True
+```
+
+### A gotcha coming from JS
+
+JS also has an `in` operator, but for **arrays** it checks the **index**, not the value —
+which is a common source of confusion:
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+
+0 in fruits; // true  — index 0 exists
+'banana' in fruits; // false — this is NOT how you check for a value in JS
+fruits.includes('banana'); // true — this is what you actually want in JS
+```
+
+Python's `in` on a list always checks **values**, which matches JS's `arr.includes(x)` — not
+JS's own `in` operator. Keep that distinction in mind when moving between the two languages.
