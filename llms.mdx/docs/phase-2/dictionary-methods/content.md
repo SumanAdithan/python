@@ -1,4 +1,4 @@
-# get, keys, values & items (/docs/phase-2/dictionary-methods)
+# get, keys, values & items (/en/docs/phase-2/dictionary-methods)
 
 
 

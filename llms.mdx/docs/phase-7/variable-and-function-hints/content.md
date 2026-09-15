@@ -1,4 +1,4 @@
-# Variable & Function Hints (/docs/phase-7/variable-and-function-hints)
+# Variable & Function Hints (/en/docs/phase-7/variable-and-function-hints)
 
 
 

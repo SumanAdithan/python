@@ -1,4 +1,4 @@
-# Project Setup (/docs/fastapi/getting-started/project-setup)
+# Project Setup (/en/docs/fastapi/getting-started/project-setup)
 
 
 

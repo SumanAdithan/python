@@ -1,4 +1,4 @@
-# Putting It Together — How Does YouTube Work? (/docs/fastapi/web-fundamentals/how-youtube-works)
+# Putting It Together — How Does YouTube Work? (/en/docs/fastapi/web-fundamentals/how-youtube-works)
 
 
 

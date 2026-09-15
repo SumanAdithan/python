@@ -1,4 +1,4 @@
-# __init__ & self (/docs/phase-4/init-and-self)
+# __init__ & self (/en/docs/phase-4/init-and-self)
 
 
 

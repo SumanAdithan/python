@@ -1,4 +1,4 @@
-# Phase 2 — Collections (/docs/phase-2)
+# Phase 2 — Collections (/en/docs/phase-2)
 
 
 

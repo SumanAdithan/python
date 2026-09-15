@@ -1,4 +1,4 @@
-# Final Practice — Build a User Store (/docs/final-practice)
+# Final Practice — Build a User Store (/en/docs/final-practice)
 
 
 
@@ -160,7 +160,7 @@ filter_active_users  → GET    /users/active
 ```
 
 
-# Python Learning Notes (/docs)
+# Python Learning Notes (/en/docs)
 
 
 
@@ -196,7 +196,7 @@ Use the language switcher in the top navigation bar to read the same notes in **
 </Cards>
 
 
-# Backend Development with FastAPI (/docs/fastapi)
+# Backend Development with FastAPI (/en/docs/fastapi)
 
 
 
@@ -219,7 +219,524 @@ Topics are added here as they're covered, in teaching order.
 *More topics will appear here as they're added.*
 
 
-# if / elif / else (/docs/phase-1/conditionals)
+# dict (/en/docs/phase-2/dictionaries)
+
+
+
+A `dict` (dictionary) stores **key-value pairs**. It's Python's equivalent of a JS object, and
+you'll use it everywhere — request bodies, JSON responses, database rows, config values.
+
+JavaScript:
+
+```js
+const user = {
+  id: 1,
+  name: 'John',
+  email: 'john@example.com',
+};
+
+console.log(user.name);
+
+user.age = 25;
+```
+
+Python:
+
+```python
+user = {
+    "id": 1,
+    "name": "John",
+    "email": "john@example.com"
+}
+
+print(user["name"])
+
+user["age"] = 25
+```
+
+## Key differences from a JS object [#key-differences-from-a-js-object]
+
+**Python only uses bracket access — there's no dot notation.**
+
+```python
+user["name"]   # ✅ works
+user.name      # ❌ AttributeError
+```
+
+JS lets you use `user.name` or `user["name"]` interchangeably. Python dicts only support the
+bracket form.
+
+**Adding a new key** works the same way in both languages — just assign to a key that doesn't
+exist yet:
+
+```python
+user["age"] = 25
+```
+
+**Accessing a missing key** behaves differently:
+
+```python
+user["phone"]
+# ❌ KeyError: 'phone'
+```
+
+In JS, `user.phone` would just quietly give you `undefined`. Python raises an error instead —
+which is exactly why the `.get()` method (covered on the next page) exists.
+
+
+# get, keys, values & items (/en/docs/phase-2/dictionary-methods)
+
+
+
+## get — safe access [#get--safe-access]
+
+`.get()` reads a key without raising an error if it's missing.
+
+```python
+user = {"id": 1, "name": "John"}
+
+user.get("name")            # "John"
+user.get("phone")           # None
+user.get("phone", "N/A")    # "N/A" — a default value if the key is missing
+```
+
+This is basically Python's version of JS's `??` fallback:
+
+```js
+user.phone ?? 'N/A';
+```
+
+Prefer `.get()` over `user["key"]` whenever the key might not exist.
+
+## keys — just the keys [#keys--just-the-keys]
+
+```python
+user = {"id": 1, "name": "John"}
+
+print(user.keys())   # dict_keys(['id', 'name'])
+```
+
+Same as JS's `Object.keys(user)`.
+
+## values — just the values [#values--just-the-values]
+
+```python
+print(user.values())   # dict_values([1, 'John'])
+```
+
+Same as JS's `Object.values(user)`.
+
+## items — key and value together [#items--key-and-value-together]
+
+`.items()` is what you'll use most, especially in a `for` loop:
+
+```python
+for key, value in user.items():
+    print(key, value)
+```
+
+```text
+id 1
+name John
+```
+
+This is the same shape as JS's `Object.entries(user)` combined with array destructuring:
+
+```js
+for (const [key, value] of Object.entries(user)) {
+  console.log(key, value);
+}
+```
+
+
+# Phase 2 — Collections (/en/docs/phase-2)
+
+
+
+Estimated time: **\~2 hours**.
+
+This is probably the **most important** Python section for backend development. Almost every
+API you write will pass data around as lists and dicts.
+
+## Goals [#goals]
+
+By the end of this phase you should be comfortable with:
+
+* `list`
+* `tuple`
+* `set`
+* `dict` (especially this one)
+* indexing
+* slicing
+* `append`, `remove`, `pop`
+* `get`, `keys`, `values`, `items`
+* `in`
+
+Each topic is its own page in the sidebar, taught with a JS/TS → Python comparison, followed
+by a small example.
+
+## Cheat sheet [#cheat-sheet]
+
+```text
+JavaScript / TypeScript        Python
+──────────────────────────────────────────
+Array                          list
+Object                         dict
+Set                            set
+frozen array / tuple-like       tuple
+
+arr.push(x)                    list.append(x)
+arr.pop()                      list.pop()
+arr.splice(i, 1)                del list[i]
+arr.filter(v => v !== x)        list.remove(x)
+
+arr[0]                         list[0]
+arr.at(-1)                      list[-1]
+arr.slice(1, 3)                  list[1:3]
+
+Object.keys(obj)                dict.keys()
+Object.values(obj)               dict.values()
+Object.entries(obj)              dict.items()
+obj.x ?? obj["x"]                 dict.get("x")
+
+'x' in obj                       'x' in dict
+arr.includes(x)                   x in list
+```
+
+
+# append, remove & pop (/en/docs/phase-2/list-methods)
+
+
+
+## append — add to the end [#append--add-to-the-end]
+
+JavaScript:
+
+```js
+const fruits = ['apple', 'banana'];
+fruits.push('cherry');
+```
+
+Python:
+
+```python
+fruits = ["apple", "banana"]
+fruits.append("cherry")
+
+print(fruits)   # ["apple", "banana", "cherry"]
+```
+
+`append()` is Python's `push()` — it always adds to the **end** of the list.
+
+## remove — delete by value [#remove--delete-by-value]
+
+Python's `remove()` deletes the **first matching value**, not an index.
+
+```python
+fruits = ["apple", "banana", "cherry"]
+fruits.remove("banana")
+
+print(fruits)   # ["apple", "cherry"]
+```
+
+JS doesn't have a direct "remove by value" method — you'd normally write
+`arr.filter(f => f !== 'banana')` to get a new array without it.
+
+**Note:** if the value doesn't exist, `remove()` raises an error, so make sure it's actually
+in the list first (more on checking that with `in` later in this phase).
+
+## pop — remove and return [#pop--remove-and-return]
+
+`pop()` removes an item and gives it back to you.
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+last = fruits.pop()
+print(last)      # "cherry"
+print(fruits)    # ["apple", "banana"]
+```
+
+Just like JS's `arr.pop()`. But Python's `pop()` also accepts an **index**, which JS's
+`pop()` doesn't support directly:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+first = fruits.pop(0)
+print(first)     # "apple"
+print(fruits)    # ["banana", "cherry"]
+```
+
+
+# list, Indexing & Slicing (/en/docs/phase-2/lists)
+
+
+
+## list [#list]
+
+Python's `list` is the equivalent of a JavaScript array. It's ordered, you can change it after
+creating it, and it can hold duplicate values.
+
+JavaScript:
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+```
+
+Python:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+```
+
+Same idea — square brackets, comma-separated values. `len()` gives you the size:
+
+```python
+len(fruits)   # 3
+```
+
+## Indexing [#indexing]
+
+Just like JS arrays, indexing starts at `0`.
+
+```python
+fruits[0]   # "apple"
+fruits[1]   # "banana"
+```
+
+Python also supports **negative indexing** — a clean way to count from the end:
+
+```python
+fruits[-1]   # "cherry" (last item)
+fruits[-2]   # "banana" (second-last item)
+```
+
+In JS you'd reach for `arr.at(-1)` to get the same result; in Python `-1` just works directly
+inside the brackets.
+
+## Slicing [#slicing]
+
+Slicing lets you grab a sub-list using `list[start:stop]`. Just like `range()`, `stop` is
+**not included**.
+
+```python
+fruits = ["apple", "banana", "cherry", "date"]
+
+fruits[1:3]    # ["banana", "cherry"]
+fruits[:2]     # ["apple", "banana"]   (start defaults to 0)
+fruits[2:]     # ["cherry", "date"]    (stop defaults to the end)
+fruits[:]      # ["apple", "banana", "cherry", "date"]  (a full copy)
+```
+
+JavaScript's closest equivalent is `arr.slice(start, stop)` — same start/stop behavior, just a
+method instead of bracket syntax.
+
+A common trick — reverse a list with a slice:
+
+```python
+fruits[::-1]   # ["date", "cherry", "banana", "apple"]
+```
+
+
+# Nested Data & in (/en/docs/phase-2/nested-data-and-in)
+
+
+
+## Nested data — a list of dicts [#nested-data--a-list-of-dicts]
+
+This is one of the most common shapes you'll deal with in backend code: a **list of
+dictionaries**, e.g. a list of users from a database.
+
+JavaScript:
+
+```js
+const users = [
+  { id: 1, name: 'John' },
+  { id: 2, name: 'David' },
+];
+
+for (const user of users) {
+  console.log(user.name);
+}
+```
+
+Python:
+
+```python
+users = [
+    {
+        "id": 1,
+        "name": "John"
+    },
+    {
+        "id": 2,
+        "name": "David"
+    }
+]
+
+for user in users:
+    print(user["name"])
+```
+
+Each loop iteration gives you one dict, and you read from it with brackets — exactly like a
+standalone dict.
+
+## in — membership check [#in--membership-check]
+
+`in` checks whether something exists inside a collection. It works on lists, dicts, sets, and
+strings.
+
+**Checking a list** — checks if a **value** is present:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+"banana" in fruits   # True
+"mango" in fruits    # False
+```
+
+**Checking a dict** — checks if a **key** is present (not a value):
+
+```python
+user = {"id": 1, "name": "John"}
+
+"name" in user   # True
+"John" in user   # False — "John" is a value, not a key
+```
+
+**Checking a string** — checks for a substring:
+
+```python
+"John" in "John Doe"   # True
+```
+
+### A gotcha coming from JS [#a-gotcha-coming-from-js]
+
+JS also has an `in` operator, but for **arrays** it checks the **index**, not the value —
+which is a common source of confusion:
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+
+0 in fruits; // true  — index 0 exists
+'banana' in fruits; // false — this is NOT how you check for a value in JS
+fruits.includes('banana'); // true — this is what you actually want in JS
+```
+
+Python's `in` on a list always checks **values**, which matches JS's `arr.includes(x)` — not
+JS's own `in` operator. Keep that distinction in mind when moving between the two languages.
+
+
+# set (/en/docs/phase-2/sets)
+
+
+
+A `set` stores **unique values only** — duplicates are automatically dropped, and there's no
+guaranteed order.
+
+JavaScript:
+
+```js
+const numbers = new Set([1, 2, 2, 3]);
+```
+
+Python:
+
+```python
+numbers = {1, 2, 2, 3}
+
+print(numbers)   # {1, 2, 3}
+```
+
+Notice sets use curly braces `{ }`, just like a dict — but with plain values instead of
+key-value pairs. (An empty `{}` in Python actually creates a `dict`, not a set — use `set()`
+for an empty set.)
+
+## Adding and removing [#adding-and-removing]
+
+```python
+numbers = {1, 2, 3}
+
+numbers.add(4)
+print(numbers)   # {1, 2, 3, 4}
+
+numbers.remove(2)
+print(numbers)   # {1, 3, 4}
+```
+
+Same idea as JS's `set.add()` and `set.delete()`.
+
+## Why use a set? [#why-use-a-set]
+
+The most common reason: removing duplicates from a list.
+
+```python
+fruits = ["apple", "banana", "apple", "cherry"]
+
+unique_fruits = list(set(fruits))
+print(unique_fruits)   # ["apple", "banana", "cherry"] (order not guaranteed)
+```
+
+Sets are also very fast for checking whether a value exists — you'll see this combined with
+the `in` keyword later in this phase.
+
+
+# tuple (/en/docs/phase-2/tuples)
+
+
+
+A `tuple` looks like a list, but once it's created, it **can't be changed** — no adding,
+removing, or replacing items.
+
+JS doesn't have a true built-in equivalent — the closest is `Object.freeze()` on an array:
+
+```js
+const point = Object.freeze([4, 5]);
+```
+
+Python has a dedicated syntax for this — parentheses instead of square brackets:
+
+```python
+point = (4, 5)
+```
+
+Indexing and slicing work exactly the same as with a list:
+
+```python
+point[0]     # 4
+point[-1]    # 5
+```
+
+But trying to change it fails:
+
+```python
+point[0] = 10
+# ❌ TypeError: 'tuple' object does not support item assignment
+```
+
+## Why use a tuple? [#why-use-a-tuple]
+
+Use a tuple when a value shouldn't change after it's created — for example, coordinates, an
+RGB color, or a fixed pair of values returned from a function. It signals to anyone reading
+the code: "this is a fixed collection, not something to mutate."
+
+```python
+def get_coordinates():
+    return (12.9716, 77.5946)
+
+lat, lng = get_coordinates()
+```
+
+That last line — unpacking a tuple straight into two variables — is something JS can also do,
+via array destructuring:
+
+```js
+const [lat, lng] = getCoordinates();
+```
+
+
+# if / elif / else (/en/docs/phase-1/conditionals)
 
 
 
@@ -285,7 +802,7 @@ if age >= 18:
 ```
 
 
-# Data Types & None (/docs/phase-1/data-types-and-none)
+# Data Types & None (/en/docs/phase-1/data-types-and-none)
 
 
 
@@ -345,7 +862,7 @@ isinstance(age, int)   # True
 ```
 
 
-# Phase 1 — Python Core Foundations (/docs/phase-1)
+# Phase 1 — Python Core Foundations (/en/docs/phase-1)
 
 
 
@@ -409,7 +926,7 @@ continue                      continue
 ```
 
 
-# break, continue & pass (/docs/phase-1/loop-control)
+# break, continue & pass (/en/docs/phase-1/loop-control)
 
 
 
@@ -472,7 +989,7 @@ if condition:
 ```
 
 
-# for, range() & while (/docs/phase-1/loops)
+# for, range() & while (/en/docs/phase-1/loops)
 
 
 
@@ -577,7 +1094,7 @@ while count < 5:
 Notice: `count++` is **not** valid Python syntax. Use `count += 1` instead.
 
 
-# Operators (/docs/phase-1/operators)
+# Operators (/en/docs/phase-1/operators)
 
 
 
@@ -657,7 +1174,7 @@ not is_active
 ```
 
 
-# Printing & String Interpolation (/docs/phase-1/printing-and-strings)
+# Printing & String Interpolation (/en/docs/phase-1/printing-and-strings)
 
 
 
@@ -720,7 +1237,7 @@ Think of it this way:
 | Template literal `` `${x}` `` | f-string `f"{x}"` |
 
 
-# Syntax & Indentation (/docs/phase-1/syntax-and-indentation)
+# Syntax & Indentation (/en/docs/phase-1/syntax-and-indentation)
 
 
 
@@ -796,7 +1313,7 @@ if age >= 18:
 | `;`                    | not required |
 
 
-# Variables & Constants (/docs/phase-1/variables-and-constants)
+# Variables & Constants (/en/docs/phase-1/variables-and-constants)
 
 
 
@@ -847,524 +1364,7 @@ It's just a naming convention — nothing stops you from changing it. Python doe
 the way `const` does in JS/TS.
 
 
-# dict (/docs/phase-2/dictionaries)
-
-
-
-A `dict` (dictionary) stores **key-value pairs**. It's Python's equivalent of a JS object, and
-you'll use it everywhere — request bodies, JSON responses, database rows, config values.
-
-JavaScript:
-
-```js
-const user = {
-  id: 1,
-  name: 'John',
-  email: 'john@example.com',
-};
-
-console.log(user.name);
-
-user.age = 25;
-```
-
-Python:
-
-```python
-user = {
-    "id": 1,
-    "name": "John",
-    "email": "john@example.com"
-}
-
-print(user["name"])
-
-user["age"] = 25
-```
-
-## Key differences from a JS object [#key-differences-from-a-js-object]
-
-**Python only uses bracket access — there's no dot notation.**
-
-```python
-user["name"]   # ✅ works
-user.name      # ❌ AttributeError
-```
-
-JS lets you use `user.name` or `user["name"]` interchangeably. Python dicts only support the
-bracket form.
-
-**Adding a new key** works the same way in both languages — just assign to a key that doesn't
-exist yet:
-
-```python
-user["age"] = 25
-```
-
-**Accessing a missing key** behaves differently:
-
-```python
-user["phone"]
-# ❌ KeyError: 'phone'
-```
-
-In JS, `user.phone` would just quietly give you `undefined`. Python raises an error instead —
-which is exactly why the `.get()` method (covered on the next page) exists.
-
-
-# get, keys, values & items (/docs/phase-2/dictionary-methods)
-
-
-
-## get — safe access [#get--safe-access]
-
-`.get()` reads a key without raising an error if it's missing.
-
-```python
-user = {"id": 1, "name": "John"}
-
-user.get("name")            # "John"
-user.get("phone")           # None
-user.get("phone", "N/A")    # "N/A" — a default value if the key is missing
-```
-
-This is basically Python's version of JS's `??` fallback:
-
-```js
-user.phone ?? 'N/A';
-```
-
-Prefer `.get()` over `user["key"]` whenever the key might not exist.
-
-## keys — just the keys [#keys--just-the-keys]
-
-```python
-user = {"id": 1, "name": "John"}
-
-print(user.keys())   # dict_keys(['id', 'name'])
-```
-
-Same as JS's `Object.keys(user)`.
-
-## values — just the values [#values--just-the-values]
-
-```python
-print(user.values())   # dict_values([1, 'John'])
-```
-
-Same as JS's `Object.values(user)`.
-
-## items — key and value together [#items--key-and-value-together]
-
-`.items()` is what you'll use most, especially in a `for` loop:
-
-```python
-for key, value in user.items():
-    print(key, value)
-```
-
-```text
-id 1
-name John
-```
-
-This is the same shape as JS's `Object.entries(user)` combined with array destructuring:
-
-```js
-for (const [key, value] of Object.entries(user)) {
-  console.log(key, value);
-}
-```
-
-
-# Phase 2 — Collections (/docs/phase-2)
-
-
-
-Estimated time: **\~2 hours**.
-
-This is probably the **most important** Python section for backend development. Almost every
-API you write will pass data around as lists and dicts.
-
-## Goals [#goals]
-
-By the end of this phase you should be comfortable with:
-
-* `list`
-* `tuple`
-* `set`
-* `dict` (especially this one)
-* indexing
-* slicing
-* `append`, `remove`, `pop`
-* `get`, `keys`, `values`, `items`
-* `in`
-
-Each topic is its own page in the sidebar, taught with a JS/TS → Python comparison, followed
-by a small example.
-
-## Cheat sheet [#cheat-sheet]
-
-```text
-JavaScript / TypeScript        Python
-──────────────────────────────────────────
-Array                          list
-Object                         dict
-Set                            set
-frozen array / tuple-like       tuple
-
-arr.push(x)                    list.append(x)
-arr.pop()                      list.pop()
-arr.splice(i, 1)                del list[i]
-arr.filter(v => v !== x)        list.remove(x)
-
-arr[0]                         list[0]
-arr.at(-1)                      list[-1]
-arr.slice(1, 3)                  list[1:3]
-
-Object.keys(obj)                dict.keys()
-Object.values(obj)               dict.values()
-Object.entries(obj)              dict.items()
-obj.x ?? obj["x"]                 dict.get("x")
-
-'x' in obj                       'x' in dict
-arr.includes(x)                   x in list
-```
-
-
-# append, remove & pop (/docs/phase-2/list-methods)
-
-
-
-## append — add to the end [#append--add-to-the-end]
-
-JavaScript:
-
-```js
-const fruits = ['apple', 'banana'];
-fruits.push('cherry');
-```
-
-Python:
-
-```python
-fruits = ["apple", "banana"]
-fruits.append("cherry")
-
-print(fruits)   # ["apple", "banana", "cherry"]
-```
-
-`append()` is Python's `push()` — it always adds to the **end** of the list.
-
-## remove — delete by value [#remove--delete-by-value]
-
-Python's `remove()` deletes the **first matching value**, not an index.
-
-```python
-fruits = ["apple", "banana", "cherry"]
-fruits.remove("banana")
-
-print(fruits)   # ["apple", "cherry"]
-```
-
-JS doesn't have a direct "remove by value" method — you'd normally write
-`arr.filter(f => f !== 'banana')` to get a new array without it.
-
-**Note:** if the value doesn't exist, `remove()` raises an error, so make sure it's actually
-in the list first (more on checking that with `in` later in this phase).
-
-## pop — remove and return [#pop--remove-and-return]
-
-`pop()` removes an item and gives it back to you.
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-last = fruits.pop()
-print(last)      # "cherry"
-print(fruits)    # ["apple", "banana"]
-```
-
-Just like JS's `arr.pop()`. But Python's `pop()` also accepts an **index**, which JS's
-`pop()` doesn't support directly:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-first = fruits.pop(0)
-print(first)     # "apple"
-print(fruits)    # ["banana", "cherry"]
-```
-
-
-# list, Indexing & Slicing (/docs/phase-2/lists)
-
-
-
-## list [#list]
-
-Python's `list` is the equivalent of a JavaScript array. It's ordered, you can change it after
-creating it, and it can hold duplicate values.
-
-JavaScript:
-
-```js
-const fruits = ['apple', 'banana', 'cherry'];
-```
-
-Python:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-```
-
-Same idea — square brackets, comma-separated values. `len()` gives you the size:
-
-```python
-len(fruits)   # 3
-```
-
-## Indexing [#indexing]
-
-Just like JS arrays, indexing starts at `0`.
-
-```python
-fruits[0]   # "apple"
-fruits[1]   # "banana"
-```
-
-Python also supports **negative indexing** — a clean way to count from the end:
-
-```python
-fruits[-1]   # "cherry" (last item)
-fruits[-2]   # "banana" (second-last item)
-```
-
-In JS you'd reach for `arr.at(-1)` to get the same result; in Python `-1` just works directly
-inside the brackets.
-
-## Slicing [#slicing]
-
-Slicing lets you grab a sub-list using `list[start:stop]`. Just like `range()`, `stop` is
-**not included**.
-
-```python
-fruits = ["apple", "banana", "cherry", "date"]
-
-fruits[1:3]    # ["banana", "cherry"]
-fruits[:2]     # ["apple", "banana"]   (start defaults to 0)
-fruits[2:]     # ["cherry", "date"]    (stop defaults to the end)
-fruits[:]      # ["apple", "banana", "cherry", "date"]  (a full copy)
-```
-
-JavaScript's closest equivalent is `arr.slice(start, stop)` — same start/stop behavior, just a
-method instead of bracket syntax.
-
-A common trick — reverse a list with a slice:
-
-```python
-fruits[::-1]   # ["date", "cherry", "banana", "apple"]
-```
-
-
-# Nested Data & in (/docs/phase-2/nested-data-and-in)
-
-
-
-## Nested data — a list of dicts [#nested-data--a-list-of-dicts]
-
-This is one of the most common shapes you'll deal with in backend code: a **list of
-dictionaries**, e.g. a list of users from a database.
-
-JavaScript:
-
-```js
-const users = [
-  { id: 1, name: 'John' },
-  { id: 2, name: 'David' },
-];
-
-for (const user of users) {
-  console.log(user.name);
-}
-```
-
-Python:
-
-```python
-users = [
-    {
-        "id": 1,
-        "name": "John"
-    },
-    {
-        "id": 2,
-        "name": "David"
-    }
-]
-
-for user in users:
-    print(user["name"])
-```
-
-Each loop iteration gives you one dict, and you read from it with brackets — exactly like a
-standalone dict.
-
-## in — membership check [#in--membership-check]
-
-`in` checks whether something exists inside a collection. It works on lists, dicts, sets, and
-strings.
-
-**Checking a list** — checks if a **value** is present:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-"banana" in fruits   # True
-"mango" in fruits    # False
-```
-
-**Checking a dict** — checks if a **key** is present (not a value):
-
-```python
-user = {"id": 1, "name": "John"}
-
-"name" in user   # True
-"John" in user   # False — "John" is a value, not a key
-```
-
-**Checking a string** — checks for a substring:
-
-```python
-"John" in "John Doe"   # True
-```
-
-### A gotcha coming from JS [#a-gotcha-coming-from-js]
-
-JS also has an `in` operator, but for **arrays** it checks the **index**, not the value —
-which is a common source of confusion:
-
-```js
-const fruits = ['apple', 'banana', 'cherry'];
-
-0 in fruits; // true  — index 0 exists
-'banana' in fruits; // false — this is NOT how you check for a value in JS
-fruits.includes('banana'); // true — this is what you actually want in JS
-```
-
-Python's `in` on a list always checks **values**, which matches JS's `arr.includes(x)` — not
-JS's own `in` operator. Keep that distinction in mind when moving between the two languages.
-
-
-# set (/docs/phase-2/sets)
-
-
-
-A `set` stores **unique values only** — duplicates are automatically dropped, and there's no
-guaranteed order.
-
-JavaScript:
-
-```js
-const numbers = new Set([1, 2, 2, 3]);
-```
-
-Python:
-
-```python
-numbers = {1, 2, 2, 3}
-
-print(numbers)   # {1, 2, 3}
-```
-
-Notice sets use curly braces `{ }`, just like a dict — but with plain values instead of
-key-value pairs. (An empty `{}` in Python actually creates a `dict`, not a set — use `set()`
-for an empty set.)
-
-## Adding and removing [#adding-and-removing]
-
-```python
-numbers = {1, 2, 3}
-
-numbers.add(4)
-print(numbers)   # {1, 2, 3, 4}
-
-numbers.remove(2)
-print(numbers)   # {1, 3, 4}
-```
-
-Same idea as JS's `set.add()` and `set.delete()`.
-
-## Why use a set? [#why-use-a-set]
-
-The most common reason: removing duplicates from a list.
-
-```python
-fruits = ["apple", "banana", "apple", "cherry"]
-
-unique_fruits = list(set(fruits))
-print(unique_fruits)   # ["apple", "banana", "cherry"] (order not guaranteed)
-```
-
-Sets are also very fast for checking whether a value exists — you'll see this combined with
-the `in` keyword later in this phase.
-
-
-# tuple (/docs/phase-2/tuples)
-
-
-
-A `tuple` looks like a list, but once it's created, it **can't be changed** — no adding,
-removing, or replacing items.
-
-JS doesn't have a true built-in equivalent — the closest is `Object.freeze()` on an array:
-
-```js
-const point = Object.freeze([4, 5]);
-```
-
-Python has a dedicated syntax for this — parentheses instead of square brackets:
-
-```python
-point = (4, 5)
-```
-
-Indexing and slicing work exactly the same as with a list:
-
-```python
-point[0]     # 4
-point[-1]    # 5
-```
-
-But trying to change it fails:
-
-```python
-point[0] = 10
-# ❌ TypeError: 'tuple' object does not support item assignment
-```
-
-## Why use a tuple? [#why-use-a-tuple]
-
-Use a tuple when a value shouldn't change after it's created — for example, coordinates, an
-RGB color, or a fixed pair of values returned from a function. It signals to anyone reading
-the code: "this is a fixed collection, not something to mutate."
-
-```python
-def get_coordinates():
-    return (12.9716, 77.5946)
-
-lat, lng = get_coordinates()
-```
-
-That last line — unpacking a tuple straight into two variables — is something JS can also do,
-via array destructuring:
-
-```js
-const [lat, lng] = getCoordinates();
-```
-
-
-# *args & **kwargs (/docs/phase-3/args-and-kwargs)
+# *args & **kwargs (/en/docs/phase-3/args-and-kwargs)
 
 
 
@@ -1434,7 +1434,7 @@ example(1, 2, 3, 4, x=5, y=6)
 ```
 
 
-# Default & Keyword Arguments (/docs/phase-3/default-and-keyword-arguments)
+# Default & Keyword Arguments (/en/docs/phase-3/default-and-keyword-arguments)
 
 
 
@@ -1494,7 +1494,7 @@ Keyword arguments are especially useful when a function has several parameters, 
 make each call self-documenting.
 
 
-# Defining Functions (/docs/phase-3/functions-basics)
+# Defining Functions (/en/docs/phase-3/functions-basics)
 
 
 
@@ -1564,7 +1564,7 @@ print(result)   # None
 ```
 
 
-# Phase 3 — Functions (/docs/phase-3)
+# Phase 3 — Functions (/en/docs/phase-3)
 
 
 
@@ -1609,7 +1609,7 @@ function add(a: number, b: number): number {   def add(a: int, b: int) -> int:
 ```
 
 
-# Type Hints (/docs/phase-3/type-hints)
+# Type Hints (/en/docs/phase-3/type-hints)
 
 
 
@@ -1685,7 +1685,7 @@ def greet(name: str | None = None):
 `string | null`.
 
 
-# class & object (/docs/phase-4/classes-and-objects)
+# class & object (/en/docs/phase-4/classes-and-objects)
 
 
 
@@ -1730,7 +1730,7 @@ The one thing to unlearn: **Python has no `new` keyword**. Calling the class nam
 function creates the object.
 
 
-# Phase 4 — Python OOP (/docs/phase-4)
+# Phase 4 — Python OOP (/en/docs/phase-4)
 
 
 
@@ -1784,7 +1784,7 @@ class Dog extends Animal {             class Dog(Animal):
 ```
 
 
-# Inheritance & super() (/docs/phase-4/inheritance)
+# Inheritance & super() (/en/docs/phase-4/inheritance)
 
 
 
@@ -1868,7 +1868,7 @@ arguments) to get a reference to the parent, then calls `.__init__(name)` on it.
 own.
 
 
-# __init__ & self (/docs/phase-4/init-and-self)
+# __init__ & self (/en/docs/phase-4/init-and-self)
 
 
 
@@ -1931,7 +1931,7 @@ print(david.name)   # David
 ```
 
 
-# Methods (/docs/phase-4/methods)
+# Methods (/en/docs/phase-4/methods)
 
 
 
@@ -1982,7 +1982,7 @@ requires you to name it explicitly in every method's signature.
 dot; you only ever pass the *remaining* parameters.
 
 
-# Dictionary Comprehension (/docs/phase-5/dictionary-comprehension)
+# Dictionary Comprehension (/en/docs/phase-5/dictionary-comprehension)
 
 
 
@@ -2020,7 +2020,7 @@ even_squares = {x: x * x for x in range(10) if x % 2 == 0}
 ```
 
 
-# enumerate (/docs/phase-5/enumerate)
+# enumerate (/en/docs/phase-5/enumerate)
 
 
 
@@ -2072,7 +2072,7 @@ for index, user in enumerate(users, start=1):
 ```
 
 
-# Phase 5 — Python-specific Features (/docs/phase-5)
+# Phase 5 — Python-specific Features (/en/docs/phase-5)
 
 
 
@@ -2117,7 +2117,7 @@ lodash zip(arr1, arr2)
 ```
 
 
-# List Comprehension (/docs/phase-5/list-comprehension)
+# List Comprehension (/en/docs/phase-5/list-comprehension)
 
 
 
@@ -2167,7 +2167,7 @@ You'll see this shape constantly once you start reading real Python code — it 
 at first, but it's just a compact `for` loop that builds a list.
 
 
-# zip (/docs/phase-5/zip)
+# zip (/en/docs/phase-5/zip)
 
 
 
@@ -2215,7 +2215,7 @@ list(zip(names, ages))
 ```
 
 
-# Phase 6 — Exceptions + Modules (/docs/phase-6)
+# Phase 6 — Exceptions + Modules (/en/docs/phase-6)
 
 
 
@@ -2258,7 +2258,7 @@ fs.readFileSync(...)                         json.dumps(...)
 ```
 
 
-# Modules & Imports (/docs/phase-6/modules-and-imports)
+# Modules & Imports (/en/docs/phase-6/modules-and-imports)
 
 
 
@@ -2333,7 +2333,7 @@ doesn't actually stop you from importing it. It's a convention other developers 
 a hard rule.
 
 
-# raise (/docs/phase-6/raise)
+# raise (/en/docs/phase-6/raise)
 
 
 
@@ -2399,7 +2399,7 @@ try {
 ```
 
 
-# try / except (/docs/phase-6/try-except)
+# try / except (/en/docs/phase-6/try-except)
 
 
 
@@ -2472,7 +2472,7 @@ finally:
 ```
 
 
-# Container Hints (/docs/phase-7/container-hints)
+# Container Hints (/en/docs/phase-7/container-hints)
 
 
 
@@ -2526,7 +2526,7 @@ Keep this reading habit — it's the same pattern you'll use to build up the nes
 the next page.
 
 
-# Phase 7 — Type Hints (/docs/phase-7)
+# Phase 7 — Type Hints (/en/docs/phase-7)
 
 
 
@@ -2595,7 +2595,7 @@ Array<Record<string, string>>                 list[dict[str, str]]
 ```
 
 
-# Optional & Nested Types (/docs/phase-7/optional-and-nested)
+# Optional & Nested Types (/en/docs/phase-7/optional-and-nested)
 
 
 
@@ -2656,7 +2656,7 @@ day to day. Things like generics, `Protocol`, or `Callable` types are worth lear
 once you actually hit a case that needs them — not before.
 
 
-# Variable & Function Hints (/docs/phase-7/variable-and-function-hints)
+# Variable & Function Hints (/en/docs/phase-7/variable-and-function-hints)
 
 
 
@@ -2715,7 +2715,7 @@ As a reminder from Phase 3: none of this is enforced by Python itself. It's the 
 you build with — FastAPI especially — that actually read these hints and act on them.
 
 
-# def, async def & await (/docs/phase-8/async-and-await)
+# def, async def & await (/en/docs/phase-8/async-and-await)
 
 
 
@@ -2790,7 +2790,7 @@ runs them for you. This "nothing happens until awaited" behavior is the one habi
 internalizing now, since it's the most common source of confusion moving from JS to Python.
 
 
-# Phase 8 — async / await (/docs/phase-8)
+# Phase 8 — async / await (/en/docs/phase-8)
 
 
 
@@ -2830,7 +2830,7 @@ await getUser()                             await get_user()   (only inside an a
 ```
 
 
-# Database Connection (/docs/fastapi/getting-started/database-connection)
+# Database Connection (/en/docs/fastapi/getting-started/database-connection)
 
 
 
@@ -2922,7 +2922,7 @@ Base = declarative_base()
 ```
 
 
-# Environment Configuration (/docs/fastapi/getting-started/environment-configuration)
+# Environment Configuration (/en/docs/fastapi/getting-started/environment-configuration)
 
 
 
@@ -2999,7 +2999,7 @@ DATABASE_URL=mysql://app_user:test@localhost:3306/todo
 ```
 
 
-# Project Setup (/docs/fastapi/getting-started/project-setup)
+# Project Setup (/en/docs/fastapi/getting-started/project-setup)
 
 
 
@@ -3104,7 +3104,7 @@ starts a server process, listens for requests, and feeds them into your FastAPI 
 </Callout>
 
 
-# What is FastAPI? (/docs/fastapi/getting-started/what-is-fastapi)
+# What is FastAPI? (/en/docs/fastapi/getting-started/what-is-fastapi)
 
 
 
@@ -3176,514 +3176,7 @@ FastAPI app you build, with no setup.
 </Callout>
 
 
-# Putting It Together — How Does YouTube Work? (/docs/fastapi/web-fundamentals/how-youtube-works)
-
-
-
-You now know the pieces: client, backend, database. This lesson puts them together through a
-real example everyone already understands — **YouTube** — and along the way, uncovers one
-more piece you haven't met yet.
-
-## Two very different kinds of data [#two-very-different-kinds-of-data]
-
-Think about everything YouTube needs to keep track of for a single video:
-
-* Its **title**, **description**, **upload date**, **view count**, **like count**
-* Its **comments**, and who posted each one
-* The **actual video file** itself — and its thumbnail image
-
-The first two are exactly what you just learned: rows in database tables. A `videos` table
-with a `title` column and a `view_count` column fits perfectly.
-
-But that video file? A single video can be hundreds of megabytes, even gigabytes. That raises
-a real question:
-
-**Can't we just save the video file in the database too, in some column?**
-
-## Why databases aren't built for this [#why-databases-arent-built-for-this]
-
-Technically, some databases can store large binary blobs — but doing this at YouTube's scale
-would be a bad idea:
-
-* Databases are built to be searched, filtered, and sorted quickly across *many small rows* —
-  not to hold enormous files that nobody "searches" the *contents* of
-* A database that also held every raw video file would become massive, making backups,
-  replication, and queries all dramatically slower
-* Databases aren't designed to **stream** a large file out to millions of viewers at once —
-  that's a completely different kind of workload
-
-So real applications split the two apart:
-
-<Mermaid
-  chart="
-graph TD
-A[Everything about a video] --> B[Structured data:<br/>title, description,<br/>views, comments]
-A --> C[The actual files:<br/>video, thumbnail]
-B --> D[(Database)]
-C --> E[Storage Server]
-"
-/>
-
-## Meet the storage server [#meet-the-storage-server]
-
-A **storage server** (often called *object storage* — think AWS S3 or Google Cloud Storage)
-is a service whose only job is storing and serving large files efficiently. The database
-never holds the video itself — it only holds a **reference** to where that file lives on the
-storage server (a URL or file path).
-
-Large platforms also place a **CDN** (Content Delivery Network) in front of their storage —
-copies of popular videos get cached on servers physically close to viewers all over the
-world, so someone in India isn't fetching every byte from a server on the other side of the
-planet. You don't need to build one of these yourself; it's a service you connect to, the
-same way you'd connect to a database.
-
-## The full picture [#the-full-picture]
-
-<Mermaid
-  chart="
-graph LR
-A[Client<br/>browser or app] -- requests --> B[Backend]
-B -- structured data --> C[(Database)]
-B -- file references --> D[Storage Server + CDN]
-D -. video/image bytes .-> A
-"
-/>
-
-## Walking through: uploading a video [#walking-through-uploading-a-video]
-
-1. You select a video file and hit upload in the client.
-2. The client sends the file to the **backend**.
-3. The backend sends the actual video file to the **storage server** to be saved.
-4. The storage server gives back a reference — where that file now lives.
-5. The backend saves the **metadata** (title, description, your user id, and that file
-   reference) as a new row in the **database**.
-
-## Walking through: watching a video [#walking-through-watching-a-video]
-
-1. You open a video page in the client.
-2. The client asks the **backend** for that video's info.
-3. The backend reads the row from the **database** — title, description, view count, and the
-   stored file reference.
-4. The backend sends that data back to the client, including where the actual video file
-   lives.
-5. The client's video player fetches the video bytes **directly from the storage server /
-   CDN** — not routed back through the backend — so playback is fast and doesn't load down
-   your API server.
-
-## Why this matters going forward [#why-this-matters-going-forward]
-
-This same split shows up in almost every real app you'll build: a database for structured,
-searchable data, and a storage service for the files themselves (profile pictures, PDFs,
-audio, video). In this course, you'll build the backend and database side yourself with
-FastAPI; storage servers and CDNs are usually a cloud service you connect to, not something
-you build from scratch.
-
-With client, backend, database, and storage all in place, you now have the complete mental
-map of how a real application is built — everything from here on is about learning the tools
-to build the backend piece of it, properly.
-
-<Callout title="For you, coming from Express/Nest">
-  Same architecture you already know — an Express/Nest API talking to Postgres/MongoDB for
-  structured data, and to S3 (or similar) for files, usually via a pre-signed upload URL or a
-  multipart upload endpoint. FastAPI will follow the identical pattern; you're not learning a
-  new architecture here, just new syntax for a shape you've already built before.
-</Callout>
-
-
-# Web 1.0, Web 2.0 & Why React (/docs/fastapi/web-fundamentals/web-evolution-and-why-react)
-
-
-
-Websites haven't always worked the way they do today. To understand why tools like React
-exist, you need to see the problem they were built to solve.
-
-## Web 1.0 — read-only pages [#web-10--read-only-pages]
-
-The earliest websites (roughly the 1990s) were **static and read-only** — closer to a digital
-brochure than an app. A server had a folder of pre-written HTML files, and every visitor got
-exactly the same page. There was no login, no comments, no personalization. You looked, you
-didn't interact.
-
-## Web 2.0 — the interactive web [#web-20--the-interactive-web]
-
-Starting in the 2000s, the web became **interactive and user-driven**: logins, comments,
-likes, posting your own content — think early Facebook, YouTube, blogs with comment sections.
-The server now generated a *different* page for every user, built from data stored in a
-database.
-
-This is a huge leap forward — but under the hood, most Web 2.0 sites still worked the exact
-same way as Web 1.0 for one crucial thing: &#x2A;*every click reloaded the entire page.**
-
-## The full page reload problem [#the-full-page-reload-problem]
-
-Click a link on a traditional website (even a modern-looking one built with plain
-HTML/CSS/JS), and this happens:
-
-<Mermaid
-  chart="
-graph TD
-A[You click a link or submit a form] --> B[Browser throws away the entire current page]
-B --> C[Browser sends a request for a brand new page]
-C --> D[Server builds and sends a full HTML page]
-D --> E[Browser reloads everything from scratch: HTML, CSS, JS, images]
-E --> F[White flash, then the new page appears]
-"
-/>
-
-Every single action — clicking a link, submitting a form, even liking a post — could mean
-throwing away the whole page and rebuilding it from nothing. That means:
-
-* A visible **white flash** while the old page disappears and the new one loads
-* **Everything resets** — scroll position, an open dropdown, a half-filled form, a playing
-  video — all gone, because the browser is starting over completely
-* Re-downloading and re-running the *same* CSS and JS files you already had, every time
-
-Imagine a chat app where sending one message reloaded the entire page, wiped your scroll
-position, and re-downloaded the whole app — just to show one new message. That's not
-acceptable for the kind of apps people expect today.
-
-## Why React [#why-react]
-
-React (and similar tools) exist to fix exactly this. The core idea: **load the page once,
-then only update the small part that actually changed** — never throw away and rebuild the
-whole thing again.
-
-<Mermaid
-  chart="
-graph TD
-A[You click a button] --> B[JavaScript intercepts the click - no reload]
-B --> C[JavaScript asks the server for just the data it needs]
-C --> D[Server sends back data - not a full HTML page]
-D --> E[React updates only the changed part of the page]
-"
-/>
-
-Notice the key difference from the diagram above: the server isn't sending a full HTML page
-anymore — it's sending back **just the data**. That's the piece that matters most for this
-course.
-
-## Why this matters for a backend developer [#why-this-matters-for-a-backend-developer]
-
-This shift changes what a backend server's job even is:
-
-|                             | Web 1.0 / 2.0 style  | Modern React-style            |
-| --------------------------- | -------------------- | ----------------------------- |
-| Server sends back           | A complete HTML page | Just data (usually JSON)      |
-| Who builds the page         | The server           | The browser (React), once     |
-| What happens on each action | Full page reload     | Only the changed part updates |
-
-**This is exactly why we're learning FastAPI**: FastAPI's job in this stack isn't to generate
-HTML pages — it's to answer requests with data. A separate React app (running in the
-browser) is responsible for turning that data into an actual page, and updating it without
-ever reloading. Backend and frontend become two separate programs that talk to each other
-purely through requests and responses of data.
-
-<Callout title="For you, coming from Express/Nest">
-  You've almost certainly already done this: an Express route that calls `res.json({ ... })`
-  instead of rendering a template with something like EJS or Pug is *already* the "modern"
-  approach — server as a pure data API, frontend as a separate React app. FastAPI works on that
-  exact same principle, so this mental model isn't new to you at all — only the Python syntax
-  around it will be.
-</Callout>
-
-
-# What is a Database? (/docs/fastapi/web-fundamentals/what-is-a-database)
-
-
-
-The last lesson established that the backend is a trusted boundary — the client never
-touches secrets, source code, or raw data directly. But the backend needs somewhere to
-actually **keep** that data. That's what a database is for.
-
-## Why not just store data in a variable? [#why-not-just-store-data-in-a-variable]
-
-You could imagine a backend that keeps everything in a plain Python list, like the `users`
-list from your Final Practice exercise back in the Python Notes. That works while the program
-is running — but it has a fatal flaw: &#x2A;*the moment the server restarts, everything is gone.**
-A crash, a deploy, a simple reboot — all of it wipes the list clean.
-
-A real application needs data to:
-
-* **Survive** restarts and crashes
-* Be **searched and filtered** quickly, even with millions of records
-* Be **shared safely** across many requests happening at the same time
-
-That's a job for a dedicated piece of software — a **database**.
-
-## What a database actually is [#what-a-database-actually-is]
-
-A database is a separate program (often running as its own server) whose entire purpose is
-storing data reliably and retrieving it fast. Think of it as a very well-organized set of
-spreadsheets:
-
-* A **table** is one spreadsheet — for example, a `users` table, or a `videos` table
-* A **row** is one record in that spreadsheet — one specific user, one specific video
-* A **column** defines one piece of information every row has — `id`, `name`, `email`
-
-```text
-users table
-┌────┬─────────┬───────────────────┐
-│ id │ name    │ email             │
-├────┼─────────┼───────────────────┤
-│ 1  │ John    │ john@example.com  │
-│ 2  │ David   │ david@example.com │
-└────┴─────────┴───────────────────┘
-```
-
-This should look familiar — it's the same shape as the list-of-dicts you already worked with
-in Python Notes' Phase 2 and Final Practice. A database table is essentially that same idea,
-made permanent and searchable at scale.
-
-## Only the backend talks to the database [#only-the-backend-talks-to-the-database]
-
-<Mermaid
-  chart="
-graph LR
-A[Client] -- request to a URL --> B[Backend]
-B -- reads / writes data --> C[(Database)]
-B -- only the resulting data --> A
-"
-/>
-
-The client never connects to the database directly — it never even knows the database
-exists. It only ever talks to the backend, and the backend decides what to read, what to
-write, and what to send back. This is the same trusted-boundary idea from the last lesson,
-just with a concrete example of what's actually being hidden.
-
-## The kind of database you'll use in this course [#the-kind-of-database-youll-use-in-this-course]
-
-There are different families of databases, but the most common kind — and the one this course
-uses with FastAPI — is a **relational database** (like PostgreSQL or MySQL): data organized
-into clearly defined tables with columns, similar to the `users` table above. You'll get
-hands-on with this properly in a later lesson — for now, just hold onto the mental picture:
-&#x2A;*tables, rows, and columns, living inside a server only the backend can reach.**
-
-<Callout title="For you, coming from Express/Nest">
-  Exactly the same relationship as `pg`, Prisma, or TypeORM talking to a Postgres/MySQL
-  database from an Express/Nest server — the client still only ever calls your API, never the
-  database itself. FastAPI will use its own tools for this (you'll meet them soon), but the
-  architecture is identical to what you already do.
-</Callout>
-
-
-# What is a Website? (/docs/fastapi/web-fundamentals/what-is-a-website)
-
-
-
-In the last lesson you saw that a **server** answers requests from a **client**. A website is
-simply what most servers send back as their answer.
-
-## The three building blocks [#the-three-building-blocks]
-
-Every website, no matter how complex it looks, is built from three things:
-
-* **HTML** — the structure and content (the text, images, buttons — what's on the page)
-* **CSS** — the styling (colors, spacing, fonts — how it looks)
-* **JavaScript** — the behavior (what happens when you click, type, or scroll)
-
-The server's job is to send these files to whichever browser asks for them. The browser's job
-is to read them and turn them into the page you actually see.
-
-## What happens when you visit a page [#what-happens-when-you-visit-a-page]
-
-Opening a single webpage is rarely just *one* request — it's usually several, one after
-another:
-
-<Mermaid
-  chart="
-graph TD
-A[Browser requests index.html] --> B[Server sends the HTML file]
-B --> C[Browser reads the HTML]
-C --> D[Browser sees a link to style.css and requests it]
-C --> E[Browser sees a link to script.js and requests it]
-D --> F[Page is styled and interactive]
-E --> F
-"
-/>
-
-1. The browser asks for the page itself (`index.html`).
-2. While reading that HTML, the browser notices it references a stylesheet and a script file.
-3. It sends **separate requests** for those too.
-4. Once everything has arrived, the browser combines them into the page you see on screen.
-
-This matters later: every one of those arrows in the diagram is a full round trip across the
-internet — a request, then a response. Keeping that number small (and not repeating it
-unnecessarily) is a big part of why the web has evolved the way it has, which is exactly
-what the next lesson is about.
-
-
-# What is the Internet? (/docs/fastapi/web-fundamentals/what-is-the-internet)
-
-
-
-Before writing a single line of backend code, you need a clear picture of what you're
-actually building on top of. So let's start at the very bottom: &#x2A;*what is the internet?**
-
-## A simple definition [#a-simple-definition]
-
-The internet is a huge network of computers all over the world, connected together so they
-can send information to each other.
-
-That's really it. Your phone, your laptop, and the servers that run apps like Instagram or
-Netflix are all just computers on this same giant network — some asking for information,
-others answering.
-
-## Every computer has an address [#every-computer-has-an-address]
-
-For one computer to send data to another, it needs to know where to send it. Every device on
-the internet has an **IP address** — a unique set of numbers that identifies it, the same way
-a house needs a postal address before anyone can deliver mail to it.
-
-```text
-192.168.1.1
-```
-
-You'll rarely type an IP address yourself — that's what domain names like `google.com` are
-for, they're just a human-friendly label that gets translated into an IP address behind the
-scenes. But the underlying idea is the same: &#x2A;*every computer on the internet can be found at
-an address.**
-
-## Two roles: asking and answering [#two-roles-asking-and-answering]
-
-Almost everything that happens on the internet comes down to two roles:
-
-* **Client** — the one asking for something (a browser, a mobile app)
-* **Server** — the one answering (a computer that's always on, waiting for questions)
-
-<Mermaid
-  chart="
-graph LR
-A[Client<br/>your browser or app] -- 1. Request --> B((The Internet))
-B -- forwards it to --> C[Server<br/>a computer that is always on]
-C -- 2. Response --> B
-B -- delivers it back --> A
-"
-/>
-
-For example, when you open a browser and go to a website:
-
-1. Your browser (**client**) sends a **request** out onto the internet: "Please give me this
-   webpage."
-2. The request travels across the network to the right computer, based on its address.
-3. That computer (**server**) sends a **response** back: the actual webpage content.
-4. Your browser receives it and displays it on your screen.
-
-This request → response pattern is the single most important idea in this entire course.
-Everything you'll build runs on top of it.
-
-## Why this matters for you [#why-this-matters-for-you]
-
-**Backend development means building the "server" side of this picture** — the program that
-sits there, always on, waiting for requests, and deciding what to send back.
-
-Everything you've learned in Python so far — functions, dictionaries, classes — is about to
-become the logic that runs *inside* that server, answering the requests your users' browsers
-and apps send in.
-
-
-# What is the Backend, and Why Do We Need One? (/docs/fastapi/web-fundamentals/why-we-need-a-backend)
-
-
-
-You already know the backend is the "server" side of the client/server picture. This lesson
-is about *why* it needs to exist at all — why can't a website just be HTML, CSS, and
-JavaScript, with everything happening in the browser?
-
-## The one rule that explains everything [#the-one-rule-that-explains-everything]
-
-**Anything you send to the browser, the user can see and change.**
-
-Open any website, right-click, "View Source" or open DevTools — every line of HTML, CSS, and
-JavaScript is right there, fully readable. Nothing that reaches the browser stays private.
-Not "hard to find" — genuinely, completely visible, and editable, by anyone who opens it.
-
-The backend exists because some things must **never** be visible or editable by the user:
-
-* The actual logic that decides prices, discounts, permissions, or scores
-* Passwords, and how they're checked
-* Secret keys for payment providers, email services, or other paid APIs
-* The database itself — where everyone's data actually lives
-
-## What the client is allowed to see [#what-the-client-is-allowed-to-see]
-
-A user only ever sees two things:
-
-1. The **URL** they called (e.g. `POST /orders`)
-2. Whatever **data** came back in the response
-
-They never see the code that ran to produce that response. The backend's internal logic —
-how it validated the request, which database it checked, what business rules it applied — is
-completely invisible on the other side of that URL.
-
-<Mermaid
-  chart="
-graph LR
-subgraph Client [Client - fully visible to the user]
-A[HTML / CSS / JS you sent]
-B[Whatever data arrives back]
-end
-subgraph Backend [Backend - fully hidden from the user]
-C[Your source code]
-D[Database]
-E[Secret keys]
-F[Business rules: pricing, permissions, validation]
-end
-A -- request to a URL --> C
-C --> D
-C --> E
-C --> F
-C -- only the resulting data --> B
-"
-/>
-
-This is the whole point of a backend: it's a boundary. Requests go in, responses come out,
-and everything that happens in between is the developer's business, not the user's.
-
-## What if there were no backend at all? [#what-if-there-were-no-backend-at-all]
-
-Imagine trying to build an online store with *only* HTML, CSS, and JavaScript running in the
-browser — no server, no database, nothing hidden.
-
-**Prices and discounts couldn't be trusted.** If the "final price" is calculated by
-JavaScript running in the user's own browser, the user can open DevTools and change it before
-checkout. There's no second, trusted opinion checking the real price — the browser *is* the
-only opinion, and the user fully controls it.
-
-**Logins couldn't be secure.** If checking a password is a line of JavaScript like
-`if (password === "admin123")`, that string is sitting right there in the page's source code
-for anyone to read. Worse, a user could just skip the check entirely by editing the code
-running in their own browser.
-
-**Data couldn't be shared or kept safe.** Without a database, data can only live in the
-browser itself (e.g. `localStorage`) — meaning it exists on *that one device, in that one
-browser*, invisible to everyone else. Two users could never see each other's posts. You
-couldn't check your own account from your phone. Clear your browser data, and everything is
-gone forever.
-
-**Secrets couldn't stay secret.** Calling a paid third-party service (email, SMS, payments)
-requires a secret API key. If that key lives in browser JavaScript, it ships to every visitor
-— anyone can extract it from the page and use it as their own, at your expense.
-
-None of this is a small inconvenience — it means **nothing on the site could actually be
-trusted**. A backend is what turns "a page that runs some code" into "a system whose rules
-actually hold."
-
-## The takeaway [#the-takeaway]
-
-The backend is the one place in your entire application that only *you*, the developer,
-control. The user can call its URLs and see its responses — but never its code, its
-database, or its secrets. Everything you'll build with FastAPI from here on lives inside that
-trusted boundary.
-
-<Callout title="For you, coming from Express/Nest">
-  This is precisely why an Express/Nest server exists in your past projects too — it's the same
-  "trusted boundary" idea, whether the request handler is written in a Express route, a Nest
-  controller method, or — starting now — a FastAPI path operation function. The concept doesn't
-  change; only the syntax will.
-</Callout>
-
-
-# Create Todo — Your First Endpoint (/docs/fastapi/todo-api/create-todo-endpoint)
+# Create Todo — Your First Endpoint (/en/docs/fastapi/todo-api/create-todo-endpoint)
 
 
 
@@ -3839,7 +3332,7 @@ def create(todo: TodoCreate, db:Session = Depends(get_db)):
 ```
 
 
-# Creating the Todo Model (/docs/fastapi/todo-api/creating-the-todo-model)
+# Creating the Todo Model (/en/docs/fastapi/todo-api/creating-the-todo-model)
 
 
 
@@ -3927,7 +3420,7 @@ class Todo(Base):
 ```
 
 
-# Creating the Todo Schema (/docs/fastapi/todo-api/creating-the-todo-schema)
+# Creating the Todo Schema (/en/docs/fastapi/todo-api/creating-the-todo-schema)
 
 
 
@@ -4046,7 +3539,7 @@ class Todo(TodoBase):
 ```
 
 
-# Delete Todo (/docs/fastapi/todo-api/delete-todo)
+# Delete Todo (/en/docs/fastapi/todo-api/delete-todo)
 
 
 
@@ -4160,7 +3653,7 @@ def delete_todo(todo_id:int,  db:Session = Depends(get_db)):
 ```
 
 
-# Fetch All Todos (/docs/fastapi/todo-api/fetch-all-todos)
+# Fetch All Todos (/en/docs/fastapi/todo-api/fetch-all-todos)
 
 
 
@@ -4242,7 +3735,7 @@ def read_todos(db:Session = Depends(get_db)):
 ```
 
 
-# Fetch a Single Todo (/docs/fastapi/todo-api/fetch-single-todo)
+# Fetch a Single Todo (/en/docs/fastapi/todo-api/fetch-single-todo)
 
 
 
@@ -4350,7 +3843,7 @@ def read_todo(todo_id: int,db:Session = Depends(get_db)):
 ```
 
 
-# Running & Testing Your API (/docs/fastapi/todo-api/running-and-testing)
+# Running & Testing Your API (/en/docs/fastapi/todo-api/running-and-testing)
 
 
 
@@ -4400,7 +3893,7 @@ sent back, including the `id` your database assigned.
 </Callout>
 
 
-# Update Todo — PUT vs PATCH (/docs/fastapi/todo-api/update-todo)
+# Update Todo — PUT vs PATCH (/en/docs/fastapi/todo-api/update-todo)
 
 
 
@@ -4561,6 +4054,513 @@ def update_todo(todo_id:int, updated: TodoCreate, db:Session = Depends(get_db)):
     db.refresh(todo)
     return todo
 ```
+
+
+# Putting It Together — How Does YouTube Work? (/en/docs/fastapi/web-fundamentals/how-youtube-works)
+
+
+
+You now know the pieces: client, backend, database. This lesson puts them together through a
+real example everyone already understands — **YouTube** — and along the way, uncovers one
+more piece you haven't met yet.
+
+## Two very different kinds of data [#two-very-different-kinds-of-data]
+
+Think about everything YouTube needs to keep track of for a single video:
+
+* Its **title**, **description**, **upload date**, **view count**, **like count**
+* Its **comments**, and who posted each one
+* The **actual video file** itself — and its thumbnail image
+
+The first two are exactly what you just learned: rows in database tables. A `videos` table
+with a `title` column and a `view_count` column fits perfectly.
+
+But that video file? A single video can be hundreds of megabytes, even gigabytes. That raises
+a real question:
+
+**Can't we just save the video file in the database too, in some column?**
+
+## Why databases aren't built for this [#why-databases-arent-built-for-this]
+
+Technically, some databases can store large binary blobs — but doing this at YouTube's scale
+would be a bad idea:
+
+* Databases are built to be searched, filtered, and sorted quickly across *many small rows* —
+  not to hold enormous files that nobody "searches" the *contents* of
+* A database that also held every raw video file would become massive, making backups,
+  replication, and queries all dramatically slower
+* Databases aren't designed to **stream** a large file out to millions of viewers at once —
+  that's a completely different kind of workload
+
+So real applications split the two apart:
+
+<Mermaid
+  chart="
+graph TD
+A[Everything about a video] --> B[Structured data:<br/>title, description,<br/>views, comments]
+A --> C[The actual files:<br/>video, thumbnail]
+B --> D[(Database)]
+C --> E[Storage Server]
+"
+/>
+
+## Meet the storage server [#meet-the-storage-server]
+
+A **storage server** (often called *object storage* — think AWS S3 or Google Cloud Storage)
+is a service whose only job is storing and serving large files efficiently. The database
+never holds the video itself — it only holds a **reference** to where that file lives on the
+storage server (a URL or file path).
+
+Large platforms also place a **CDN** (Content Delivery Network) in front of their storage —
+copies of popular videos get cached on servers physically close to viewers all over the
+world, so someone in India isn't fetching every byte from a server on the other side of the
+planet. You don't need to build one of these yourself; it's a service you connect to, the
+same way you'd connect to a database.
+
+## The full picture [#the-full-picture]
+
+<Mermaid
+  chart="
+graph LR
+A[Client<br/>browser or app] -- requests --> B[Backend]
+B -- structured data --> C[(Database)]
+B -- file references --> D[Storage Server + CDN]
+D -. video/image bytes .-> A
+"
+/>
+
+## Walking through: uploading a video [#walking-through-uploading-a-video]
+
+1. You select a video file and hit upload in the client.
+2. The client sends the file to the **backend**.
+3. The backend sends the actual video file to the **storage server** to be saved.
+4. The storage server gives back a reference — where that file now lives.
+5. The backend saves the **metadata** (title, description, your user id, and that file
+   reference) as a new row in the **database**.
+
+## Walking through: watching a video [#walking-through-watching-a-video]
+
+1. You open a video page in the client.
+2. The client asks the **backend** for that video's info.
+3. The backend reads the row from the **database** — title, description, view count, and the
+   stored file reference.
+4. The backend sends that data back to the client, including where the actual video file
+   lives.
+5. The client's video player fetches the video bytes **directly from the storage server /
+   CDN** — not routed back through the backend — so playback is fast and doesn't load down
+   your API server.
+
+## Why this matters going forward [#why-this-matters-going-forward]
+
+This same split shows up in almost every real app you'll build: a database for structured,
+searchable data, and a storage service for the files themselves (profile pictures, PDFs,
+audio, video). In this course, you'll build the backend and database side yourself with
+FastAPI; storage servers and CDNs are usually a cloud service you connect to, not something
+you build from scratch.
+
+With client, backend, database, and storage all in place, you now have the complete mental
+map of how a real application is built — everything from here on is about learning the tools
+to build the backend piece of it, properly.
+
+<Callout title="For you, coming from Express/Nest">
+  Same architecture you already know — an Express/Nest API talking to Postgres/MongoDB for
+  structured data, and to S3 (or similar) for files, usually via a pre-signed upload URL or a
+  multipart upload endpoint. FastAPI will follow the identical pattern; you're not learning a
+  new architecture here, just new syntax for a shape you've already built before.
+</Callout>
+
+
+# Web 1.0, Web 2.0 & Why React (/en/docs/fastapi/web-fundamentals/web-evolution-and-why-react)
+
+
+
+Websites haven't always worked the way they do today. To understand why tools like React
+exist, you need to see the problem they were built to solve.
+
+## Web 1.0 — read-only pages [#web-10--read-only-pages]
+
+The earliest websites (roughly the 1990s) were **static and read-only** — closer to a digital
+brochure than an app. A server had a folder of pre-written HTML files, and every visitor got
+exactly the same page. There was no login, no comments, no personalization. You looked, you
+didn't interact.
+
+## Web 2.0 — the interactive web [#web-20--the-interactive-web]
+
+Starting in the 2000s, the web became **interactive and user-driven**: logins, comments,
+likes, posting your own content — think early Facebook, YouTube, blogs with comment sections.
+The server now generated a *different* page for every user, built from data stored in a
+database.
+
+This is a huge leap forward — but under the hood, most Web 2.0 sites still worked the exact
+same way as Web 1.0 for one crucial thing: &#x2A;*every click reloaded the entire page.**
+
+## The full page reload problem [#the-full-page-reload-problem]
+
+Click a link on a traditional website (even a modern-looking one built with plain
+HTML/CSS/JS), and this happens:
+
+<Mermaid
+  chart="
+graph TD
+A[You click a link or submit a form] --> B[Browser throws away the entire current page]
+B --> C[Browser sends a request for a brand new page]
+C --> D[Server builds and sends a full HTML page]
+D --> E[Browser reloads everything from scratch: HTML, CSS, JS, images]
+E --> F[White flash, then the new page appears]
+"
+/>
+
+Every single action — clicking a link, submitting a form, even liking a post — could mean
+throwing away the whole page and rebuilding it from nothing. That means:
+
+* A visible **white flash** while the old page disappears and the new one loads
+* **Everything resets** — scroll position, an open dropdown, a half-filled form, a playing
+  video — all gone, because the browser is starting over completely
+* Re-downloading and re-running the *same* CSS and JS files you already had, every time
+
+Imagine a chat app where sending one message reloaded the entire page, wiped your scroll
+position, and re-downloaded the whole app — just to show one new message. That's not
+acceptable for the kind of apps people expect today.
+
+## Why React [#why-react]
+
+React (and similar tools) exist to fix exactly this. The core idea: **load the page once,
+then only update the small part that actually changed** — never throw away and rebuild the
+whole thing again.
+
+<Mermaid
+  chart="
+graph TD
+A[You click a button] --> B[JavaScript intercepts the click - no reload]
+B --> C[JavaScript asks the server for just the data it needs]
+C --> D[Server sends back data - not a full HTML page]
+D --> E[React updates only the changed part of the page]
+"
+/>
+
+Notice the key difference from the diagram above: the server isn't sending a full HTML page
+anymore — it's sending back **just the data**. That's the piece that matters most for this
+course.
+
+## Why this matters for a backend developer [#why-this-matters-for-a-backend-developer]
+
+This shift changes what a backend server's job even is:
+
+|                             | Web 1.0 / 2.0 style  | Modern React-style            |
+| --------------------------- | -------------------- | ----------------------------- |
+| Server sends back           | A complete HTML page | Just data (usually JSON)      |
+| Who builds the page         | The server           | The browser (React), once     |
+| What happens on each action | Full page reload     | Only the changed part updates |
+
+**This is exactly why we're learning FastAPI**: FastAPI's job in this stack isn't to generate
+HTML pages — it's to answer requests with data. A separate React app (running in the
+browser) is responsible for turning that data into an actual page, and updating it without
+ever reloading. Backend and frontend become two separate programs that talk to each other
+purely through requests and responses of data.
+
+<Callout title="For you, coming from Express/Nest">
+  You've almost certainly already done this: an Express route that calls `res.json({ ... })`
+  instead of rendering a template with something like EJS or Pug is *already* the "modern"
+  approach — server as a pure data API, frontend as a separate React app. FastAPI works on that
+  exact same principle, so this mental model isn't new to you at all — only the Python syntax
+  around it will be.
+</Callout>
+
+
+# What is a Database? (/en/docs/fastapi/web-fundamentals/what-is-a-database)
+
+
+
+The last lesson established that the backend is a trusted boundary — the client never
+touches secrets, source code, or raw data directly. But the backend needs somewhere to
+actually **keep** that data. That's what a database is for.
+
+## Why not just store data in a variable? [#why-not-just-store-data-in-a-variable]
+
+You could imagine a backend that keeps everything in a plain Python list, like the `users`
+list from your Final Practice exercise back in the Python Notes. That works while the program
+is running — but it has a fatal flaw: &#x2A;*the moment the server restarts, everything is gone.**
+A crash, a deploy, a simple reboot — all of it wipes the list clean.
+
+A real application needs data to:
+
+* **Survive** restarts and crashes
+* Be **searched and filtered** quickly, even with millions of records
+* Be **shared safely** across many requests happening at the same time
+
+That's a job for a dedicated piece of software — a **database**.
+
+## What a database actually is [#what-a-database-actually-is]
+
+A database is a separate program (often running as its own server) whose entire purpose is
+storing data reliably and retrieving it fast. Think of it as a very well-organized set of
+spreadsheets:
+
+* A **table** is one spreadsheet — for example, a `users` table, or a `videos` table
+* A **row** is one record in that spreadsheet — one specific user, one specific video
+* A **column** defines one piece of information every row has — `id`, `name`, `email`
+
+```text
+users table
+┌────┬─────────┬───────────────────┐
+│ id │ name    │ email             │
+├────┼─────────┼───────────────────┤
+│ 1  │ John    │ john@example.com  │
+│ 2  │ David   │ david@example.com │
+└────┴─────────┴───────────────────┘
+```
+
+This should look familiar — it's the same shape as the list-of-dicts you already worked with
+in Python Notes' Phase 2 and Final Practice. A database table is essentially that same idea,
+made permanent and searchable at scale.
+
+## Only the backend talks to the database [#only-the-backend-talks-to-the-database]
+
+<Mermaid
+  chart="
+graph LR
+A[Client] -- request to a URL --> B[Backend]
+B -- reads / writes data --> C[(Database)]
+B -- only the resulting data --> A
+"
+/>
+
+The client never connects to the database directly — it never even knows the database
+exists. It only ever talks to the backend, and the backend decides what to read, what to
+write, and what to send back. This is the same trusted-boundary idea from the last lesson,
+just with a concrete example of what's actually being hidden.
+
+## The kind of database you'll use in this course [#the-kind-of-database-youll-use-in-this-course]
+
+There are different families of databases, but the most common kind — and the one this course
+uses with FastAPI — is a **relational database** (like PostgreSQL or MySQL): data organized
+into clearly defined tables with columns, similar to the `users` table above. You'll get
+hands-on with this properly in a later lesson — for now, just hold onto the mental picture:
+&#x2A;*tables, rows, and columns, living inside a server only the backend can reach.**
+
+<Callout title="For you, coming from Express/Nest">
+  Exactly the same relationship as `pg`, Prisma, or TypeORM talking to a Postgres/MySQL
+  database from an Express/Nest server — the client still only ever calls your API, never the
+  database itself. FastAPI will use its own tools for this (you'll meet them soon), but the
+  architecture is identical to what you already do.
+</Callout>
+
+
+# What is a Website? (/en/docs/fastapi/web-fundamentals/what-is-a-website)
+
+
+
+In the last lesson you saw that a **server** answers requests from a **client**. A website is
+simply what most servers send back as their answer.
+
+## The three building blocks [#the-three-building-blocks]
+
+Every website, no matter how complex it looks, is built from three things:
+
+* **HTML** — the structure and content (the text, images, buttons — what's on the page)
+* **CSS** — the styling (colors, spacing, fonts — how it looks)
+* **JavaScript** — the behavior (what happens when you click, type, or scroll)
+
+The server's job is to send these files to whichever browser asks for them. The browser's job
+is to read them and turn them into the page you actually see.
+
+## What happens when you visit a page [#what-happens-when-you-visit-a-page]
+
+Opening a single webpage is rarely just *one* request — it's usually several, one after
+another:
+
+<Mermaid
+  chart="
+graph TD
+A[Browser requests index.html] --> B[Server sends the HTML file]
+B --> C[Browser reads the HTML]
+C --> D[Browser sees a link to style.css and requests it]
+C --> E[Browser sees a link to script.js and requests it]
+D --> F[Page is styled and interactive]
+E --> F
+"
+/>
+
+1. The browser asks for the page itself (`index.html`).
+2. While reading that HTML, the browser notices it references a stylesheet and a script file.
+3. It sends **separate requests** for those too.
+4. Once everything has arrived, the browser combines them into the page you see on screen.
+
+This matters later: every one of those arrows in the diagram is a full round trip across the
+internet — a request, then a response. Keeping that number small (and not repeating it
+unnecessarily) is a big part of why the web has evolved the way it has, which is exactly
+what the next lesson is about.
+
+
+# What is the Internet? (/en/docs/fastapi/web-fundamentals/what-is-the-internet)
+
+
+
+Before writing a single line of backend code, you need a clear picture of what you're
+actually building on top of. So let's start at the very bottom: &#x2A;*what is the internet?**
+
+## A simple definition [#a-simple-definition]
+
+The internet is a huge network of computers all over the world, connected together so they
+can send information to each other.
+
+That's really it. Your phone, your laptop, and the servers that run apps like Instagram or
+Netflix are all just computers on this same giant network — some asking for information,
+others answering.
+
+## Every computer has an address [#every-computer-has-an-address]
+
+For one computer to send data to another, it needs to know where to send it. Every device on
+the internet has an **IP address** — a unique set of numbers that identifies it, the same way
+a house needs a postal address before anyone can deliver mail to it.
+
+```text
+192.168.1.1
+```
+
+You'll rarely type an IP address yourself — that's what domain names like `google.com` are
+for, they're just a human-friendly label that gets translated into an IP address behind the
+scenes. But the underlying idea is the same: &#x2A;*every computer on the internet can be found at
+an address.**
+
+## Two roles: asking and answering [#two-roles-asking-and-answering]
+
+Almost everything that happens on the internet comes down to two roles:
+
+* **Client** — the one asking for something (a browser, a mobile app)
+* **Server** — the one answering (a computer that's always on, waiting for questions)
+
+<Mermaid
+  chart="
+graph LR
+A[Client<br/>your browser or app] -- 1. Request --> B((The Internet))
+B -- forwards it to --> C[Server<br/>a computer that is always on]
+C -- 2. Response --> B
+B -- delivers it back --> A
+"
+/>
+
+For example, when you open a browser and go to a website:
+
+1. Your browser (**client**) sends a **request** out onto the internet: "Please give me this
+   webpage."
+2. The request travels across the network to the right computer, based on its address.
+3. That computer (**server**) sends a **response** back: the actual webpage content.
+4. Your browser receives it and displays it on your screen.
+
+This request → response pattern is the single most important idea in this entire course.
+Everything you'll build runs on top of it.
+
+## Why this matters for you [#why-this-matters-for-you]
+
+**Backend development means building the "server" side of this picture** — the program that
+sits there, always on, waiting for requests, and deciding what to send back.
+
+Everything you've learned in Python so far — functions, dictionaries, classes — is about to
+become the logic that runs *inside* that server, answering the requests your users' browsers
+and apps send in.
+
+
+# What is the Backend, and Why Do We Need One? (/en/docs/fastapi/web-fundamentals/why-we-need-a-backend)
+
+
+
+You already know the backend is the "server" side of the client/server picture. This lesson
+is about *why* it needs to exist at all — why can't a website just be HTML, CSS, and
+JavaScript, with everything happening in the browser?
+
+## The one rule that explains everything [#the-one-rule-that-explains-everything]
+
+**Anything you send to the browser, the user can see and change.**
+
+Open any website, right-click, "View Source" or open DevTools — every line of HTML, CSS, and
+JavaScript is right there, fully readable. Nothing that reaches the browser stays private.
+Not "hard to find" — genuinely, completely visible, and editable, by anyone who opens it.
+
+The backend exists because some things must **never** be visible or editable by the user:
+
+* The actual logic that decides prices, discounts, permissions, or scores
+* Passwords, and how they're checked
+* Secret keys for payment providers, email services, or other paid APIs
+* The database itself — where everyone's data actually lives
+
+## What the client is allowed to see [#what-the-client-is-allowed-to-see]
+
+A user only ever sees two things:
+
+1. The **URL** they called (e.g. `POST /orders`)
+2. Whatever **data** came back in the response
+
+They never see the code that ran to produce that response. The backend's internal logic —
+how it validated the request, which database it checked, what business rules it applied — is
+completely invisible on the other side of that URL.
+
+<Mermaid
+  chart="
+graph LR
+subgraph Client [Client - fully visible to the user]
+A[HTML / CSS / JS you sent]
+B[Whatever data arrives back]
+end
+subgraph Backend [Backend - fully hidden from the user]
+C[Your source code]
+D[Database]
+E[Secret keys]
+F[Business rules: pricing, permissions, validation]
+end
+A -- request to a URL --> C
+C --> D
+C --> E
+C --> F
+C -- only the resulting data --> B
+"
+/>
+
+This is the whole point of a backend: it's a boundary. Requests go in, responses come out,
+and everything that happens in between is the developer's business, not the user's.
+
+## What if there were no backend at all? [#what-if-there-were-no-backend-at-all]
+
+Imagine trying to build an online store with *only* HTML, CSS, and JavaScript running in the
+browser — no server, no database, nothing hidden.
+
+**Prices and discounts couldn't be trusted.** If the "final price" is calculated by
+JavaScript running in the user's own browser, the user can open DevTools and change it before
+checkout. There's no second, trusted opinion checking the real price — the browser *is* the
+only opinion, and the user fully controls it.
+
+**Logins couldn't be secure.** If checking a password is a line of JavaScript like
+`if (password === "admin123")`, that string is sitting right there in the page's source code
+for anyone to read. Worse, a user could just skip the check entirely by editing the code
+running in their own browser.
+
+**Data couldn't be shared or kept safe.** Without a database, data can only live in the
+browser itself (e.g. `localStorage`) — meaning it exists on *that one device, in that one
+browser*, invisible to everyone else. Two users could never see each other's posts. You
+couldn't check your own account from your phone. Clear your browser data, and everything is
+gone forever.
+
+**Secrets couldn't stay secret.** Calling a paid third-party service (email, SMS, payments)
+requires a secret API key. If that key lives in browser JavaScript, it ships to every visitor
+— anyone can extract it from the page and use it as their own, at your expense.
+
+None of this is a small inconvenience — it means **nothing on the site could actually be
+trusted**. A backend is what turns "a page that runs some code" into "a system whose rules
+actually hold."
+
+## The takeaway [#the-takeaway]
+
+The backend is the one place in your entire application that only *you*, the developer,
+control. The user can call its URLs and see its responses — but never its code, its
+database, or its secrets. Everything you'll build with FastAPI from here on lives inside that
+trusted boundary.
+
+<Callout title="For you, coming from Express/Nest">
+  This is precisely why an Express/Nest server exists in your past projects too — it's the same
+  "trusted boundary" idea, whether the request handler is written in a Express route, a Nest
+  controller method, or — starting now — a FastAPI path operation function. The concept doesn't
+  change; only the syntax will.
+</Callout>
 
 
 # Final Practice — Build a User Store (/tanglish/docs/final-practice)
@@ -4786,6 +4786,529 @@ Topics are added here as they're covered, in teaching order.
 </Cards>
 
 *More topics will appear here as they're added.*
+
+
+# dict (/tanglish/docs/phase-2/dictionaries)
+
+
+
+`dict` (dictionary) **key-value pairs** store pannum. Idhu JS object oda equivalent, nee idha
+everywhere use pannuva — request bodies, JSON responses, database rows, config values.
+
+JavaScript:
+
+```js
+const user = {
+  id: 1,
+  name: 'John',
+  email: 'john@example.com',
+};
+
+console.log(user.name);
+
+user.age = 25;
+```
+
+Python:
+
+```python
+user = {
+    "id": 1,
+    "name": "John",
+    "email": "john@example.com"
+}
+
+print(user["name"])
+
+user["age"] = 25
+```
+
+## JS object-la irundhu key differences [#js-object-la-irundhu-key-differences]
+
+**Python-la bracket access matum than use pannuvom — dot notation kidayathu.**
+
+```python
+user["name"]   # ✅ work aagum
+user.name      # ❌ AttributeError
+```
+
+JS-la `user.name` allathu `user["name"]` — rendum interchangeable ah use pannalaam. Python
+dicts bracket form matum than support pannum.
+
+**New key add pannradhu** rendu languages-layum same way than — illatha key-ku assign
+pannina podhum:
+
+```python
+user["age"] = 25
+```
+
+**Illatha key-a access pannina** different-a behave pannum:
+
+```python
+user["phone"]
+# ❌ KeyError: 'phone'
+```
+
+JS-la, `user.phone` quietly `undefined`-a kudukkum. Python error throw pannum — idhu than
+next page-la paakura `.get()` method yen irukku-nu exact reason.
+
+
+# get, keys, values & items (/tanglish/docs/phase-2/dictionary-methods)
+
+
+
+## get — safe access [#get--safe-access]
+
+`.get()` oru key illana error throw pannama read pannum.
+
+```python
+user = {"id": 1, "name": "John"}
+
+user.get("name")            # "John"
+user.get("phone")           # None
+user.get("phone", "N/A")    # "N/A" — key illana idhu default value
+```
+
+Idhu basically JS oda `??` fallback oda Python version:
+
+```js
+user.phone ?? 'N/A';
+```
+
+Key irukka-illaya-nu sure illana `user["key"]` ku badhila `.get()` use pannu.
+
+## keys — keys matum [#keys--keys-matum]
+
+```python
+user = {"id": 1, "name": "John"}
+
+print(user.keys())   # dict_keys(['id', 'name'])
+```
+
+JS oda `Object.keys(user)` maadhiri than.
+
+## values — values matum [#values--values-matum]
+
+```python
+print(user.values())   # dict_values([1, 'John'])
+```
+
+JS oda `Object.values(user)` maadhiri than.
+
+## items — key mattrum value onnaaga [#items--key-mattrum-value-onnaaga]
+
+`.items()` than nee mostly use pannuva, especially `for` loop-la:
+
+```python
+for key, value in user.items():
+    print(key, value)
+```
+
+```text
+id 1
+name John
+```
+
+Idhu JS oda `Object.entries(user)`, array destructuring oda serthu use pannuvadhu maadhiri
+than:
+
+```js
+for (const [key, value] of Object.entries(user)) {
+  console.log(key, value);
+}
+```
+
+
+# Phase 2 — Collections (/tanglish/docs/phase-2)
+
+
+
+Estimated time: **\~2 hours**.
+
+Idhu probably backend development ku romba important-ana Python section. Nee eluthura almost
+ella API-um data-va list mattrum dict vazhiye than pass pannum.
+
+## Goals [#goals]
+
+Indha phase mudichadhukku apparam, intha topics ellam unakku comfortable ah irukanum:
+
+* `list`
+* `tuple`
+* `set`
+* `dict` (idha especially)
+* indexing
+* slicing
+* `append`, `remove`, `pop`
+* `get`, `keys`, `values`, `items`
+* `in`
+
+Ovvoru topic-um sidebar-la thani page ah irukku. Ella page-layum JS/TS → Python compare
+panni explain pannirukom, adha followed by oru chinna example.
+
+## Cheat sheet [#cheat-sheet]
+
+```text
+JavaScript / TypeScript        Python
+──────────────────────────────────────────
+Array                          list
+Object                         dict
+Set                            set
+frozen array / tuple-like       tuple
+
+arr.push(x)                    list.append(x)
+arr.pop()                      list.pop()
+arr.splice(i, 1)                del list[i]
+arr.filter(v => v !== x)        list.remove(x)
+
+arr[0]                         list[0]
+arr.at(-1)                      list[-1]
+arr.slice(1, 3)                  list[1:3]
+
+Object.keys(obj)                dict.keys()
+Object.values(obj)               dict.values()
+Object.entries(obj)              dict.items()
+obj.x ?? obj["x"]                 dict.get("x")
+
+'x' in obj                       'x' in dict
+arr.includes(x)                   x in list
+```
+
+
+# append, remove & pop (/tanglish/docs/phase-2/list-methods)
+
+
+
+## append — end-la add pannradhu [#append--end-la-add-pannradhu]
+
+JavaScript:
+
+```js
+const fruits = ['apple', 'banana'];
+fruits.push('cherry');
+```
+
+Python:
+
+```python
+fruits = ["apple", "banana"]
+fruits.append("cherry")
+
+print(fruits)   # ["apple", "banana", "cherry"]
+```
+
+`append()` na Python oda `push()` than — idhu eppovum list oda **end**-la than add pannum.
+
+## remove — value vechi delete pannradhu [#remove--value-vechi-delete-pannradhu]
+
+Python oda `remove()`, **first matching value**-a delete pannum, index illa.
+
+```python
+fruits = ["apple", "banana", "cherry"]
+fruits.remove("banana")
+
+print(fruits)   # ["apple", "cherry"]
+```
+
+JS-la direct-a "value vechi remove pannu" nu oru method kidayathu — usually
+`arr.filter(f => f !== 'banana')` vechi andha value illama oru new array create pannuvom.
+
+**Note:** andha value list-la illana, `remove()` error throw pannum, so first andha value
+irukka-nu check pannikonga (idha `in` vechi eppadi check pannaradhu-nu indha phase-oda
+last-la paapom).
+
+## pop — remove pannitu return pannradhu [#pop--remove-pannitu-return-pannradhu]
+
+`pop()` oru item-a remove pannitu, adha unakku thirumba kudukkum.
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+last = fruits.pop()
+print(last)      # "cherry"
+print(fruits)    # ["apple", "banana"]
+```
+
+JS oda `arr.pop()` maadhiri than. Aana Python oda `pop()`, oru **index**-um accept pannum,
+adha JS oda `pop()` direct-a support pannadhu:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+first = fruits.pop(0)
+print(first)     # "apple"
+print(fruits)    # ["banana", "cherry"]
+```
+
+
+# list, Indexing & Slicing (/tanglish/docs/phase-2/lists)
+
+
+
+## list [#list]
+
+Python oda `list` na JavaScript array oda equivalent. Idhu ordered, create pannina apparam
+change pannalam, duplicate values-um vechikalam.
+
+JavaScript:
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+```
+
+Python:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+```
+
+Same idea than — square brackets, comma-separated values. `len()` size-a kudukkum:
+
+```python
+len(fruits)   # 3
+```
+
+## Indexing [#indexing]
+
+JS arrays maadhiri than, indexing `0`-la irundhu start aagum.
+
+```python
+fruits[0]   # "apple"
+fruits[1]   # "banana"
+```
+
+Python-la **negative indexing** nu oru feature irukku — last-la irundhu count panna clean
+way:
+
+```python
+fruits[-1]   # "cherry" (last item)
+fruits[-2]   # "banana" (second-last item)
+```
+
+JS-la idha pannanum na `arr.at(-1)` use pannanum; Python-la `-1` andha bracket-kulla direct-a
+work aagidum.
+
+## Slicing [#slicing]
+
+`list[start:stop]` vechi sub-list-a edukalam. `range()` maadhiri than, `stop` **include
+aagadhu**.
+
+```python
+fruits = ["apple", "banana", "cherry", "date"]
+
+fruits[1:3]    # ["banana", "cherry"]
+fruits[:2]     # ["apple", "banana"]   (start default-a 0)
+fruits[2:]     # ["cherry", "date"]    (stop default-a end)
+fruits[:]      # ["apple", "banana", "cherry", "date"]  (full copy)
+```
+
+JavaScript-la idhukku close-a irukura option `arr.slice(start, stop)` — same start/stop
+behavior than, method form-la irukku.
+
+Oru common trick — slice vechi list-a reverse pannalaam:
+
+```python
+fruits[::-1]   # ["date", "cherry", "banana", "apple"]
+```
+
+
+# Nested Data & in (/tanglish/docs/phase-2/nested-data-and-in)
+
+
+
+## Nested data — dicts oda list [#nested-data--dicts-oda-list]
+
+Idhu backend code-la nee romba paakura shapes-la onnu: oru **list of dictionaries**,
+example-ku database-la irundhu varra users oda list.
+
+JavaScript:
+
+```js
+const users = [
+  { id: 1, name: 'John' },
+  { id: 2, name: 'David' },
+];
+
+for (const user of users) {
+  console.log(user.name);
+}
+```
+
+Python:
+
+```python
+users = [
+    {
+        "id": 1,
+        "name": "John"
+    },
+    {
+        "id": 2,
+        "name": "David"
+    }
+]
+
+for user in users:
+    print(user["name"])
+```
+
+Ovvoru loop iteration-um unakku oru dict-a kudukkum, adha nee bracket vechi read pannuva —
+exact-a oru standalone dict maadhiri than.
+
+## in — membership check [#in--membership-check]
+
+`in` oru collection-kulla edhavadhu irukka-nu check pannum. Idhu list, dict, set, string
+ellathulayum work aagum.
+
+**List check pannradhu** — oru **value** irukka-nu check pannum:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+"banana" in fruits   # True
+"mango" in fruits    # False
+```
+
+**Dict check pannradhu** — oru **key** irukka-nu check pannum (value illa):
+
+```python
+user = {"id": 1, "name": "John"}
+
+"name" in user   # True
+"John" in user   # False — "John" oru value, key illa
+```
+
+**String check pannradhu** — substring irukka-nu check pannum:
+
+```python
+"John" in "John Doe"   # True
+```
+
+### JS-la irundhu varra oru gotcha [#js-la-irundhu-varra-oru-gotcha]
+
+JS-la kooda `in` operator irukku, aana **arrays**-ku idhu **index**-a check pannum, value-a
+illa — idhu romba confusion create pannum:
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+
+0 in fruits; // true  — index 0 irukku
+'banana' in fruits; // false — idhu JS-la value check panna correct way illa
+fruits.includes('banana'); // true — idhu than actual-a nee vendradhu JS-la
+```
+
+Python-oda list-la `in`, eppovum **values**-a than check pannum — idhu JS oda
+`arr.includes(x)` oda match aagum, JS-oda `in` operator oda illa. Rendu languages-ku
+switch aagum bothu idha ninaivula vechiko.
+
+
+# set (/tanglish/docs/phase-2/sets)
+
+
+
+`set` na **unique values matum** than store pannum — duplicates automatic-a drop aagidum,
+order edhuvum guarantee illa.
+
+JavaScript:
+
+```js
+const numbers = new Set([1, 2, 2, 3]);
+```
+
+Python:
+
+```python
+numbers = {1, 2, 2, 3}
+
+print(numbers)   # {1, 2, 3}
+```
+
+Kavanikanum — sets curly braces `{ }` use pannum, dict maadhiri than — aana key-value pairs
+ku badhila plain values than irukkum. (Python-la empty `{}` na yeppovume `dict` than
+create pannum, set illa — empty set ku `set()` use pannanum.)
+
+## Add pannradhu, remove pannradhu [#add-pannradhu-remove-pannradhu]
+
+```python
+numbers = {1, 2, 3}
+
+numbers.add(4)
+print(numbers)   # {1, 2, 3, 4}
+
+numbers.remove(2)
+print(numbers)   # {1, 3, 4}
+```
+
+JS oda `set.add()` mattrum `set.delete()` maadhiri than same idea.
+
+## Set yen use pannanum? [#set-yen-use-pannanum]
+
+Romba common reason: list-la irundhu duplicates-a remove pannradhu.
+
+```python
+fruits = ["apple", "banana", "apple", "cherry"]
+
+unique_fruits = list(set(fruits))
+print(unique_fruits)   # ["apple", "banana", "cherry"] (order guarantee illa)
+```
+
+Oru value irukka-nu check pannradhukku-um sets romba fast — idha indha phase-oda last-la
+`in` keyword oda serthu paapom.
+
+
+# tuple (/tanglish/docs/phase-2/tuples)
+
+
+
+`tuple` na paakumbothu list maadhiri than irukkum, aana oru vaati create pannitta, adha
+**change panna mudiyathu** — add pannradhu, remove pannradhu, replace pannradhu edhuvum illa.
+
+JS-la idhukku direct-a oru built-in equivalent kidayathu — close-a irukura option array-la
+`Object.freeze()` use pannradhu than:
+
+```js
+const point = Object.freeze([4, 5]);
+```
+
+Python-la idhukku thani syntax irukku — square brackets ku badhila parentheses:
+
+```python
+point = (4, 5)
+```
+
+Indexing mattrum slicing, list maadhiri exact-a same than work aagum:
+
+```python
+point[0]     # 4
+point[-1]    # 5
+```
+
+Aana change panna try pannina fail aagidum:
+
+```python
+point[0] = 10
+# ❌ TypeError: 'tuple' object does not support item assignment
+```
+
+## Tuple yen use pannanum? [#tuple-yen-use-pannanum]
+
+Oru value create panniya apparam change aaga koodadhu-nu bothu tuple use pannu — example-ku,
+coordinates, RGB color, allathu function-la irundhu return aagura fixed pair of values. Idhu
+code padikura yaarukkum "idhu fixed collection, mutate panna vendiya onnu illa"-nu clear-a
+solradhu.
+
+```python
+def get_coordinates():
+    return (12.9716, 77.5946)
+
+lat, lng = get_coordinates()
+```
+
+Andha last line — tuple-a straight-a rendu variables-ku unpack pannradhu — idha JS-um kooda
+array destructuring vechi pannum:
+
+```js
+const [lat, lng] = getCoordinates();
+```
 
 
 # if / elif / else (/tanglish/docs/phase-1/conditionals)
@@ -5417,529 +5940,6 @@ API_VERSION = "v1"
 
 Idhu just oru naming convention than — nee value-a change panna edhuvum block panradhu
 illa. `const` maadhiri Python force pannadhu.
-
-
-# dict (/tanglish/docs/phase-2/dictionaries)
-
-
-
-`dict` (dictionary) **key-value pairs** store pannum. Idhu JS object oda equivalent, nee idha
-everywhere use pannuva — request bodies, JSON responses, database rows, config values.
-
-JavaScript:
-
-```js
-const user = {
-  id: 1,
-  name: 'John',
-  email: 'john@example.com',
-};
-
-console.log(user.name);
-
-user.age = 25;
-```
-
-Python:
-
-```python
-user = {
-    "id": 1,
-    "name": "John",
-    "email": "john@example.com"
-}
-
-print(user["name"])
-
-user["age"] = 25
-```
-
-## JS object-la irundhu key differences [#js-object-la-irundhu-key-differences]
-
-**Python-la bracket access matum than use pannuvom — dot notation kidayathu.**
-
-```python
-user["name"]   # ✅ work aagum
-user.name      # ❌ AttributeError
-```
-
-JS-la `user.name` allathu `user["name"]` — rendum interchangeable ah use pannalaam. Python
-dicts bracket form matum than support pannum.
-
-**New key add pannradhu** rendu languages-layum same way than — illatha key-ku assign
-pannina podhum:
-
-```python
-user["age"] = 25
-```
-
-**Illatha key-a access pannina** different-a behave pannum:
-
-```python
-user["phone"]
-# ❌ KeyError: 'phone'
-```
-
-JS-la, `user.phone` quietly `undefined`-a kudukkum. Python error throw pannum — idhu than
-next page-la paakura `.get()` method yen irukku-nu exact reason.
-
-
-# get, keys, values & items (/tanglish/docs/phase-2/dictionary-methods)
-
-
-
-## get — safe access [#get--safe-access]
-
-`.get()` oru key illana error throw pannama read pannum.
-
-```python
-user = {"id": 1, "name": "John"}
-
-user.get("name")            # "John"
-user.get("phone")           # None
-user.get("phone", "N/A")    # "N/A" — key illana idhu default value
-```
-
-Idhu basically JS oda `??` fallback oda Python version:
-
-```js
-user.phone ?? 'N/A';
-```
-
-Key irukka-illaya-nu sure illana `user["key"]` ku badhila `.get()` use pannu.
-
-## keys — keys matum [#keys--keys-matum]
-
-```python
-user = {"id": 1, "name": "John"}
-
-print(user.keys())   # dict_keys(['id', 'name'])
-```
-
-JS oda `Object.keys(user)` maadhiri than.
-
-## values — values matum [#values--values-matum]
-
-```python
-print(user.values())   # dict_values([1, 'John'])
-```
-
-JS oda `Object.values(user)` maadhiri than.
-
-## items — key mattrum value onnaaga [#items--key-mattrum-value-onnaaga]
-
-`.items()` than nee mostly use pannuva, especially `for` loop-la:
-
-```python
-for key, value in user.items():
-    print(key, value)
-```
-
-```text
-id 1
-name John
-```
-
-Idhu JS oda `Object.entries(user)`, array destructuring oda serthu use pannuvadhu maadhiri
-than:
-
-```js
-for (const [key, value] of Object.entries(user)) {
-  console.log(key, value);
-}
-```
-
-
-# Phase 2 — Collections (/tanglish/docs/phase-2)
-
-
-
-Estimated time: **\~2 hours**.
-
-Idhu probably backend development ku romba important-ana Python section. Nee eluthura almost
-ella API-um data-va list mattrum dict vazhiye than pass pannum.
-
-## Goals [#goals]
-
-Indha phase mudichadhukku apparam, intha topics ellam unakku comfortable ah irukanum:
-
-* `list`
-* `tuple`
-* `set`
-* `dict` (idha especially)
-* indexing
-* slicing
-* `append`, `remove`, `pop`
-* `get`, `keys`, `values`, `items`
-* `in`
-
-Ovvoru topic-um sidebar-la thani page ah irukku. Ella page-layum JS/TS → Python compare
-panni explain pannirukom, adha followed by oru chinna example.
-
-## Cheat sheet [#cheat-sheet]
-
-```text
-JavaScript / TypeScript        Python
-──────────────────────────────────────────
-Array                          list
-Object                         dict
-Set                            set
-frozen array / tuple-like       tuple
-
-arr.push(x)                    list.append(x)
-arr.pop()                      list.pop()
-arr.splice(i, 1)                del list[i]
-arr.filter(v => v !== x)        list.remove(x)
-
-arr[0]                         list[0]
-arr.at(-1)                      list[-1]
-arr.slice(1, 3)                  list[1:3]
-
-Object.keys(obj)                dict.keys()
-Object.values(obj)               dict.values()
-Object.entries(obj)              dict.items()
-obj.x ?? obj["x"]                 dict.get("x")
-
-'x' in obj                       'x' in dict
-arr.includes(x)                   x in list
-```
-
-
-# append, remove & pop (/tanglish/docs/phase-2/list-methods)
-
-
-
-## append — end-la add pannradhu [#append--end-la-add-pannradhu]
-
-JavaScript:
-
-```js
-const fruits = ['apple', 'banana'];
-fruits.push('cherry');
-```
-
-Python:
-
-```python
-fruits = ["apple", "banana"]
-fruits.append("cherry")
-
-print(fruits)   # ["apple", "banana", "cherry"]
-```
-
-`append()` na Python oda `push()` than — idhu eppovum list oda **end**-la than add pannum.
-
-## remove — value vechi delete pannradhu [#remove--value-vechi-delete-pannradhu]
-
-Python oda `remove()`, **first matching value**-a delete pannum, index illa.
-
-```python
-fruits = ["apple", "banana", "cherry"]
-fruits.remove("banana")
-
-print(fruits)   # ["apple", "cherry"]
-```
-
-JS-la direct-a "value vechi remove pannu" nu oru method kidayathu — usually
-`arr.filter(f => f !== 'banana')` vechi andha value illama oru new array create pannuvom.
-
-**Note:** andha value list-la illana, `remove()` error throw pannum, so first andha value
-irukka-nu check pannikonga (idha `in` vechi eppadi check pannaradhu-nu indha phase-oda
-last-la paapom).
-
-## pop — remove pannitu return pannradhu [#pop--remove-pannitu-return-pannradhu]
-
-`pop()` oru item-a remove pannitu, adha unakku thirumba kudukkum.
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-last = fruits.pop()
-print(last)      # "cherry"
-print(fruits)    # ["apple", "banana"]
-```
-
-JS oda `arr.pop()` maadhiri than. Aana Python oda `pop()`, oru **index**-um accept pannum,
-adha JS oda `pop()` direct-a support pannadhu:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-first = fruits.pop(0)
-print(first)     # "apple"
-print(fruits)    # ["banana", "cherry"]
-```
-
-
-# list, Indexing & Slicing (/tanglish/docs/phase-2/lists)
-
-
-
-## list [#list]
-
-Python oda `list` na JavaScript array oda equivalent. Idhu ordered, create pannina apparam
-change pannalam, duplicate values-um vechikalam.
-
-JavaScript:
-
-```js
-const fruits = ['apple', 'banana', 'cherry'];
-```
-
-Python:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-```
-
-Same idea than — square brackets, comma-separated values. `len()` size-a kudukkum:
-
-```python
-len(fruits)   # 3
-```
-
-## Indexing [#indexing]
-
-JS arrays maadhiri than, indexing `0`-la irundhu start aagum.
-
-```python
-fruits[0]   # "apple"
-fruits[1]   # "banana"
-```
-
-Python-la **negative indexing** nu oru feature irukku — last-la irundhu count panna clean
-way:
-
-```python
-fruits[-1]   # "cherry" (last item)
-fruits[-2]   # "banana" (second-last item)
-```
-
-JS-la idha pannanum na `arr.at(-1)` use pannanum; Python-la `-1` andha bracket-kulla direct-a
-work aagidum.
-
-## Slicing [#slicing]
-
-`list[start:stop]` vechi sub-list-a edukalam. `range()` maadhiri than, `stop` **include
-aagadhu**.
-
-```python
-fruits = ["apple", "banana", "cherry", "date"]
-
-fruits[1:3]    # ["banana", "cherry"]
-fruits[:2]     # ["apple", "banana"]   (start default-a 0)
-fruits[2:]     # ["cherry", "date"]    (stop default-a end)
-fruits[:]      # ["apple", "banana", "cherry", "date"]  (full copy)
-```
-
-JavaScript-la idhukku close-a irukura option `arr.slice(start, stop)` — same start/stop
-behavior than, method form-la irukku.
-
-Oru common trick — slice vechi list-a reverse pannalaam:
-
-```python
-fruits[::-1]   # ["date", "cherry", "banana", "apple"]
-```
-
-
-# Nested Data & in (/tanglish/docs/phase-2/nested-data-and-in)
-
-
-
-## Nested data — dicts oda list [#nested-data--dicts-oda-list]
-
-Idhu backend code-la nee romba paakura shapes-la onnu: oru **list of dictionaries**,
-example-ku database-la irundhu varra users oda list.
-
-JavaScript:
-
-```js
-const users = [
-  { id: 1, name: 'John' },
-  { id: 2, name: 'David' },
-];
-
-for (const user of users) {
-  console.log(user.name);
-}
-```
-
-Python:
-
-```python
-users = [
-    {
-        "id": 1,
-        "name": "John"
-    },
-    {
-        "id": 2,
-        "name": "David"
-    }
-]
-
-for user in users:
-    print(user["name"])
-```
-
-Ovvoru loop iteration-um unakku oru dict-a kudukkum, adha nee bracket vechi read pannuva —
-exact-a oru standalone dict maadhiri than.
-
-## in — membership check [#in--membership-check]
-
-`in` oru collection-kulla edhavadhu irukka-nu check pannum. Idhu list, dict, set, string
-ellathulayum work aagum.
-
-**List check pannradhu** — oru **value** irukka-nu check pannum:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-"banana" in fruits   # True
-"mango" in fruits    # False
-```
-
-**Dict check pannradhu** — oru **key** irukka-nu check pannum (value illa):
-
-```python
-user = {"id": 1, "name": "John"}
-
-"name" in user   # True
-"John" in user   # False — "John" oru value, key illa
-```
-
-**String check pannradhu** — substring irukka-nu check pannum:
-
-```python
-"John" in "John Doe"   # True
-```
-
-### JS-la irundhu varra oru gotcha [#js-la-irundhu-varra-oru-gotcha]
-
-JS-la kooda `in` operator irukku, aana **arrays**-ku idhu **index**-a check pannum, value-a
-illa — idhu romba confusion create pannum:
-
-```js
-const fruits = ['apple', 'banana', 'cherry'];
-
-0 in fruits; // true  — index 0 irukku
-'banana' in fruits; // false — idhu JS-la value check panna correct way illa
-fruits.includes('banana'); // true — idhu than actual-a nee vendradhu JS-la
-```
-
-Python-oda list-la `in`, eppovum **values**-a than check pannum — idhu JS oda
-`arr.includes(x)` oda match aagum, JS-oda `in` operator oda illa. Rendu languages-ku
-switch aagum bothu idha ninaivula vechiko.
-
-
-# set (/tanglish/docs/phase-2/sets)
-
-
-
-`set` na **unique values matum** than store pannum — duplicates automatic-a drop aagidum,
-order edhuvum guarantee illa.
-
-JavaScript:
-
-```js
-const numbers = new Set([1, 2, 2, 3]);
-```
-
-Python:
-
-```python
-numbers = {1, 2, 2, 3}
-
-print(numbers)   # {1, 2, 3}
-```
-
-Kavanikanum — sets curly braces `{ }` use pannum, dict maadhiri than — aana key-value pairs
-ku badhila plain values than irukkum. (Python-la empty `{}` na yeppovume `dict` than
-create pannum, set illa — empty set ku `set()` use pannanum.)
-
-## Add pannradhu, remove pannradhu [#add-pannradhu-remove-pannradhu]
-
-```python
-numbers = {1, 2, 3}
-
-numbers.add(4)
-print(numbers)   # {1, 2, 3, 4}
-
-numbers.remove(2)
-print(numbers)   # {1, 3, 4}
-```
-
-JS oda `set.add()` mattrum `set.delete()` maadhiri than same idea.
-
-## Set yen use pannanum? [#set-yen-use-pannanum]
-
-Romba common reason: list-la irundhu duplicates-a remove pannradhu.
-
-```python
-fruits = ["apple", "banana", "apple", "cherry"]
-
-unique_fruits = list(set(fruits))
-print(unique_fruits)   # ["apple", "banana", "cherry"] (order guarantee illa)
-```
-
-Oru value irukka-nu check pannradhukku-um sets romba fast — idha indha phase-oda last-la
-`in` keyword oda serthu paapom.
-
-
-# tuple (/tanglish/docs/phase-2/tuples)
-
-
-
-`tuple` na paakumbothu list maadhiri than irukkum, aana oru vaati create pannitta, adha
-**change panna mudiyathu** — add pannradhu, remove pannradhu, replace pannradhu edhuvum illa.
-
-JS-la idhukku direct-a oru built-in equivalent kidayathu — close-a irukura option array-la
-`Object.freeze()` use pannradhu than:
-
-```js
-const point = Object.freeze([4, 5]);
-```
-
-Python-la idhukku thani syntax irukku — square brackets ku badhila parentheses:
-
-```python
-point = (4, 5)
-```
-
-Indexing mattrum slicing, list maadhiri exact-a same than work aagum:
-
-```python
-point[0]     # 4
-point[-1]    # 5
-```
-
-Aana change panna try pannina fail aagidum:
-
-```python
-point[0] = 10
-# ❌ TypeError: 'tuple' object does not support item assignment
-```
-
-## Tuple yen use pannanum? [#tuple-yen-use-pannanum]
-
-Oru value create panniya apparam change aaga koodadhu-nu bothu tuple use pannu — example-ku,
-coordinates, RGB color, allathu function-la irundhu return aagura fixed pair of values. Idhu
-code padikura yaarukkum "idhu fixed collection, mutate panna vendiya onnu illa"-nu clear-a
-solradhu.
-
-```python
-def get_coordinates():
-    return (12.9716, 77.5946)
-
-lat, lng = get_coordinates()
-```
-
-Andha last line — tuple-a straight-a rendu variables-ku unpack pannradhu — idha JS-um kooda
-array destructuring vechi pannum:
-
-```js
-const [lat, lng] = getCoordinates();
-```
 
 
 # *args & **kwargs (/tanglish/docs/phase-3/args-and-kwargs)
@@ -7769,513 +7769,6 @@ FastAPI app you build, with no setup.
 </Callout>
 
 
-# Putting It Together — How Does YouTube Work? (/tanglish/docs/fastapi/web-fundamentals/how-youtube-works)
-
-
-
-You now know the pieces: client, backend, database. This lesson puts them together through a
-real example everyone already understands — **YouTube** — and along the way, uncovers one
-more piece you haven't met yet.
-
-## Two very different kinds of data [#two-very-different-kinds-of-data]
-
-Think about everything YouTube needs to keep track of for a single video:
-
-* Its **title**, **description**, **upload date**, **view count**, **like count**
-* Its **comments**, and who posted each one
-* The **actual video file** itself — and its thumbnail image
-
-The first two are exactly what you just learned: rows in database tables. A `videos` table
-with a `title` column and a `view_count` column fits perfectly.
-
-But that video file? A single video can be hundreds of megabytes, even gigabytes. That raises
-a real question:
-
-**Can't we just save the video file in the database too, in some column?**
-
-## Why databases aren't built for this [#why-databases-arent-built-for-this]
-
-Technically, some databases can store large binary blobs — but doing this at YouTube's scale
-would be a bad idea:
-
-* Databases are built to be searched, filtered, and sorted quickly across *many small rows* —
-  not to hold enormous files that nobody "searches" the *contents* of
-* A database that also held every raw video file would become massive, making backups,
-  replication, and queries all dramatically slower
-* Databases aren't designed to **stream** a large file out to millions of viewers at once —
-  that's a completely different kind of workload
-
-So real applications split the two apart:
-
-<Mermaid
-  chart="
-graph TD
-A[Everything about a video] --> B[Structured data:<br/>title, description,<br/>views, comments]
-A --> C[The actual files:<br/>video, thumbnail]
-B --> D[(Database)]
-C --> E[Storage Server]
-"
-/>
-
-## Meet the storage server [#meet-the-storage-server]
-
-A **storage server** (often called *object storage* — think AWS S3 or Google Cloud Storage)
-is a service whose only job is storing and serving large files efficiently. The database
-never holds the video itself — it only holds a **reference** to where that file lives on the
-storage server (a URL or file path).
-
-Large platforms also place a **CDN** (Content Delivery Network) in front of their storage —
-copies of popular videos get cached on servers physically close to viewers all over the
-world, so someone in India isn't fetching every byte from a server on the other side of the
-planet. You don't need to build one of these yourself; it's a service you connect to, the
-same way you'd connect to a database.
-
-## The full picture [#the-full-picture]
-
-<Mermaid
-  chart="
-graph LR
-A[Client<br/>browser or app] -- requests --> B[Backend]
-B -- structured data --> C[(Database)]
-B -- file references --> D[Storage Server + CDN]
-D -. video/image bytes .-> A
-"
-/>
-
-## Walking through: uploading a video [#walking-through-uploading-a-video]
-
-1. You select a video file and hit upload in the client.
-2. The client sends the file to the **backend**.
-3. The backend sends the actual video file to the **storage server** to be saved.
-4. The storage server gives back a reference — where that file now lives.
-5. The backend saves the **metadata** (title, description, your user id, and that file
-   reference) as a new row in the **database**.
-
-## Walking through: watching a video [#walking-through-watching-a-video]
-
-1. You open a video page in the client.
-2. The client asks the **backend** for that video's info.
-3. The backend reads the row from the **database** — title, description, view count, and the
-   stored file reference.
-4. The backend sends that data back to the client, including where the actual video file
-   lives.
-5. The client's video player fetches the video bytes **directly from the storage server /
-   CDN** — not routed back through the backend — so playback is fast and doesn't load down
-   your API server.
-
-## Why this matters going forward [#why-this-matters-going-forward]
-
-This same split shows up in almost every real app you'll build: a database for structured,
-searchable data, and a storage service for the files themselves (profile pictures, PDFs,
-audio, video). In this course, you'll build the backend and database side yourself with
-FastAPI; storage servers and CDNs are usually a cloud service you connect to, not something
-you build from scratch.
-
-With client, backend, database, and storage all in place, you now have the complete mental
-map of how a real application is built — everything from here on is about learning the tools
-to build the backend piece of it, properly.
-
-<Callout title="For you, coming from Express/Nest">
-  Same architecture you already know — an Express/Nest API talking to Postgres/MongoDB for
-  structured data, and to S3 (or similar) for files, usually via a pre-signed upload URL or a
-  multipart upload endpoint. FastAPI will follow the identical pattern; you're not learning a
-  new architecture here, just new syntax for a shape you've already built before.
-</Callout>
-
-
-# Web 1.0, Web 2.0 & Why React (/tanglish/docs/fastapi/web-fundamentals/web-evolution-and-why-react)
-
-
-
-Websites haven't always worked the way they do today. To understand why tools like React
-exist, you need to see the problem they were built to solve.
-
-## Web 1.0 — read-only pages [#web-10--read-only-pages]
-
-The earliest websites (roughly the 1990s) were **static and read-only** — closer to a digital
-brochure than an app. A server had a folder of pre-written HTML files, and every visitor got
-exactly the same page. There was no login, no comments, no personalization. You looked, you
-didn't interact.
-
-## Web 2.0 — the interactive web [#web-20--the-interactive-web]
-
-Starting in the 2000s, the web became **interactive and user-driven**: logins, comments,
-likes, posting your own content — think early Facebook, YouTube, blogs with comment sections.
-The server now generated a *different* page for every user, built from data stored in a
-database.
-
-This is a huge leap forward — but under the hood, most Web 2.0 sites still worked the exact
-same way as Web 1.0 for one crucial thing: &#x2A;*every click reloaded the entire page.**
-
-## The full page reload problem [#the-full-page-reload-problem]
-
-Click a link on a traditional website (even a modern-looking one built with plain
-HTML/CSS/JS), and this happens:
-
-<Mermaid
-  chart="
-graph TD
-A[You click a link or submit a form] --> B[Browser throws away the entire current page]
-B --> C[Browser sends a request for a brand new page]
-C --> D[Server builds and sends a full HTML page]
-D --> E[Browser reloads everything from scratch: HTML, CSS, JS, images]
-E --> F[White flash, then the new page appears]
-"
-/>
-
-Every single action — clicking a link, submitting a form, even liking a post — could mean
-throwing away the whole page and rebuilding it from nothing. That means:
-
-* A visible **white flash** while the old page disappears and the new one loads
-* **Everything resets** — scroll position, an open dropdown, a half-filled form, a playing
-  video — all gone, because the browser is starting over completely
-* Re-downloading and re-running the *same* CSS and JS files you already had, every time
-
-Imagine a chat app where sending one message reloaded the entire page, wiped your scroll
-position, and re-downloaded the whole app — just to show one new message. That's not
-acceptable for the kind of apps people expect today.
-
-## Why React [#why-react]
-
-React (and similar tools) exist to fix exactly this. The core idea: **load the page once,
-then only update the small part that actually changed** — never throw away and rebuild the
-whole thing again.
-
-<Mermaid
-  chart="
-graph TD
-A[You click a button] --> B[JavaScript intercepts the click - no reload]
-B --> C[JavaScript asks the server for just the data it needs]
-C --> D[Server sends back data - not a full HTML page]
-D --> E[React updates only the changed part of the page]
-"
-/>
-
-Notice the key difference from the diagram above: the server isn't sending a full HTML page
-anymore — it's sending back **just the data**. That's the piece that matters most for this
-course.
-
-## Why this matters for a backend developer [#why-this-matters-for-a-backend-developer]
-
-This shift changes what a backend server's job even is:
-
-|                             | Web 1.0 / 2.0 style  | Modern React-style            |
-| --------------------------- | -------------------- | ----------------------------- |
-| Server sends back           | A complete HTML page | Just data (usually JSON)      |
-| Who builds the page         | The server           | The browser (React), once     |
-| What happens on each action | Full page reload     | Only the changed part updates |
-
-**This is exactly why we're learning FastAPI**: FastAPI's job in this stack isn't to generate
-HTML pages — it's to answer requests with data. A separate React app (running in the
-browser) is responsible for turning that data into an actual page, and updating it without
-ever reloading. Backend and frontend become two separate programs that talk to each other
-purely through requests and responses of data.
-
-<Callout title="For you, coming from Express/Nest">
-  You've almost certainly already done this: an Express route that calls `res.json({ ... })`
-  instead of rendering a template with something like EJS or Pug is *already* the "modern"
-  approach — server as a pure data API, frontend as a separate React app. FastAPI works on that
-  exact same principle, so this mental model isn't new to you at all — only the Python syntax
-  around it will be.
-</Callout>
-
-
-# What is a Database? (/tanglish/docs/fastapi/web-fundamentals/what-is-a-database)
-
-
-
-The last lesson established that the backend is a trusted boundary — the client never
-touches secrets, source code, or raw data directly. But the backend needs somewhere to
-actually **keep** that data. That's what a database is for.
-
-## Why not just store data in a variable? [#why-not-just-store-data-in-a-variable]
-
-You could imagine a backend that keeps everything in a plain Python list, like the `users`
-list from your Final Practice exercise back in the Python Notes. That works while the program
-is running — but it has a fatal flaw: &#x2A;*the moment the server restarts, everything is gone.**
-A crash, a deploy, a simple reboot — all of it wipes the list clean.
-
-A real application needs data to:
-
-* **Survive** restarts and crashes
-* Be **searched and filtered** quickly, even with millions of records
-* Be **shared safely** across many requests happening at the same time
-
-That's a job for a dedicated piece of software — a **database**.
-
-## What a database actually is [#what-a-database-actually-is]
-
-A database is a separate program (often running as its own server) whose entire purpose is
-storing data reliably and retrieving it fast. Think of it as a very well-organized set of
-spreadsheets:
-
-* A **table** is one spreadsheet — for example, a `users` table, or a `videos` table
-* A **row** is one record in that spreadsheet — one specific user, one specific video
-* A **column** defines one piece of information every row has — `id`, `name`, `email`
-
-```text
-users table
-┌────┬─────────┬───────────────────┐
-│ id │ name    │ email             │
-├────┼─────────┼───────────────────┤
-│ 1  │ John    │ john@example.com  │
-│ 2  │ David   │ david@example.com │
-└────┴─────────┴───────────────────┘
-```
-
-This should look familiar — it's the same shape as the list-of-dicts you already worked with
-in Python Notes' Phase 2 and Final Practice. A database table is essentially that same idea,
-made permanent and searchable at scale.
-
-## Only the backend talks to the database [#only-the-backend-talks-to-the-database]
-
-<Mermaid
-  chart="
-graph LR
-A[Client] -- request to a URL --> B[Backend]
-B -- reads / writes data --> C[(Database)]
-B -- only the resulting data --> A
-"
-/>
-
-The client never connects to the database directly — it never even knows the database
-exists. It only ever talks to the backend, and the backend decides what to read, what to
-write, and what to send back. This is the same trusted-boundary idea from the last lesson,
-just with a concrete example of what's actually being hidden.
-
-## The kind of database you'll use in this course [#the-kind-of-database-youll-use-in-this-course]
-
-There are different families of databases, but the most common kind — and the one this course
-uses with FastAPI — is a **relational database** (like PostgreSQL or MySQL): data organized
-into clearly defined tables with columns, similar to the `users` table above. You'll get
-hands-on with this properly in a later lesson — for now, just hold onto the mental picture:
-&#x2A;*tables, rows, and columns, living inside a server only the backend can reach.**
-
-<Callout title="For you, coming from Express/Nest">
-  Exactly the same relationship as `pg`, Prisma, or TypeORM talking to a Postgres/MySQL
-  database from an Express/Nest server — the client still only ever calls your API, never the
-  database itself. FastAPI will use its own tools for this (you'll meet them soon), but the
-  architecture is identical to what you already do.
-</Callout>
-
-
-# What is a Website? (/tanglish/docs/fastapi/web-fundamentals/what-is-a-website)
-
-
-
-In the last lesson you saw that a **server** answers requests from a **client**. A website is
-simply what most servers send back as their answer.
-
-## The three building blocks [#the-three-building-blocks]
-
-Every website, no matter how complex it looks, is built from three things:
-
-* **HTML** — the structure and content (the text, images, buttons — what's on the page)
-* **CSS** — the styling (colors, spacing, fonts — how it looks)
-* **JavaScript** — the behavior (what happens when you click, type, or scroll)
-
-The server's job is to send these files to whichever browser asks for them. The browser's job
-is to read them and turn them into the page you actually see.
-
-## What happens when you visit a page [#what-happens-when-you-visit-a-page]
-
-Opening a single webpage is rarely just *one* request — it's usually several, one after
-another:
-
-<Mermaid
-  chart="
-graph TD
-A[Browser requests index.html] --> B[Server sends the HTML file]
-B --> C[Browser reads the HTML]
-C --> D[Browser sees a link to style.css and requests it]
-C --> E[Browser sees a link to script.js and requests it]
-D --> F[Page is styled and interactive]
-E --> F
-"
-/>
-
-1. The browser asks for the page itself (`index.html`).
-2. While reading that HTML, the browser notices it references a stylesheet and a script file.
-3. It sends **separate requests** for those too.
-4. Once everything has arrived, the browser combines them into the page you see on screen.
-
-This matters later: every one of those arrows in the diagram is a full round trip across the
-internet — a request, then a response. Keeping that number small (and not repeating it
-unnecessarily) is a big part of why the web has evolved the way it has, which is exactly
-what the next lesson is about.
-
-
-# What is the Internet? (/tanglish/docs/fastapi/web-fundamentals/what-is-the-internet)
-
-
-
-Before writing a single line of backend code, you need a clear picture of what you're
-actually building on top of. So let's start at the very bottom: &#x2A;*what is the internet?**
-
-## A simple definition [#a-simple-definition]
-
-The internet is a huge network of computers all over the world, connected together so they
-can send information to each other.
-
-That's really it. Your phone, your laptop, and the servers that run apps like Instagram or
-Netflix are all just computers on this same giant network — some asking for information,
-others answering.
-
-## Every computer has an address [#every-computer-has-an-address]
-
-For one computer to send data to another, it needs to know where to send it. Every device on
-the internet has an **IP address** — a unique set of numbers that identifies it, the same way
-a house needs a postal address before anyone can deliver mail to it.
-
-```text
-192.168.1.1
-```
-
-You'll rarely type an IP address yourself — that's what domain names like `google.com` are
-for, they're just a human-friendly label that gets translated into an IP address behind the
-scenes. But the underlying idea is the same: &#x2A;*every computer on the internet can be found at
-an address.**
-
-## Two roles: asking and answering [#two-roles-asking-and-answering]
-
-Almost everything that happens on the internet comes down to two roles:
-
-* **Client** — the one asking for something (a browser, a mobile app)
-* **Server** — the one answering (a computer that's always on, waiting for questions)
-
-<Mermaid
-  chart="
-graph LR
-A[Client<br/>your browser or app] -- 1. Request --> B((The Internet))
-B -- forwards it to --> C[Server<br/>a computer that is always on]
-C -- 2. Response --> B
-B -- delivers it back --> A
-"
-/>
-
-For example, when you open a browser and go to a website:
-
-1. Your browser (**client**) sends a **request** out onto the internet: "Please give me this
-   webpage."
-2. The request travels across the network to the right computer, based on its address.
-3. That computer (**server**) sends a **response** back: the actual webpage content.
-4. Your browser receives it and displays it on your screen.
-
-This request → response pattern is the single most important idea in this entire course.
-Everything you'll build runs on top of it.
-
-## Why this matters for you [#why-this-matters-for-you]
-
-**Backend development means building the "server" side of this picture** — the program that
-sits there, always on, waiting for requests, and deciding what to send back.
-
-Everything you've learned in Python so far — functions, dictionaries, classes — is about to
-become the logic that runs *inside* that server, answering the requests your users' browsers
-and apps send in.
-
-
-# What is the Backend, and Why Do We Need One? (/tanglish/docs/fastapi/web-fundamentals/why-we-need-a-backend)
-
-
-
-You already know the backend is the "server" side of the client/server picture. This lesson
-is about *why* it needs to exist at all — why can't a website just be HTML, CSS, and
-JavaScript, with everything happening in the browser?
-
-## The one rule that explains everything [#the-one-rule-that-explains-everything]
-
-**Anything you send to the browser, the user can see and change.**
-
-Open any website, right-click, "View Source" or open DevTools — every line of HTML, CSS, and
-JavaScript is right there, fully readable. Nothing that reaches the browser stays private.
-Not "hard to find" — genuinely, completely visible, and editable, by anyone who opens it.
-
-The backend exists because some things must **never** be visible or editable by the user:
-
-* The actual logic that decides prices, discounts, permissions, or scores
-* Passwords, and how they're checked
-* Secret keys for payment providers, email services, or other paid APIs
-* The database itself — where everyone's data actually lives
-
-## What the client is allowed to see [#what-the-client-is-allowed-to-see]
-
-A user only ever sees two things:
-
-1. The **URL** they called (e.g. `POST /orders`)
-2. Whatever **data** came back in the response
-
-They never see the code that ran to produce that response. The backend's internal logic —
-how it validated the request, which database it checked, what business rules it applied — is
-completely invisible on the other side of that URL.
-
-<Mermaid
-  chart="
-graph LR
-subgraph Client [Client - fully visible to the user]
-A[HTML / CSS / JS you sent]
-B[Whatever data arrives back]
-end
-subgraph Backend [Backend - fully hidden from the user]
-C[Your source code]
-D[Database]
-E[Secret keys]
-F[Business rules: pricing, permissions, validation]
-end
-A -- request to a URL --> C
-C --> D
-C --> E
-C --> F
-C -- only the resulting data --> B
-"
-/>
-
-This is the whole point of a backend: it's a boundary. Requests go in, responses come out,
-and everything that happens in between is the developer's business, not the user's.
-
-## What if there were no backend at all? [#what-if-there-were-no-backend-at-all]
-
-Imagine trying to build an online store with *only* HTML, CSS, and JavaScript running in the
-browser — no server, no database, nothing hidden.
-
-**Prices and discounts couldn't be trusted.** If the "final price" is calculated by
-JavaScript running in the user's own browser, the user can open DevTools and change it before
-checkout. There's no second, trusted opinion checking the real price — the browser *is* the
-only opinion, and the user fully controls it.
-
-**Logins couldn't be secure.** If checking a password is a line of JavaScript like
-`if (password === "admin123")`, that string is sitting right there in the page's source code
-for anyone to read. Worse, a user could just skip the check entirely by editing the code
-running in their own browser.
-
-**Data couldn't be shared or kept safe.** Without a database, data can only live in the
-browser itself (e.g. `localStorage`) — meaning it exists on *that one device, in that one
-browser*, invisible to everyone else. Two users could never see each other's posts. You
-couldn't check your own account from your phone. Clear your browser data, and everything is
-gone forever.
-
-**Secrets couldn't stay secret.** Calling a paid third-party service (email, SMS, payments)
-requires a secret API key. If that key lives in browser JavaScript, it ships to every visitor
-— anyone can extract it from the page and use it as their own, at your expense.
-
-None of this is a small inconvenience — it means **nothing on the site could actually be
-trusted**. A backend is what turns "a page that runs some code" into "a system whose rules
-actually hold."
-
-## The takeaway [#the-takeaway]
-
-The backend is the one place in your entire application that only *you*, the developer,
-control. The user can call its URLs and see its responses — but never its code, its
-database, or its secrets. Everything you'll build with FastAPI from here on lives inside that
-trusted boundary.
-
-<Callout title="For you, coming from Express/Nest">
-  This is precisely why an Express/Nest server exists in your past projects too — it's the same
-  "trusted boundary" idea, whether the request handler is written in a Express route, a Nest
-  controller method, or — starting now — a FastAPI path operation function. The concept doesn't
-  change; only the syntax will.
-</Callout>
-
-
 # Create Todo — Your First Endpoint (/tanglish/docs/fastapi/todo-api/create-todo-endpoint)
 
 
@@ -9154,3 +8647,510 @@ def update_todo(todo_id:int, updated: TodoCreate, db:Session = Depends(get_db)):
     db.refresh(todo)
     return todo
 ```
+
+
+# Putting It Together — How Does YouTube Work? (/tanglish/docs/fastapi/web-fundamentals/how-youtube-works)
+
+
+
+You now know the pieces: client, backend, database. This lesson puts them together through a
+real example everyone already understands — **YouTube** — and along the way, uncovers one
+more piece you haven't met yet.
+
+## Two very different kinds of data [#two-very-different-kinds-of-data]
+
+Think about everything YouTube needs to keep track of for a single video:
+
+* Its **title**, **description**, **upload date**, **view count**, **like count**
+* Its **comments**, and who posted each one
+* The **actual video file** itself — and its thumbnail image
+
+The first two are exactly what you just learned: rows in database tables. A `videos` table
+with a `title` column and a `view_count` column fits perfectly.
+
+But that video file? A single video can be hundreds of megabytes, even gigabytes. That raises
+a real question:
+
+**Can't we just save the video file in the database too, in some column?**
+
+## Why databases aren't built for this [#why-databases-arent-built-for-this]
+
+Technically, some databases can store large binary blobs — but doing this at YouTube's scale
+would be a bad idea:
+
+* Databases are built to be searched, filtered, and sorted quickly across *many small rows* —
+  not to hold enormous files that nobody "searches" the *contents* of
+* A database that also held every raw video file would become massive, making backups,
+  replication, and queries all dramatically slower
+* Databases aren't designed to **stream** a large file out to millions of viewers at once —
+  that's a completely different kind of workload
+
+So real applications split the two apart:
+
+<Mermaid
+  chart="
+graph TD
+A[Everything about a video] --> B[Structured data:<br/>title, description,<br/>views, comments]
+A --> C[The actual files:<br/>video, thumbnail]
+B --> D[(Database)]
+C --> E[Storage Server]
+"
+/>
+
+## Meet the storage server [#meet-the-storage-server]
+
+A **storage server** (often called *object storage* — think AWS S3 or Google Cloud Storage)
+is a service whose only job is storing and serving large files efficiently. The database
+never holds the video itself — it only holds a **reference** to where that file lives on the
+storage server (a URL or file path).
+
+Large platforms also place a **CDN** (Content Delivery Network) in front of their storage —
+copies of popular videos get cached on servers physically close to viewers all over the
+world, so someone in India isn't fetching every byte from a server on the other side of the
+planet. You don't need to build one of these yourself; it's a service you connect to, the
+same way you'd connect to a database.
+
+## The full picture [#the-full-picture]
+
+<Mermaid
+  chart="
+graph LR
+A[Client<br/>browser or app] -- requests --> B[Backend]
+B -- structured data --> C[(Database)]
+B -- file references --> D[Storage Server + CDN]
+D -. video/image bytes .-> A
+"
+/>
+
+## Walking through: uploading a video [#walking-through-uploading-a-video]
+
+1. You select a video file and hit upload in the client.
+2. The client sends the file to the **backend**.
+3. The backend sends the actual video file to the **storage server** to be saved.
+4. The storage server gives back a reference — where that file now lives.
+5. The backend saves the **metadata** (title, description, your user id, and that file
+   reference) as a new row in the **database**.
+
+## Walking through: watching a video [#walking-through-watching-a-video]
+
+1. You open a video page in the client.
+2. The client asks the **backend** for that video's info.
+3. The backend reads the row from the **database** — title, description, view count, and the
+   stored file reference.
+4. The backend sends that data back to the client, including where the actual video file
+   lives.
+5. The client's video player fetches the video bytes **directly from the storage server /
+   CDN** — not routed back through the backend — so playback is fast and doesn't load down
+   your API server.
+
+## Why this matters going forward [#why-this-matters-going-forward]
+
+This same split shows up in almost every real app you'll build: a database for structured,
+searchable data, and a storage service for the files themselves (profile pictures, PDFs,
+audio, video). In this course, you'll build the backend and database side yourself with
+FastAPI; storage servers and CDNs are usually a cloud service you connect to, not something
+you build from scratch.
+
+With client, backend, database, and storage all in place, you now have the complete mental
+map of how a real application is built — everything from here on is about learning the tools
+to build the backend piece of it, properly.
+
+<Callout title="For you, coming from Express/Nest">
+  Same architecture you already know — an Express/Nest API talking to Postgres/MongoDB for
+  structured data, and to S3 (or similar) for files, usually via a pre-signed upload URL or a
+  multipart upload endpoint. FastAPI will follow the identical pattern; you're not learning a
+  new architecture here, just new syntax for a shape you've already built before.
+</Callout>
+
+
+# Web 1.0, Web 2.0 & Why React (/tanglish/docs/fastapi/web-fundamentals/web-evolution-and-why-react)
+
+
+
+Websites haven't always worked the way they do today. To understand why tools like React
+exist, you need to see the problem they were built to solve.
+
+## Web 1.0 — read-only pages [#web-10--read-only-pages]
+
+The earliest websites (roughly the 1990s) were **static and read-only** — closer to a digital
+brochure than an app. A server had a folder of pre-written HTML files, and every visitor got
+exactly the same page. There was no login, no comments, no personalization. You looked, you
+didn't interact.
+
+## Web 2.0 — the interactive web [#web-20--the-interactive-web]
+
+Starting in the 2000s, the web became **interactive and user-driven**: logins, comments,
+likes, posting your own content — think early Facebook, YouTube, blogs with comment sections.
+The server now generated a *different* page for every user, built from data stored in a
+database.
+
+This is a huge leap forward — but under the hood, most Web 2.0 sites still worked the exact
+same way as Web 1.0 for one crucial thing: &#x2A;*every click reloaded the entire page.**
+
+## The full page reload problem [#the-full-page-reload-problem]
+
+Click a link on a traditional website (even a modern-looking one built with plain
+HTML/CSS/JS), and this happens:
+
+<Mermaid
+  chart="
+graph TD
+A[You click a link or submit a form] --> B[Browser throws away the entire current page]
+B --> C[Browser sends a request for a brand new page]
+C --> D[Server builds and sends a full HTML page]
+D --> E[Browser reloads everything from scratch: HTML, CSS, JS, images]
+E --> F[White flash, then the new page appears]
+"
+/>
+
+Every single action — clicking a link, submitting a form, even liking a post — could mean
+throwing away the whole page and rebuilding it from nothing. That means:
+
+* A visible **white flash** while the old page disappears and the new one loads
+* **Everything resets** — scroll position, an open dropdown, a half-filled form, a playing
+  video — all gone, because the browser is starting over completely
+* Re-downloading and re-running the *same* CSS and JS files you already had, every time
+
+Imagine a chat app where sending one message reloaded the entire page, wiped your scroll
+position, and re-downloaded the whole app — just to show one new message. That's not
+acceptable for the kind of apps people expect today.
+
+## Why React [#why-react]
+
+React (and similar tools) exist to fix exactly this. The core idea: **load the page once,
+then only update the small part that actually changed** — never throw away and rebuild the
+whole thing again.
+
+<Mermaid
+  chart="
+graph TD
+A[You click a button] --> B[JavaScript intercepts the click - no reload]
+B --> C[JavaScript asks the server for just the data it needs]
+C --> D[Server sends back data - not a full HTML page]
+D --> E[React updates only the changed part of the page]
+"
+/>
+
+Notice the key difference from the diagram above: the server isn't sending a full HTML page
+anymore — it's sending back **just the data**. That's the piece that matters most for this
+course.
+
+## Why this matters for a backend developer [#why-this-matters-for-a-backend-developer]
+
+This shift changes what a backend server's job even is:
+
+|                             | Web 1.0 / 2.0 style  | Modern React-style            |
+| --------------------------- | -------------------- | ----------------------------- |
+| Server sends back           | A complete HTML page | Just data (usually JSON)      |
+| Who builds the page         | The server           | The browser (React), once     |
+| What happens on each action | Full page reload     | Only the changed part updates |
+
+**This is exactly why we're learning FastAPI**: FastAPI's job in this stack isn't to generate
+HTML pages — it's to answer requests with data. A separate React app (running in the
+browser) is responsible for turning that data into an actual page, and updating it without
+ever reloading. Backend and frontend become two separate programs that talk to each other
+purely through requests and responses of data.
+
+<Callout title="For you, coming from Express/Nest">
+  You've almost certainly already done this: an Express route that calls `res.json({ ... })`
+  instead of rendering a template with something like EJS or Pug is *already* the "modern"
+  approach — server as a pure data API, frontend as a separate React app. FastAPI works on that
+  exact same principle, so this mental model isn't new to you at all — only the Python syntax
+  around it will be.
+</Callout>
+
+
+# What is a Database? (/tanglish/docs/fastapi/web-fundamentals/what-is-a-database)
+
+
+
+The last lesson established that the backend is a trusted boundary — the client never
+touches secrets, source code, or raw data directly. But the backend needs somewhere to
+actually **keep** that data. That's what a database is for.
+
+## Why not just store data in a variable? [#why-not-just-store-data-in-a-variable]
+
+You could imagine a backend that keeps everything in a plain Python list, like the `users`
+list from your Final Practice exercise back in the Python Notes. That works while the program
+is running — but it has a fatal flaw: &#x2A;*the moment the server restarts, everything is gone.**
+A crash, a deploy, a simple reboot — all of it wipes the list clean.
+
+A real application needs data to:
+
+* **Survive** restarts and crashes
+* Be **searched and filtered** quickly, even with millions of records
+* Be **shared safely** across many requests happening at the same time
+
+That's a job for a dedicated piece of software — a **database**.
+
+## What a database actually is [#what-a-database-actually-is]
+
+A database is a separate program (often running as its own server) whose entire purpose is
+storing data reliably and retrieving it fast. Think of it as a very well-organized set of
+spreadsheets:
+
+* A **table** is one spreadsheet — for example, a `users` table, or a `videos` table
+* A **row** is one record in that spreadsheet — one specific user, one specific video
+* A **column** defines one piece of information every row has — `id`, `name`, `email`
+
+```text
+users table
+┌────┬─────────┬───────────────────┐
+│ id │ name    │ email             │
+├────┼─────────┼───────────────────┤
+│ 1  │ John    │ john@example.com  │
+│ 2  │ David   │ david@example.com │
+└────┴─────────┴───────────────────┘
+```
+
+This should look familiar — it's the same shape as the list-of-dicts you already worked with
+in Python Notes' Phase 2 and Final Practice. A database table is essentially that same idea,
+made permanent and searchable at scale.
+
+## Only the backend talks to the database [#only-the-backend-talks-to-the-database]
+
+<Mermaid
+  chart="
+graph LR
+A[Client] -- request to a URL --> B[Backend]
+B -- reads / writes data --> C[(Database)]
+B -- only the resulting data --> A
+"
+/>
+
+The client never connects to the database directly — it never even knows the database
+exists. It only ever talks to the backend, and the backend decides what to read, what to
+write, and what to send back. This is the same trusted-boundary idea from the last lesson,
+just with a concrete example of what's actually being hidden.
+
+## The kind of database you'll use in this course [#the-kind-of-database-youll-use-in-this-course]
+
+There are different families of databases, but the most common kind — and the one this course
+uses with FastAPI — is a **relational database** (like PostgreSQL or MySQL): data organized
+into clearly defined tables with columns, similar to the `users` table above. You'll get
+hands-on with this properly in a later lesson — for now, just hold onto the mental picture:
+&#x2A;*tables, rows, and columns, living inside a server only the backend can reach.**
+
+<Callout title="For you, coming from Express/Nest">
+  Exactly the same relationship as `pg`, Prisma, or TypeORM talking to a Postgres/MySQL
+  database from an Express/Nest server — the client still only ever calls your API, never the
+  database itself. FastAPI will use its own tools for this (you'll meet them soon), but the
+  architecture is identical to what you already do.
+</Callout>
+
+
+# What is a Website? (/tanglish/docs/fastapi/web-fundamentals/what-is-a-website)
+
+
+
+In the last lesson you saw that a **server** answers requests from a **client**. A website is
+simply what most servers send back as their answer.
+
+## The three building blocks [#the-three-building-blocks]
+
+Every website, no matter how complex it looks, is built from three things:
+
+* **HTML** — the structure and content (the text, images, buttons — what's on the page)
+* **CSS** — the styling (colors, spacing, fonts — how it looks)
+* **JavaScript** — the behavior (what happens when you click, type, or scroll)
+
+The server's job is to send these files to whichever browser asks for them. The browser's job
+is to read them and turn them into the page you actually see.
+
+## What happens when you visit a page [#what-happens-when-you-visit-a-page]
+
+Opening a single webpage is rarely just *one* request — it's usually several, one after
+another:
+
+<Mermaid
+  chart="
+graph TD
+A[Browser requests index.html] --> B[Server sends the HTML file]
+B --> C[Browser reads the HTML]
+C --> D[Browser sees a link to style.css and requests it]
+C --> E[Browser sees a link to script.js and requests it]
+D --> F[Page is styled and interactive]
+E --> F
+"
+/>
+
+1. The browser asks for the page itself (`index.html`).
+2. While reading that HTML, the browser notices it references a stylesheet and a script file.
+3. It sends **separate requests** for those too.
+4. Once everything has arrived, the browser combines them into the page you see on screen.
+
+This matters later: every one of those arrows in the diagram is a full round trip across the
+internet — a request, then a response. Keeping that number small (and not repeating it
+unnecessarily) is a big part of why the web has evolved the way it has, which is exactly
+what the next lesson is about.
+
+
+# What is the Internet? (/tanglish/docs/fastapi/web-fundamentals/what-is-the-internet)
+
+
+
+Before writing a single line of backend code, you need a clear picture of what you're
+actually building on top of. So let's start at the very bottom: &#x2A;*what is the internet?**
+
+## A simple definition [#a-simple-definition]
+
+The internet is a huge network of computers all over the world, connected together so they
+can send information to each other.
+
+That's really it. Your phone, your laptop, and the servers that run apps like Instagram or
+Netflix are all just computers on this same giant network — some asking for information,
+others answering.
+
+## Every computer has an address [#every-computer-has-an-address]
+
+For one computer to send data to another, it needs to know where to send it. Every device on
+the internet has an **IP address** — a unique set of numbers that identifies it, the same way
+a house needs a postal address before anyone can deliver mail to it.
+
+```text
+192.168.1.1
+```
+
+You'll rarely type an IP address yourself — that's what domain names like `google.com` are
+for, they're just a human-friendly label that gets translated into an IP address behind the
+scenes. But the underlying idea is the same: &#x2A;*every computer on the internet can be found at
+an address.**
+
+## Two roles: asking and answering [#two-roles-asking-and-answering]
+
+Almost everything that happens on the internet comes down to two roles:
+
+* **Client** — the one asking for something (a browser, a mobile app)
+* **Server** — the one answering (a computer that's always on, waiting for questions)
+
+<Mermaid
+  chart="
+graph LR
+A[Client<br/>your browser or app] -- 1. Request --> B((The Internet))
+B -- forwards it to --> C[Server<br/>a computer that is always on]
+C -- 2. Response --> B
+B -- delivers it back --> A
+"
+/>
+
+For example, when you open a browser and go to a website:
+
+1. Your browser (**client**) sends a **request** out onto the internet: "Please give me this
+   webpage."
+2. The request travels across the network to the right computer, based on its address.
+3. That computer (**server**) sends a **response** back: the actual webpage content.
+4. Your browser receives it and displays it on your screen.
+
+This request → response pattern is the single most important idea in this entire course.
+Everything you'll build runs on top of it.
+
+## Why this matters for you [#why-this-matters-for-you]
+
+**Backend development means building the "server" side of this picture** — the program that
+sits there, always on, waiting for requests, and deciding what to send back.
+
+Everything you've learned in Python so far — functions, dictionaries, classes — is about to
+become the logic that runs *inside* that server, answering the requests your users' browsers
+and apps send in.
+
+
+# What is the Backend, and Why Do We Need One? (/tanglish/docs/fastapi/web-fundamentals/why-we-need-a-backend)
+
+
+
+You already know the backend is the "server" side of the client/server picture. This lesson
+is about *why* it needs to exist at all — why can't a website just be HTML, CSS, and
+JavaScript, with everything happening in the browser?
+
+## The one rule that explains everything [#the-one-rule-that-explains-everything]
+
+**Anything you send to the browser, the user can see and change.**
+
+Open any website, right-click, "View Source" or open DevTools — every line of HTML, CSS, and
+JavaScript is right there, fully readable. Nothing that reaches the browser stays private.
+Not "hard to find" — genuinely, completely visible, and editable, by anyone who opens it.
+
+The backend exists because some things must **never** be visible or editable by the user:
+
+* The actual logic that decides prices, discounts, permissions, or scores
+* Passwords, and how they're checked
+* Secret keys for payment providers, email services, or other paid APIs
+* The database itself — where everyone's data actually lives
+
+## What the client is allowed to see [#what-the-client-is-allowed-to-see]
+
+A user only ever sees two things:
+
+1. The **URL** they called (e.g. `POST /orders`)
+2. Whatever **data** came back in the response
+
+They never see the code that ran to produce that response. The backend's internal logic —
+how it validated the request, which database it checked, what business rules it applied — is
+completely invisible on the other side of that URL.
+
+<Mermaid
+  chart="
+graph LR
+subgraph Client [Client - fully visible to the user]
+A[HTML / CSS / JS you sent]
+B[Whatever data arrives back]
+end
+subgraph Backend [Backend - fully hidden from the user]
+C[Your source code]
+D[Database]
+E[Secret keys]
+F[Business rules: pricing, permissions, validation]
+end
+A -- request to a URL --> C
+C --> D
+C --> E
+C --> F
+C -- only the resulting data --> B
+"
+/>
+
+This is the whole point of a backend: it's a boundary. Requests go in, responses come out,
+and everything that happens in between is the developer's business, not the user's.
+
+## What if there were no backend at all? [#what-if-there-were-no-backend-at-all]
+
+Imagine trying to build an online store with *only* HTML, CSS, and JavaScript running in the
+browser — no server, no database, nothing hidden.
+
+**Prices and discounts couldn't be trusted.** If the "final price" is calculated by
+JavaScript running in the user's own browser, the user can open DevTools and change it before
+checkout. There's no second, trusted opinion checking the real price — the browser *is* the
+only opinion, and the user fully controls it.
+
+**Logins couldn't be secure.** If checking a password is a line of JavaScript like
+`if (password === "admin123")`, that string is sitting right there in the page's source code
+for anyone to read. Worse, a user could just skip the check entirely by editing the code
+running in their own browser.
+
+**Data couldn't be shared or kept safe.** Without a database, data can only live in the
+browser itself (e.g. `localStorage`) — meaning it exists on *that one device, in that one
+browser*, invisible to everyone else. Two users could never see each other's posts. You
+couldn't check your own account from your phone. Clear your browser data, and everything is
+gone forever.
+
+**Secrets couldn't stay secret.** Calling a paid third-party service (email, SMS, payments)
+requires a secret API key. If that key lives in browser JavaScript, it ships to every visitor
+— anyone can extract it from the page and use it as their own, at your expense.
+
+None of this is a small inconvenience — it means **nothing on the site could actually be
+trusted**. A backend is what turns "a page that runs some code" into "a system whose rules
+actually hold."
+
+## The takeaway [#the-takeaway]
+
+The backend is the one place in your entire application that only *you*, the developer,
+control. The user can call its URLs and see its responses — but never its code, its
+database, or its secrets. Everything you'll build with FastAPI from here on lives inside that
+trusted boundary.
+
+<Callout title="For you, coming from Express/Nest">
+  This is precisely why an Express/Nest server exists in your past projects too — it's the same
+  "trusted boundary" idea, whether the request handler is written in a Express route, a Nest
+  controller method, or — starting now — a FastAPI path operation function. The concept doesn't
+  change; only the syntax will.
+</Callout>

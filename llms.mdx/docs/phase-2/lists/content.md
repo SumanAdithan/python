@@ -1,4 +1,4 @@
-# list, Indexing & Slicing (/docs/phase-2/lists)
+# list, Indexing & Slicing (/en/docs/phase-2/lists)
 
 
 

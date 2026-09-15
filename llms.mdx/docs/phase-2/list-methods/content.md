@@ -1,4 +1,4 @@
-# append, remove & pop (/docs/phase-2/list-methods)
+# append, remove & pop (/en/docs/phase-2/list-methods)
 
 
 

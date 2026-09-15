@@ -1,4 +1,4 @@
-# Web 1.0, Web 2.0 & Why React (/docs/fastapi/web-fundamentals/web-evolution-and-why-react)
+# Web 1.0, Web 2.0 & Why React (/en/docs/fastapi/web-fundamentals/web-evolution-and-why-react)
 
 
 

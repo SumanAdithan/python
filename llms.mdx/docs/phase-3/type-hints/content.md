@@ -1,4 +1,4 @@
-# Type Hints (/docs/phase-3/type-hints)
+# Type Hints (/en/docs/phase-3/type-hints)
 
 
 

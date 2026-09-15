@@ -1,4 +1,4 @@
-# dict (/docs/phase-2/dictionaries)
+# dict (/en/docs/phase-2/dictionaries)
 
 
 

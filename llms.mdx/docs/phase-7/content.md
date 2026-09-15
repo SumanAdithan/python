@@ -1,4 +1,4 @@
-# Phase 7 — Type Hints (/docs/phase-7)
+# Phase 7 — Type Hints (/en/docs/phase-7)
 
 
 

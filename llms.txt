@@ -1,81 +1,81 @@
 # Docs
 
 - Python Notes
-  - [Python Learning Notes](/docs): Phase-by-phase Python notes, written for a JavaScript/TypeScript developer
+  - [Python Learning Notes](/en/docs): Phase-by-phase Python notes, written for a JavaScript/TypeScript developer
   - Phase 1 — Core Foundations
-    - [Phase 1 — Python Core Foundations](/docs/phase-1): Goals for this phase, and a full JS/TS → Python cheat sheet
-    - [Syntax & Indentation](/docs/phase-1/syntax-and-indentation): Python's biggest rule coming from JS/TS — indentation defines blocks
-    - [Variables & Constants](/docs/phase-1/variables-and-constants): No const, let, or var — Python just assigns
-    - [Data Types & None](/docs/phase-1/data-types-and-none): str, int, float, bool, None, and checking types with type()
-    - [Printing & String Interpolation](/docs/phase-1/printing-and-strings): print() instead of console.log(), and f-strings instead of template literals
-    - [Operators](/docs/phase-1/operators): Arithmetic, comparison, and logical operators — and, or, not instead of &&, ||, !
-    - [if / elif / else](/docs/phase-1/conditionals): Conditionals, including nested conditions
-    - [for, range() & while](/docs/phase-1/loops): Looping in Python — one of the bigger syntax changes from JS/TS
-    - [break, continue & pass](/docs/phase-1/loop-control): Controlling loops, plus Python's "do nothing yet" keyword
+    - [Phase 1 — Python Core Foundations](/en/docs/phase-1): Goals for this phase, and a full JS/TS → Python cheat sheet
+    - [Syntax & Indentation](/en/docs/phase-1/syntax-and-indentation): Python's biggest rule coming from JS/TS — indentation defines blocks
+    - [Variables & Constants](/en/docs/phase-1/variables-and-constants): No const, let, or var — Python just assigns
+    - [Data Types & None](/en/docs/phase-1/data-types-and-none): str, int, float, bool, None, and checking types with type()
+    - [Printing & String Interpolation](/en/docs/phase-1/printing-and-strings): print() instead of console.log(), and f-strings instead of template literals
+    - [Operators](/en/docs/phase-1/operators): Arithmetic, comparison, and logical operators — and, or, not instead of &&, ||, !
+    - [if / elif / else](/en/docs/phase-1/conditionals): Conditionals, including nested conditions
+    - [for, range() & while](/en/docs/phase-1/loops): Looping in Python — one of the bigger syntax changes from JS/TS
+    - [break, continue & pass](/en/docs/phase-1/loop-control): Controlling loops, plus Python's "do nothing yet" keyword
   - Phase 2 — Collections
-    - [Phase 2 — Collections](/docs/phase-2): Goals for this phase, and a full JS/TS → Python cheat sheet
-    - [list, Indexing & Slicing](/docs/phase-2/lists): Python's array — ordered, mutable, and allows duplicates
-    - [append, remove & pop](/docs/phase-2/list-methods): The three list methods you'll use constantly
-    - [tuple](/docs/phase-2/tuples): A list that can't be changed after it's created
-    - [set](/docs/phase-2/sets): A collection that automatically removes duplicates
-    - [dict](/docs/phase-2/dictionaries): Python's object — probably the most important type for backend work
-    - [get, keys, values & items](/docs/phase-2/dictionary-methods): The methods you'll use to safely read and loop over a dict
-    - [Nested Data & in](/docs/phase-2/nested-data-and-in): A list of dicts (very common in backend code), and Python's membership operator
+    - [Phase 2 — Collections](/en/docs/phase-2): Goals for this phase, and a full JS/TS → Python cheat sheet
+    - [list, Indexing & Slicing](/en/docs/phase-2/lists): Python's array — ordered, mutable, and allows duplicates
+    - [append, remove & pop](/en/docs/phase-2/list-methods): The three list methods you'll use constantly
+    - [tuple](/en/docs/phase-2/tuples): A list that can't be changed after it's created
+    - [set](/en/docs/phase-2/sets): A collection that automatically removes duplicates
+    - [dict](/en/docs/phase-2/dictionaries): Python's object — probably the most important type for backend work
+    - [get, keys, values & items](/en/docs/phase-2/dictionary-methods): The methods you'll use to safely read and loop over a dict
+    - [Nested Data & in](/en/docs/phase-2/nested-data-and-in): A list of dicts (very common in backend code), and Python's membership operator
   - Phase 3 — Functions
-    - [Phase 3 — Functions](/docs/phase-3): Goals for this phase, and a full JS/TS → Python cheat sheet
-    - [Defining Functions](/docs/phase-3/functions-basics): def instead of function, parameters, and return
-    - [Type Hints](/docs/phase-3/type-hints): The Python equivalent of TypeScript's parameter and return types
-    - [Default & Keyword Arguments](/docs/phase-3/default-and-keyword-arguments): Optional parameters, and calling functions by argument name
-    - [*args & **kwargs](/docs/phase-3/args-and-kwargs): Accepting any number of positional or keyword arguments
+    - [Phase 3 — Functions](/en/docs/phase-3): Goals for this phase, and a full JS/TS → Python cheat sheet
+    - [Defining Functions](/en/docs/phase-3/functions-basics): def instead of function, parameters, and return
+    - [Type Hints](/en/docs/phase-3/type-hints): The Python equivalent of TypeScript's parameter and return types
+    - [Default & Keyword Arguments](/en/docs/phase-3/default-and-keyword-arguments): Optional parameters, and calling functions by argument name
+    - [*args & **kwargs](/en/docs/phase-3/args-and-kwargs): Accepting any number of positional or keyword arguments
   - Phase 4 — Python OOP
-    - [Phase 4 — Python OOP](/docs/phase-4): Goals for this phase, and a full TypeScript → Python cheat sheet
-    - [class & object](/docs/phase-4/classes-and-objects): Defining a class, and creating an object from it — no new keyword
-    - [__init__ & self](/docs/phase-4/init-and-self): Python's constructor, and the explicit stand-in for this
-    - [Methods](/docs/phase-4/methods): Functions that belong to a class — and why self still shows up
-    - [Inheritance & super()](/docs/phase-4/inheritance): extends becomes parentheses, and super() works almost the same
+    - [Phase 4 — Python OOP](/en/docs/phase-4): Goals for this phase, and a full TypeScript → Python cheat sheet
+    - [class & object](/en/docs/phase-4/classes-and-objects): Defining a class, and creating an object from it — no new keyword
+    - [__init__ & self](/en/docs/phase-4/init-and-self): Python's constructor, and the explicit stand-in for this
+    - [Methods](/en/docs/phase-4/methods): Functions that belong to a class — and why self still shows up
+    - [Inheritance & super()](/en/docs/phase-4/inheritance): extends becomes parentheses, and super() works almost the same
   - Phase 5 — Python-specific Features
-    - [Phase 5 — Python-specific Features](/docs/phase-5): Goals for this phase, and a full JS/TS → Python cheat sheet
-    - [List Comprehension](/docs/phase-5/list-comprehension): A one-line way to build a list — Python's version of .map() and .filter()
-    - [Dictionary Comprehension](/docs/phase-5/dictionary-comprehension): The same idea as list comprehension, but building a dict
-    - [enumerate](/docs/phase-5/enumerate): Loop over a list while also getting the index
-    - [zip](/docs/phase-5/zip): Loop over two lists together, pair by pair
+    - [Phase 5 — Python-specific Features](/en/docs/phase-5): Goals for this phase, and a full JS/TS → Python cheat sheet
+    - [List Comprehension](/en/docs/phase-5/list-comprehension): A one-line way to build a list — Python's version of .map() and .filter()
+    - [Dictionary Comprehension](/en/docs/phase-5/dictionary-comprehension): The same idea as list comprehension, but building a dict
+    - [enumerate](/en/docs/phase-5/enumerate): Loop over a list while also getting the index
+    - [zip](/en/docs/phase-5/zip): Loop over two lists together, pair by pair
   - Phase 6 — Exceptions + Modules
-    - [Phase 6 — Exceptions + Modules](/docs/phase-6): Goals for this phase, and a full JS/TS → Python cheat sheet
-    - [try / except](/docs/phase-6/try-except): Python's try/catch — but it wants you to name the specific error
-    - [raise](/docs/phase-6/raise): Python's throw — with built-in exception types instead of a generic Error
-    - [Modules & Imports](/docs/phase-6/modules-and-imports): How Python files talk to each other — no export keyword needed
+    - [Phase 6 — Exceptions + Modules](/en/docs/phase-6): Goals for this phase, and a full JS/TS → Python cheat sheet
+    - [try / except](/en/docs/phase-6/try-except): Python's try/catch — but it wants you to name the specific error
+    - [raise](/en/docs/phase-6/raise): Python's throw — with built-in exception types instead of a generic Error
+    - [Modules & Imports](/en/docs/phase-6/modules-and-imports): How Python files talk to each other — no export keyword needed
   - Phase 7 — Type Hints
-    - [Phase 7 — Type Hints](/docs/phase-7): Goals for this phase, and a full TypeScript → Python cheat sheet
-    - [Variable & Function Hints](/docs/phase-7/variable-and-function-hints): Annotating plain values, and a recap of function type hints
-    - [Container Hints](/docs/phase-7/container-hints): Describing what's inside a list or dict, not just that it is one
-    - [Optional & Nested Types](/docs/phase-7/optional-and-nested): A value that might be None, and combining container hints together
+    - [Phase 7 — Type Hints](/en/docs/phase-7): Goals for this phase, and a full TypeScript → Python cheat sheet
+    - [Variable & Function Hints](/en/docs/phase-7/variable-and-function-hints): Annotating plain values, and a recap of function type hints
+    - [Container Hints](/en/docs/phase-7/container-hints): Describing what's inside a list or dict, not just that it is one
+    - [Optional & Nested Types](/en/docs/phase-7/optional-and-nested): A value that might be None, and combining container hints together
   - Phase 8 — async / await
-    - [Phase 8 — async / await](/docs/phase-8): Goals for this phase, and a JS/TS → Python cheat sheet
-    - [def, async def & await](/docs/phase-8/async-and-await): Same idea as JS async/await — almost the same keywords too
-  - [Final Practice — Build a User Store](/docs/final-practice): Close the tutorial and build this yourself — the best prep for FastAPI
+    - [Phase 8 — async / await](/en/docs/phase-8): Goals for this phase, and a JS/TS → Python cheat sheet
+    - [def, async def & await](/en/docs/phase-8/async-and-await): Same idea as JS async/await — almost the same keywords too
+  - [Final Practice — Build a User Store](/en/docs/final-practice): Close the tutorial and build this yourself — the best prep for FastAPI
 - Backend with FastAPI
-  - [Backend Development with FastAPI](/docs/fastapi): A syllabus for teaching backend development with FastAPI
+  - [Backend Development with FastAPI](/en/docs/fastapi): A syllabus for teaching backend development with FastAPI
   - Web Fundamentals
-    - [What is the Internet?](/docs/fastapi/web-fundamentals/what-is-the-internet): The network that makes backend development possible
-    - [What is a Website?](/docs/fastapi/web-fundamentals/what-is-a-website): HTML, CSS, and JS — and what actually happens when a page loads
-    - [Web 1.0, Web 2.0 & Why React](/docs/fastapi/web-fundamentals/web-evolution-and-why-react): The full page reload problem — and why modern apps stopped doing it
-    - [What is the Backend, and Why Do We Need One?](/docs/fastapi/web-fundamentals/why-we-need-a-backend): Why business logic can't just live in the browser
-    - [What is a Database?](/docs/fastapi/web-fundamentals/what-is-a-database): Where the backend keeps data that has to survive and stay organized
-    - [Putting It Together — How Does YouTube Work?](/docs/fastapi/web-fundamentals/how-youtube-works): A real-world walkthrough that ties client, backend, database, and file storage together
+    - [What is the Internet?](/en/docs/fastapi/web-fundamentals/what-is-the-internet): The network that makes backend development possible
+    - [What is a Website?](/en/docs/fastapi/web-fundamentals/what-is-a-website): HTML, CSS, and JS — and what actually happens when a page loads
+    - [Web 1.0, Web 2.0 & Why React](/en/docs/fastapi/web-fundamentals/web-evolution-and-why-react): The full page reload problem — and why modern apps stopped doing it
+    - [What is the Backend, and Why Do We Need One?](/en/docs/fastapi/web-fundamentals/why-we-need-a-backend): Why business logic can't just live in the browser
+    - [What is a Database?](/en/docs/fastapi/web-fundamentals/what-is-a-database): Where the backend keeps data that has to survive and stay organized
+    - [Putting It Together — How Does YouTube Work?](/en/docs/fastapi/web-fundamentals/how-youtube-works): A real-world walkthrough that ties client, backend, database, and file storage together
   - Getting Started
-    - [What is FastAPI?](/docs/fastapi/getting-started/what-is-fastapi): A modern Python framework built for writing APIs fast, with less code
-    - [Project Setup](/docs/fastapi/getting-started/project-setup): Virtual environments, and installing FastAPI's core dependencies
-    - [Environment Configuration](/docs/fastapi/getting-started/environment-configuration): Keeping database credentials out of your code with a .env file
-    - [Database Connection](/docs/fastapi/getting-started/database-connection): Turning your connection string into a real connection with SQLAlchemy
+    - [What is FastAPI?](/en/docs/fastapi/getting-started/what-is-fastapi): A modern Python framework built for writing APIs fast, with less code
+    - [Project Setup](/en/docs/fastapi/getting-started/project-setup): Virtual environments, and installing FastAPI's core dependencies
+    - [Environment Configuration](/en/docs/fastapi/getting-started/environment-configuration): Keeping database credentials out of your code with a .env file
+    - [Database Connection](/en/docs/fastapi/getting-started/database-connection): Turning your connection string into a real connection with SQLAlchemy
   - Building the Todo API
-    - [Creating the Todo Model](/docs/fastapi/todo-api/creating-the-todo-model): Describing a database table as a Python class
-    - [Creating the Todo Schema](/docs/fastapi/todo-api/creating-the-todo-schema): Pydantic schemas — the shape of data at the API boundary, separate from the database model
-    - [Create Todo — Your First Endpoint](/docs/fastapi/todo-api/create-todo-endpoint): The FastAPI app, the database session dependency, and your first route
-    - [Running & Testing Your API](/docs/fastapi/todo-api/running-and-testing): Starting uvicorn, and trying your endpoint through the interactive docs
-    - [Fetch All Todos](/docs/fastapi/todo-api/fetch-all-todos): A GET endpoint that returns a list, and querying every row with SQLAlchemy
-    - [Fetch a Single Todo](/docs/fastapi/todo-api/fetch-single-todo): Path parameters, filtering a query, and returning a proper 404
-    - [Update Todo — PUT vs PATCH](/docs/fastapi/todo-api/update-todo): Replacing a todo entirely, updating it partially, and the real difference between the two
-    - [Delete Todo](/docs/fastapi/todo-api/delete-todo): Removing a row, and returning a plain message instead of the resource
+    - [Creating the Todo Model](/en/docs/fastapi/todo-api/creating-the-todo-model): Describing a database table as a Python class
+    - [Creating the Todo Schema](/en/docs/fastapi/todo-api/creating-the-todo-schema): Pydantic schemas — the shape of data at the API boundary, separate from the database model
+    - [Create Todo — Your First Endpoint](/en/docs/fastapi/todo-api/create-todo-endpoint): The FastAPI app, the database session dependency, and your first route
+    - [Running & Testing Your API](/en/docs/fastapi/todo-api/running-and-testing): Starting uvicorn, and trying your endpoint through the interactive docs
+    - [Fetch All Todos](/en/docs/fastapi/todo-api/fetch-all-todos): A GET endpoint that returns a list, and querying every row with SQLAlchemy
+    - [Fetch a Single Todo](/en/docs/fastapi/todo-api/fetch-single-todo): Path parameters, filtering a query, and returning a proper 404
+    - [Update Todo — PUT vs PATCH](/en/docs/fastapi/todo-api/update-todo): Replacing a todo entirely, updating it partially, and the real difference between the two
+    - [Delete Todo](/en/docs/fastapi/todo-api/delete-todo): Removing a row, and returning a plain message instead of the resource
 
 # Docs
 

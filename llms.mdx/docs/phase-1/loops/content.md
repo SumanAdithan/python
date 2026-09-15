@@ -1,4 +1,4 @@
-# for, range() & while (/docs/phase-1/loops)
+# for, range() & while (/en/docs/phase-1/loops)
 
 
 

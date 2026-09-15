@@ -1,4 +1,4 @@
-# What is the Internet? (/docs/fastapi/web-fundamentals/what-is-the-internet)
+# What is the Internet? (/en/docs/fastapi/web-fundamentals/what-is-the-internet)
 
 
 

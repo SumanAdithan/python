@@ -1,4 +1,4 @@
-# def, async def & await (/docs/phase-8/async-and-await)
+# def, async def & await (/en/docs/phase-8/async-and-await)
 
 
 

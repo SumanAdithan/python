@@ -1,4 +1,4 @@
-# Environment Configuration (/docs/fastapi/getting-started/environment-configuration)
+# Environment Configuration (/en/docs/fastapi/getting-started/environment-configuration)
 
 
 

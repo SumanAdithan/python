@@ -1,4 +1,4 @@
-# Inheritance & super() (/docs/phase-4/inheritance)
+# Inheritance & super() (/en/docs/phase-4/inheritance)
 
 
 

@@ -1,4 +1,4 @@
-# Phase 1 — Python Core Foundations (/docs/phase-1)
+# Phase 1 — Python Core Foundations (/en/docs/phase-1)
 
 
 
