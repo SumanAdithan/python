@@ -14,12 +14,8 @@ export default function RootRedirectPage() {
   }, [target]);
 
   return (
-    <html lang="en">
-      <body>
-        <p>
-          Redirecting to <a href={target}>the docs</a>...
-        </p>
-      </body>
-    </html>
+    <p>
+      Redirecting to <a href={target}>the docs</a>...
+    </p>
   );
 }

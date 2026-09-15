@@ -29,11 +29,5 @@ export default function NotFound() {
     window.location.replace(redirectTo);
   }, []);
 
-  return (
-    <html lang="en">
-      <body>
-        <p>{target ? <a href={target}>Redirecting...</a> : 'Page not found.'}</p>
-      </body>
-    </html>
-  );
+  return <p>{target ? <a href={target}>Redirecting...</a> : 'Page not found.'}</p>;
 }
