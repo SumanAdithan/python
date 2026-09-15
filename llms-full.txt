@@ -176,23 +176,23 @@ Use the language switcher in the top navigation bar to read the same notes in **
 ## Phases [#phases]
 
 <Cards>
-  <Card title="Phase 1 — Python Core Foundations" href="/docs/phase-1" />
+  <Card title="Phase 1 — Python Core Foundations" href="/en/docs/phase-1" />
 
-  <Card title="Phase 2 — Collections" href="/docs/phase-2" />
+  <Card title="Phase 2 — Collections" href="/en/docs/phase-2" />
 
-  <Card title="Phase 3 — Functions" href="/docs/phase-3" />
+  <Card title="Phase 3 — Functions" href="/en/docs/phase-3" />
 
-  <Card title="Phase 4 — Python OOP" href="/docs/phase-4" />
+  <Card title="Phase 4 — Python OOP" href="/en/docs/phase-4" />
 
-  <Card title="Phase 5 — Python-specific Features" href="/docs/phase-5" />
+  <Card title="Phase 5 — Python-specific Features" href="/en/docs/phase-5" />
 
-  <Card title="Phase 6 — Exceptions + Modules" href="/docs/phase-6" />
+  <Card title="Phase 6 — Exceptions + Modules" href="/en/docs/phase-6" />
 
-  <Card title="Phase 7 — Type Hints" href="/docs/phase-7" />
+  <Card title="Phase 7 — Type Hints" href="/en/docs/phase-7" />
 
-  <Card title="Phase 8 — async / await" href="/docs/phase-8" />
+  <Card title="Phase 8 — async / await" href="/en/docs/phase-8" />
 
-  <Card title="Final Practice — Build a User Store" href="/docs/final-practice" />
+  <Card title="Final Practice — Build a User Store" href="/en/docs/final-practice" />
 </Cards>
 
 
@@ -209,11 +209,11 @@ Topics are added here as they're covered, in teaching order.
 ## Topics [#topics]
 
 <Cards>
-  <Card title="Web Fundamentals" href="/docs/fastapi/web-fundamentals/what-is-the-internet" />
+  <Card title="Web Fundamentals" href="/en/docs/fastapi/web-fundamentals/what-is-the-internet" />
 
-  <Card title="Getting Started" href="/docs/fastapi/getting-started/what-is-fastapi" />
+  <Card title="Getting Started" href="/en/docs/fastapi/getting-started/what-is-fastapi" />
 
-  <Card title="Building the Todo API" href="/docs/fastapi/todo-api/creating-the-todo-model" />
+  <Card title="Building the Todo API" href="/en/docs/fastapi/todo-api/creating-the-todo-model" />
 </Cards>
 
 *More topics will appear here as they're added.*
@@ -3176,6 +3176,513 @@ FastAPI app you build, with no setup.
 </Callout>
 
 
+# Putting It Together — How Does YouTube Work? (/docs/fastapi/web-fundamentals/how-youtube-works)
+
+
+
+You now know the pieces: client, backend, database. This lesson puts them together through a
+real example everyone already understands — **YouTube** — and along the way, uncovers one
+more piece you haven't met yet.
+
+## Two very different kinds of data [#two-very-different-kinds-of-data]
+
+Think about everything YouTube needs to keep track of for a single video:
+
+* Its **title**, **description**, **upload date**, **view count**, **like count**
+* Its **comments**, and who posted each one
+* The **actual video file** itself — and its thumbnail image
+
+The first two are exactly what you just learned: rows in database tables. A `videos` table
+with a `title` column and a `view_count` column fits perfectly.
+
+But that video file? A single video can be hundreds of megabytes, even gigabytes. That raises
+a real question:
+
+**Can't we just save the video file in the database too, in some column?**
+
+## Why databases aren't built for this [#why-databases-arent-built-for-this]
+
+Technically, some databases can store large binary blobs — but doing this at YouTube's scale
+would be a bad idea:
+
+* Databases are built to be searched, filtered, and sorted quickly across *many small rows* —
+  not to hold enormous files that nobody "searches" the *contents* of
+* A database that also held every raw video file would become massive, making backups,
+  replication, and queries all dramatically slower
+* Databases aren't designed to **stream** a large file out to millions of viewers at once —
+  that's a completely different kind of workload
+
+So real applications split the two apart:
+
+<Mermaid
+  chart="
+graph TD
+A[Everything about a video] --> B[Structured data:<br/>title, description,<br/>views, comments]
+A --> C[The actual files:<br/>video, thumbnail]
+B --> D[(Database)]
+C --> E[Storage Server]
+"
+/>
+
+## Meet the storage server [#meet-the-storage-server]
+
+A **storage server** (often called *object storage* — think AWS S3 or Google Cloud Storage)
+is a service whose only job is storing and serving large files efficiently. The database
+never holds the video itself — it only holds a **reference** to where that file lives on the
+storage server (a URL or file path).
+
+Large platforms also place a **CDN** (Content Delivery Network) in front of their storage —
+copies of popular videos get cached on servers physically close to viewers all over the
+world, so someone in India isn't fetching every byte from a server on the other side of the
+planet. You don't need to build one of these yourself; it's a service you connect to, the
+same way you'd connect to a database.
+
+## The full picture [#the-full-picture]
+
+<Mermaid
+  chart="
+graph LR
+A[Client<br/>browser or app] -- requests --> B[Backend]
+B -- structured data --> C[(Database)]
+B -- file references --> D[Storage Server + CDN]
+D -. video/image bytes .-> A
+"
+/>
+
+## Walking through: uploading a video [#walking-through-uploading-a-video]
+
+1. You select a video file and hit upload in the client.
+2. The client sends the file to the **backend**.
+3. The backend sends the actual video file to the **storage server** to be saved.
+4. The storage server gives back a reference — where that file now lives.
+5. The backend saves the **metadata** (title, description, your user id, and that file
+   reference) as a new row in the **database**.
+
+## Walking through: watching a video [#walking-through-watching-a-video]
+
+1. You open a video page in the client.
+2. The client asks the **backend** for that video's info.
+3. The backend reads the row from the **database** — title, description, view count, and the
+   stored file reference.
+4. The backend sends that data back to the client, including where the actual video file
+   lives.
+5. The client's video player fetches the video bytes **directly from the storage server /
+   CDN** — not routed back through the backend — so playback is fast and doesn't load down
+   your API server.
+
+## Why this matters going forward [#why-this-matters-going-forward]
+
+This same split shows up in almost every real app you'll build: a database for structured,
+searchable data, and a storage service for the files themselves (profile pictures, PDFs,
+audio, video). In this course, you'll build the backend and database side yourself with
+FastAPI; storage servers and CDNs are usually a cloud service you connect to, not something
+you build from scratch.
+
+With client, backend, database, and storage all in place, you now have the complete mental
+map of how a real application is built — everything from here on is about learning the tools
+to build the backend piece of it, properly.
+
+<Callout title="For you, coming from Express/Nest">
+  Same architecture you already know — an Express/Nest API talking to Postgres/MongoDB for
+  structured data, and to S3 (or similar) for files, usually via a pre-signed upload URL or a
+  multipart upload endpoint. FastAPI will follow the identical pattern; you're not learning a
+  new architecture here, just new syntax for a shape you've already built before.
+</Callout>
+
+
+# Web 1.0, Web 2.0 & Why React (/docs/fastapi/web-fundamentals/web-evolution-and-why-react)
+
+
+
+Websites haven't always worked the way they do today. To understand why tools like React
+exist, you need to see the problem they were built to solve.
+
+## Web 1.0 — read-only pages [#web-10--read-only-pages]
+
+The earliest websites (roughly the 1990s) were **static and read-only** — closer to a digital
+brochure than an app. A server had a folder of pre-written HTML files, and every visitor got
+exactly the same page. There was no login, no comments, no personalization. You looked, you
+didn't interact.
+
+## Web 2.0 — the interactive web [#web-20--the-interactive-web]
+
+Starting in the 2000s, the web became **interactive and user-driven**: logins, comments,
+likes, posting your own content — think early Facebook, YouTube, blogs with comment sections.
+The server now generated a *different* page for every user, built from data stored in a
+database.
+
+This is a huge leap forward — but under the hood, most Web 2.0 sites still worked the exact
+same way as Web 1.0 for one crucial thing: &#x2A;*every click reloaded the entire page.**
+
+## The full page reload problem [#the-full-page-reload-problem]
+
+Click a link on a traditional website (even a modern-looking one built with plain
+HTML/CSS/JS), and this happens:
+
+<Mermaid
+  chart="
+graph TD
+A[You click a link or submit a form] --> B[Browser throws away the entire current page]
+B --> C[Browser sends a request for a brand new page]
+C --> D[Server builds and sends a full HTML page]
+D --> E[Browser reloads everything from scratch: HTML, CSS, JS, images]
+E --> F[White flash, then the new page appears]
+"
+/>
+
+Every single action — clicking a link, submitting a form, even liking a post — could mean
+throwing away the whole page and rebuilding it from nothing. That means:
+
+* A visible **white flash** while the old page disappears and the new one loads
+* **Everything resets** — scroll position, an open dropdown, a half-filled form, a playing
+  video — all gone, because the browser is starting over completely
+* Re-downloading and re-running the *same* CSS and JS files you already had, every time
+
+Imagine a chat app where sending one message reloaded the entire page, wiped your scroll
+position, and re-downloaded the whole app — just to show one new message. That's not
+acceptable for the kind of apps people expect today.
+
+## Why React [#why-react]
+
+React (and similar tools) exist to fix exactly this. The core idea: **load the page once,
+then only update the small part that actually changed** — never throw away and rebuild the
+whole thing again.
+
+<Mermaid
+  chart="
+graph TD
+A[You click a button] --> B[JavaScript intercepts the click - no reload]
+B --> C[JavaScript asks the server for just the data it needs]
+C --> D[Server sends back data - not a full HTML page]
+D --> E[React updates only the changed part of the page]
+"
+/>
+
+Notice the key difference from the diagram above: the server isn't sending a full HTML page
+anymore — it's sending back **just the data**. That's the piece that matters most for this
+course.
+
+## Why this matters for a backend developer [#why-this-matters-for-a-backend-developer]
+
+This shift changes what a backend server's job even is:
+
+|                             | Web 1.0 / 2.0 style  | Modern React-style            |
+| --------------------------- | -------------------- | ----------------------------- |
+| Server sends back           | A complete HTML page | Just data (usually JSON)      |
+| Who builds the page         | The server           | The browser (React), once     |
+| What happens on each action | Full page reload     | Only the changed part updates |
+
+**This is exactly why we're learning FastAPI**: FastAPI's job in this stack isn't to generate
+HTML pages — it's to answer requests with data. A separate React app (running in the
+browser) is responsible for turning that data into an actual page, and updating it without
+ever reloading. Backend and frontend become two separate programs that talk to each other
+purely through requests and responses of data.
+
+<Callout title="For you, coming from Express/Nest">
+  You've almost certainly already done this: an Express route that calls `res.json({ ... })`
+  instead of rendering a template with something like EJS or Pug is *already* the "modern"
+  approach — server as a pure data API, frontend as a separate React app. FastAPI works on that
+  exact same principle, so this mental model isn't new to you at all — only the Python syntax
+  around it will be.
+</Callout>
+
+
+# What is a Database? (/docs/fastapi/web-fundamentals/what-is-a-database)
+
+
+
+The last lesson established that the backend is a trusted boundary — the client never
+touches secrets, source code, or raw data directly. But the backend needs somewhere to
+actually **keep** that data. That's what a database is for.
+
+## Why not just store data in a variable? [#why-not-just-store-data-in-a-variable]
+
+You could imagine a backend that keeps everything in a plain Python list, like the `users`
+list from your Final Practice exercise back in the Python Notes. That works while the program
+is running — but it has a fatal flaw: &#x2A;*the moment the server restarts, everything is gone.**
+A crash, a deploy, a simple reboot — all of it wipes the list clean.
+
+A real application needs data to:
+
+* **Survive** restarts and crashes
+* Be **searched and filtered** quickly, even with millions of records
+* Be **shared safely** across many requests happening at the same time
+
+That's a job for a dedicated piece of software — a **database**.
+
+## What a database actually is [#what-a-database-actually-is]
+
+A database is a separate program (often running as its own server) whose entire purpose is
+storing data reliably and retrieving it fast. Think of it as a very well-organized set of
+spreadsheets:
+
+* A **table** is one spreadsheet — for example, a `users` table, or a `videos` table
+* A **row** is one record in that spreadsheet — one specific user, one specific video
+* A **column** defines one piece of information every row has — `id`, `name`, `email`
+
+```text
+users table
+┌────┬─────────┬───────────────────┐
+│ id │ name    │ email             │
+├────┼─────────┼───────────────────┤
+│ 1  │ John    │ john@example.com  │
+│ 2  │ David   │ david@example.com │
+└────┴─────────┴───────────────────┘
+```
+
+This should look familiar — it's the same shape as the list-of-dicts you already worked with
+in Python Notes' Phase 2 and Final Practice. A database table is essentially that same idea,
+made permanent and searchable at scale.
+
+## Only the backend talks to the database [#only-the-backend-talks-to-the-database]
+
+<Mermaid
+  chart="
+graph LR
+A[Client] -- request to a URL --> B[Backend]
+B -- reads / writes data --> C[(Database)]
+B -- only the resulting data --> A
+"
+/>
+
+The client never connects to the database directly — it never even knows the database
+exists. It only ever talks to the backend, and the backend decides what to read, what to
+write, and what to send back. This is the same trusted-boundary idea from the last lesson,
+just with a concrete example of what's actually being hidden.
+
+## The kind of database you'll use in this course [#the-kind-of-database-youll-use-in-this-course]
+
+There are different families of databases, but the most common kind — and the one this course
+uses with FastAPI — is a **relational database** (like PostgreSQL or MySQL): data organized
+into clearly defined tables with columns, similar to the `users` table above. You'll get
+hands-on with this properly in a later lesson — for now, just hold onto the mental picture:
+&#x2A;*tables, rows, and columns, living inside a server only the backend can reach.**
+
+<Callout title="For you, coming from Express/Nest">
+  Exactly the same relationship as `pg`, Prisma, or TypeORM talking to a Postgres/MySQL
+  database from an Express/Nest server — the client still only ever calls your API, never the
+  database itself. FastAPI will use its own tools for this (you'll meet them soon), but the
+  architecture is identical to what you already do.
+</Callout>
+
+
+# What is a Website? (/docs/fastapi/web-fundamentals/what-is-a-website)
+
+
+
+In the last lesson you saw that a **server** answers requests from a **client**. A website is
+simply what most servers send back as their answer.
+
+## The three building blocks [#the-three-building-blocks]
+
+Every website, no matter how complex it looks, is built from three things:
+
+* **HTML** — the structure and content (the text, images, buttons — what's on the page)
+* **CSS** — the styling (colors, spacing, fonts — how it looks)
+* **JavaScript** — the behavior (what happens when you click, type, or scroll)
+
+The server's job is to send these files to whichever browser asks for them. The browser's job
+is to read them and turn them into the page you actually see.
+
+## What happens when you visit a page [#what-happens-when-you-visit-a-page]
+
+Opening a single webpage is rarely just *one* request — it's usually several, one after
+another:
+
+<Mermaid
+  chart="
+graph TD
+A[Browser requests index.html] --> B[Server sends the HTML file]
+B --> C[Browser reads the HTML]
+C --> D[Browser sees a link to style.css and requests it]
+C --> E[Browser sees a link to script.js and requests it]
+D --> F[Page is styled and interactive]
+E --> F
+"
+/>
+
+1. The browser asks for the page itself (`index.html`).
+2. While reading that HTML, the browser notices it references a stylesheet and a script file.
+3. It sends **separate requests** for those too.
+4. Once everything has arrived, the browser combines them into the page you see on screen.
+
+This matters later: every one of those arrows in the diagram is a full round trip across the
+internet — a request, then a response. Keeping that number small (and not repeating it
+unnecessarily) is a big part of why the web has evolved the way it has, which is exactly
+what the next lesson is about.
+
+
+# What is the Internet? (/docs/fastapi/web-fundamentals/what-is-the-internet)
+
+
+
+Before writing a single line of backend code, you need a clear picture of what you're
+actually building on top of. So let's start at the very bottom: &#x2A;*what is the internet?**
+
+## A simple definition [#a-simple-definition]
+
+The internet is a huge network of computers all over the world, connected together so they
+can send information to each other.
+
+That's really it. Your phone, your laptop, and the servers that run apps like Instagram or
+Netflix are all just computers on this same giant network — some asking for information,
+others answering.
+
+## Every computer has an address [#every-computer-has-an-address]
+
+For one computer to send data to another, it needs to know where to send it. Every device on
+the internet has an **IP address** — a unique set of numbers that identifies it, the same way
+a house needs a postal address before anyone can deliver mail to it.
+
+```text
+192.168.1.1
+```
+
+You'll rarely type an IP address yourself — that's what domain names like `google.com` are
+for, they're just a human-friendly label that gets translated into an IP address behind the
+scenes. But the underlying idea is the same: &#x2A;*every computer on the internet can be found at
+an address.**
+
+## Two roles: asking and answering [#two-roles-asking-and-answering]
+
+Almost everything that happens on the internet comes down to two roles:
+
+* **Client** — the one asking for something (a browser, a mobile app)
+* **Server** — the one answering (a computer that's always on, waiting for questions)
+
+<Mermaid
+  chart="
+graph LR
+A[Client<br/>your browser or app] -- 1. Request --> B((The Internet))
+B -- forwards it to --> C[Server<br/>a computer that is always on]
+C -- 2. Response --> B
+B -- delivers it back --> A
+"
+/>
+
+For example, when you open a browser and go to a website:
+
+1. Your browser (**client**) sends a **request** out onto the internet: "Please give me this
+   webpage."
+2. The request travels across the network to the right computer, based on its address.
+3. That computer (**server**) sends a **response** back: the actual webpage content.
+4. Your browser receives it and displays it on your screen.
+
+This request → response pattern is the single most important idea in this entire course.
+Everything you'll build runs on top of it.
+
+## Why this matters for you [#why-this-matters-for-you]
+
+**Backend development means building the "server" side of this picture** — the program that
+sits there, always on, waiting for requests, and deciding what to send back.
+
+Everything you've learned in Python so far — functions, dictionaries, classes — is about to
+become the logic that runs *inside* that server, answering the requests your users' browsers
+and apps send in.
+
+
+# What is the Backend, and Why Do We Need One? (/docs/fastapi/web-fundamentals/why-we-need-a-backend)
+
+
+
+You already know the backend is the "server" side of the client/server picture. This lesson
+is about *why* it needs to exist at all — why can't a website just be HTML, CSS, and
+JavaScript, with everything happening in the browser?
+
+## The one rule that explains everything [#the-one-rule-that-explains-everything]
+
+**Anything you send to the browser, the user can see and change.**
+
+Open any website, right-click, "View Source" or open DevTools — every line of HTML, CSS, and
+JavaScript is right there, fully readable. Nothing that reaches the browser stays private.
+Not "hard to find" — genuinely, completely visible, and editable, by anyone who opens it.
+
+The backend exists because some things must **never** be visible or editable by the user:
+
+* The actual logic that decides prices, discounts, permissions, or scores
+* Passwords, and how they're checked
+* Secret keys for payment providers, email services, or other paid APIs
+* The database itself — where everyone's data actually lives
+
+## What the client is allowed to see [#what-the-client-is-allowed-to-see]
+
+A user only ever sees two things:
+
+1. The **URL** they called (e.g. `POST /orders`)
+2. Whatever **data** came back in the response
+
+They never see the code that ran to produce that response. The backend's internal logic —
+how it validated the request, which database it checked, what business rules it applied — is
+completely invisible on the other side of that URL.
+
+<Mermaid
+  chart="
+graph LR
+subgraph Client [Client - fully visible to the user]
+A[HTML / CSS / JS you sent]
+B[Whatever data arrives back]
+end
+subgraph Backend [Backend - fully hidden from the user]
+C[Your source code]
+D[Database]
+E[Secret keys]
+F[Business rules: pricing, permissions, validation]
+end
+A -- request to a URL --> C
+C --> D
+C --> E
+C --> F
+C -- only the resulting data --> B
+"
+/>
+
+This is the whole point of a backend: it's a boundary. Requests go in, responses come out,
+and everything that happens in between is the developer's business, not the user's.
+
+## What if there were no backend at all? [#what-if-there-were-no-backend-at-all]
+
+Imagine trying to build an online store with *only* HTML, CSS, and JavaScript running in the
+browser — no server, no database, nothing hidden.
+
+**Prices and discounts couldn't be trusted.** If the "final price" is calculated by
+JavaScript running in the user's own browser, the user can open DevTools and change it before
+checkout. There's no second, trusted opinion checking the real price — the browser *is* the
+only opinion, and the user fully controls it.
+
+**Logins couldn't be secure.** If checking a password is a line of JavaScript like
+`if (password === "admin123")`, that string is sitting right there in the page's source code
+for anyone to read. Worse, a user could just skip the check entirely by editing the code
+running in their own browser.
+
+**Data couldn't be shared or kept safe.** Without a database, data can only live in the
+browser itself (e.g. `localStorage`) — meaning it exists on *that one device, in that one
+browser*, invisible to everyone else. Two users could never see each other's posts. You
+couldn't check your own account from your phone. Clear your browser data, and everything is
+gone forever.
+
+**Secrets couldn't stay secret.** Calling a paid third-party service (email, SMS, payments)
+requires a secret API key. If that key lives in browser JavaScript, it ships to every visitor
+— anyone can extract it from the page and use it as their own, at your expense.
+
+None of this is a small inconvenience — it means **nothing on the site could actually be
+trusted**. A backend is what turns "a page that runs some code" into "a system whose rules
+actually hold."
+
+## The takeaway [#the-takeaway]
+
+The backend is the one place in your entire application that only *you*, the developer,
+control. The user can call its URLs and see its responses — but never its code, its
+database, or its secrets. Everything you'll build with FastAPI from here on lives inside that
+trusted boundary.
+
+<Callout title="For you, coming from Express/Nest">
+  This is precisely why an Express/Nest server exists in your past projects too — it's the same
+  "trusted boundary" idea, whether the request handler is written in a Express route, a Nest
+  controller method, or — starting now — a FastAPI path operation function. The concept doesn't
+  change; only the syntax will.
+</Callout>
+
+
 # Create Todo — Your First Endpoint (/docs/fastapi/todo-api/create-todo-endpoint)
 
 
@@ -4056,513 +4563,6 @@ def update_todo(todo_id:int, updated: TodoCreate, db:Session = Depends(get_db)):
 ```
 
 
-# Putting It Together — How Does YouTube Work? (/docs/fastapi/web-fundamentals/how-youtube-works)
-
-
-
-You now know the pieces: client, backend, database. This lesson puts them together through a
-real example everyone already understands — **YouTube** — and along the way, uncovers one
-more piece you haven't met yet.
-
-## Two very different kinds of data [#two-very-different-kinds-of-data]
-
-Think about everything YouTube needs to keep track of for a single video:
-
-* Its **title**, **description**, **upload date**, **view count**, **like count**
-* Its **comments**, and who posted each one
-* The **actual video file** itself — and its thumbnail image
-
-The first two are exactly what you just learned: rows in database tables. A `videos` table
-with a `title` column and a `view_count` column fits perfectly.
-
-But that video file? A single video can be hundreds of megabytes, even gigabytes. That raises
-a real question:
-
-**Can't we just save the video file in the database too, in some column?**
-
-## Why databases aren't built for this [#why-databases-arent-built-for-this]
-
-Technically, some databases can store large binary blobs — but doing this at YouTube's scale
-would be a bad idea:
-
-* Databases are built to be searched, filtered, and sorted quickly across *many small rows* —
-  not to hold enormous files that nobody "searches" the *contents* of
-* A database that also held every raw video file would become massive, making backups,
-  replication, and queries all dramatically slower
-* Databases aren't designed to **stream** a large file out to millions of viewers at once —
-  that's a completely different kind of workload
-
-So real applications split the two apart:
-
-<Mermaid
-  chart="
-graph TD
-A[Everything about a video] --> B[Structured data:<br/>title, description,<br/>views, comments]
-A --> C[The actual files:<br/>video, thumbnail]
-B --> D[(Database)]
-C --> E[Storage Server]
-"
-/>
-
-## Meet the storage server [#meet-the-storage-server]
-
-A **storage server** (often called *object storage* — think AWS S3 or Google Cloud Storage)
-is a service whose only job is storing and serving large files efficiently. The database
-never holds the video itself — it only holds a **reference** to where that file lives on the
-storage server (a URL or file path).
-
-Large platforms also place a **CDN** (Content Delivery Network) in front of their storage —
-copies of popular videos get cached on servers physically close to viewers all over the
-world, so someone in India isn't fetching every byte from a server on the other side of the
-planet. You don't need to build one of these yourself; it's a service you connect to, the
-same way you'd connect to a database.
-
-## The full picture [#the-full-picture]
-
-<Mermaid
-  chart="
-graph LR
-A[Client<br/>browser or app] -- requests --> B[Backend]
-B -- structured data --> C[(Database)]
-B -- file references --> D[Storage Server + CDN]
-D -. video/image bytes .-> A
-"
-/>
-
-## Walking through: uploading a video [#walking-through-uploading-a-video]
-
-1. You select a video file and hit upload in the client.
-2. The client sends the file to the **backend**.
-3. The backend sends the actual video file to the **storage server** to be saved.
-4. The storage server gives back a reference — where that file now lives.
-5. The backend saves the **metadata** (title, description, your user id, and that file
-   reference) as a new row in the **database**.
-
-## Walking through: watching a video [#walking-through-watching-a-video]
-
-1. You open a video page in the client.
-2. The client asks the **backend** for that video's info.
-3. The backend reads the row from the **database** — title, description, view count, and the
-   stored file reference.
-4. The backend sends that data back to the client, including where the actual video file
-   lives.
-5. The client's video player fetches the video bytes **directly from the storage server /
-   CDN** — not routed back through the backend — so playback is fast and doesn't load down
-   your API server.
-
-## Why this matters going forward [#why-this-matters-going-forward]
-
-This same split shows up in almost every real app you'll build: a database for structured,
-searchable data, and a storage service for the files themselves (profile pictures, PDFs,
-audio, video). In this course, you'll build the backend and database side yourself with
-FastAPI; storage servers and CDNs are usually a cloud service you connect to, not something
-you build from scratch.
-
-With client, backend, database, and storage all in place, you now have the complete mental
-map of how a real application is built — everything from here on is about learning the tools
-to build the backend piece of it, properly.
-
-<Callout title="For you, coming from Express/Nest">
-  Same architecture you already know — an Express/Nest API talking to Postgres/MongoDB for
-  structured data, and to S3 (or similar) for files, usually via a pre-signed upload URL or a
-  multipart upload endpoint. FastAPI will follow the identical pattern; you're not learning a
-  new architecture here, just new syntax for a shape you've already built before.
-</Callout>
-
-
-# Web 1.0, Web 2.0 & Why React (/docs/fastapi/web-fundamentals/web-evolution-and-why-react)
-
-
-
-Websites haven't always worked the way they do today. To understand why tools like React
-exist, you need to see the problem they were built to solve.
-
-## Web 1.0 — read-only pages [#web-10--read-only-pages]
-
-The earliest websites (roughly the 1990s) were **static and read-only** — closer to a digital
-brochure than an app. A server had a folder of pre-written HTML files, and every visitor got
-exactly the same page. There was no login, no comments, no personalization. You looked, you
-didn't interact.
-
-## Web 2.0 — the interactive web [#web-20--the-interactive-web]
-
-Starting in the 2000s, the web became **interactive and user-driven**: logins, comments,
-likes, posting your own content — think early Facebook, YouTube, blogs with comment sections.
-The server now generated a *different* page for every user, built from data stored in a
-database.
-
-This is a huge leap forward — but under the hood, most Web 2.0 sites still worked the exact
-same way as Web 1.0 for one crucial thing: &#x2A;*every click reloaded the entire page.**
-
-## The full page reload problem [#the-full-page-reload-problem]
-
-Click a link on a traditional website (even a modern-looking one built with plain
-HTML/CSS/JS), and this happens:
-
-<Mermaid
-  chart="
-graph TD
-A[You click a link or submit a form] --> B[Browser throws away the entire current page]
-B --> C[Browser sends a request for a brand new page]
-C --> D[Server builds and sends a full HTML page]
-D --> E[Browser reloads everything from scratch: HTML, CSS, JS, images]
-E --> F[White flash, then the new page appears]
-"
-/>
-
-Every single action — clicking a link, submitting a form, even liking a post — could mean
-throwing away the whole page and rebuilding it from nothing. That means:
-
-* A visible **white flash** while the old page disappears and the new one loads
-* **Everything resets** — scroll position, an open dropdown, a half-filled form, a playing
-  video — all gone, because the browser is starting over completely
-* Re-downloading and re-running the *same* CSS and JS files you already had, every time
-
-Imagine a chat app where sending one message reloaded the entire page, wiped your scroll
-position, and re-downloaded the whole app — just to show one new message. That's not
-acceptable for the kind of apps people expect today.
-
-## Why React [#why-react]
-
-React (and similar tools) exist to fix exactly this. The core idea: **load the page once,
-then only update the small part that actually changed** — never throw away and rebuild the
-whole thing again.
-
-<Mermaid
-  chart="
-graph TD
-A[You click a button] --> B[JavaScript intercepts the click - no reload]
-B --> C[JavaScript asks the server for just the data it needs]
-C --> D[Server sends back data - not a full HTML page]
-D --> E[React updates only the changed part of the page]
-"
-/>
-
-Notice the key difference from the diagram above: the server isn't sending a full HTML page
-anymore — it's sending back **just the data**. That's the piece that matters most for this
-course.
-
-## Why this matters for a backend developer [#why-this-matters-for-a-backend-developer]
-
-This shift changes what a backend server's job even is:
-
-|                             | Web 1.0 / 2.0 style  | Modern React-style            |
-| --------------------------- | -------------------- | ----------------------------- |
-| Server sends back           | A complete HTML page | Just data (usually JSON)      |
-| Who builds the page         | The server           | The browser (React), once     |
-| What happens on each action | Full page reload     | Only the changed part updates |
-
-**This is exactly why we're learning FastAPI**: FastAPI's job in this stack isn't to generate
-HTML pages — it's to answer requests with data. A separate React app (running in the
-browser) is responsible for turning that data into an actual page, and updating it without
-ever reloading. Backend and frontend become two separate programs that talk to each other
-purely through requests and responses of data.
-
-<Callout title="For you, coming from Express/Nest">
-  You've almost certainly already done this: an Express route that calls `res.json({ ... })`
-  instead of rendering a template with something like EJS or Pug is *already* the "modern"
-  approach — server as a pure data API, frontend as a separate React app. FastAPI works on that
-  exact same principle, so this mental model isn't new to you at all — only the Python syntax
-  around it will be.
-</Callout>
-
-
-# What is a Database? (/docs/fastapi/web-fundamentals/what-is-a-database)
-
-
-
-The last lesson established that the backend is a trusted boundary — the client never
-touches secrets, source code, or raw data directly. But the backend needs somewhere to
-actually **keep** that data. That's what a database is for.
-
-## Why not just store data in a variable? [#why-not-just-store-data-in-a-variable]
-
-You could imagine a backend that keeps everything in a plain Python list, like the `users`
-list from your Final Practice exercise back in the Python Notes. That works while the program
-is running — but it has a fatal flaw: &#x2A;*the moment the server restarts, everything is gone.**
-A crash, a deploy, a simple reboot — all of it wipes the list clean.
-
-A real application needs data to:
-
-* **Survive** restarts and crashes
-* Be **searched and filtered** quickly, even with millions of records
-* Be **shared safely** across many requests happening at the same time
-
-That's a job for a dedicated piece of software — a **database**.
-
-## What a database actually is [#what-a-database-actually-is]
-
-A database is a separate program (often running as its own server) whose entire purpose is
-storing data reliably and retrieving it fast. Think of it as a very well-organized set of
-spreadsheets:
-
-* A **table** is one spreadsheet — for example, a `users` table, or a `videos` table
-* A **row** is one record in that spreadsheet — one specific user, one specific video
-* A **column** defines one piece of information every row has — `id`, `name`, `email`
-
-```text
-users table
-┌────┬─────────┬───────────────────┐
-│ id │ name    │ email             │
-├────┼─────────┼───────────────────┤
-│ 1  │ John    │ john@example.com  │
-│ 2  │ David   │ david@example.com │
-└────┴─────────┴───────────────────┘
-```
-
-This should look familiar — it's the same shape as the list-of-dicts you already worked with
-in Python Notes' Phase 2 and Final Practice. A database table is essentially that same idea,
-made permanent and searchable at scale.
-
-## Only the backend talks to the database [#only-the-backend-talks-to-the-database]
-
-<Mermaid
-  chart="
-graph LR
-A[Client] -- request to a URL --> B[Backend]
-B -- reads / writes data --> C[(Database)]
-B -- only the resulting data --> A
-"
-/>
-
-The client never connects to the database directly — it never even knows the database
-exists. It only ever talks to the backend, and the backend decides what to read, what to
-write, and what to send back. This is the same trusted-boundary idea from the last lesson,
-just with a concrete example of what's actually being hidden.
-
-## The kind of database you'll use in this course [#the-kind-of-database-youll-use-in-this-course]
-
-There are different families of databases, but the most common kind — and the one this course
-uses with FastAPI — is a **relational database** (like PostgreSQL or MySQL): data organized
-into clearly defined tables with columns, similar to the `users` table above. You'll get
-hands-on with this properly in a later lesson — for now, just hold onto the mental picture:
-&#x2A;*tables, rows, and columns, living inside a server only the backend can reach.**
-
-<Callout title="For you, coming from Express/Nest">
-  Exactly the same relationship as `pg`, Prisma, or TypeORM talking to a Postgres/MySQL
-  database from an Express/Nest server — the client still only ever calls your API, never the
-  database itself. FastAPI will use its own tools for this (you'll meet them soon), but the
-  architecture is identical to what you already do.
-</Callout>
-
-
-# What is a Website? (/docs/fastapi/web-fundamentals/what-is-a-website)
-
-
-
-In the last lesson you saw that a **server** answers requests from a **client**. A website is
-simply what most servers send back as their answer.
-
-## The three building blocks [#the-three-building-blocks]
-
-Every website, no matter how complex it looks, is built from three things:
-
-* **HTML** — the structure and content (the text, images, buttons — what's on the page)
-* **CSS** — the styling (colors, spacing, fonts — how it looks)
-* **JavaScript** — the behavior (what happens when you click, type, or scroll)
-
-The server's job is to send these files to whichever browser asks for them. The browser's job
-is to read them and turn them into the page you actually see.
-
-## What happens when you visit a page [#what-happens-when-you-visit-a-page]
-
-Opening a single webpage is rarely just *one* request — it's usually several, one after
-another:
-
-<Mermaid
-  chart="
-graph TD
-A[Browser requests index.html] --> B[Server sends the HTML file]
-B --> C[Browser reads the HTML]
-C --> D[Browser sees a link to style.css and requests it]
-C --> E[Browser sees a link to script.js and requests it]
-D --> F[Page is styled and interactive]
-E --> F
-"
-/>
-
-1. The browser asks for the page itself (`index.html`).
-2. While reading that HTML, the browser notices it references a stylesheet and a script file.
-3. It sends **separate requests** for those too.
-4. Once everything has arrived, the browser combines them into the page you see on screen.
-
-This matters later: every one of those arrows in the diagram is a full round trip across the
-internet — a request, then a response. Keeping that number small (and not repeating it
-unnecessarily) is a big part of why the web has evolved the way it has, which is exactly
-what the next lesson is about.
-
-
-# What is the Internet? (/docs/fastapi/web-fundamentals/what-is-the-internet)
-
-
-
-Before writing a single line of backend code, you need a clear picture of what you're
-actually building on top of. So let's start at the very bottom: &#x2A;*what is the internet?**
-
-## A simple definition [#a-simple-definition]
-
-The internet is a huge network of computers all over the world, connected together so they
-can send information to each other.
-
-That's really it. Your phone, your laptop, and the servers that run apps like Instagram or
-Netflix are all just computers on this same giant network — some asking for information,
-others answering.
-
-## Every computer has an address [#every-computer-has-an-address]
-
-For one computer to send data to another, it needs to know where to send it. Every device on
-the internet has an **IP address** — a unique set of numbers that identifies it, the same way
-a house needs a postal address before anyone can deliver mail to it.
-
-```text
-192.168.1.1
-```
-
-You'll rarely type an IP address yourself — that's what domain names like `google.com` are
-for, they're just a human-friendly label that gets translated into an IP address behind the
-scenes. But the underlying idea is the same: &#x2A;*every computer on the internet can be found at
-an address.**
-
-## Two roles: asking and answering [#two-roles-asking-and-answering]
-
-Almost everything that happens on the internet comes down to two roles:
-
-* **Client** — the one asking for something (a browser, a mobile app)
-* **Server** — the one answering (a computer that's always on, waiting for questions)
-
-<Mermaid
-  chart="
-graph LR
-A[Client<br/>your browser or app] -- 1. Request --> B((The Internet))
-B -- forwards it to --> C[Server<br/>a computer that is always on]
-C -- 2. Response --> B
-B -- delivers it back --> A
-"
-/>
-
-For example, when you open a browser and go to a website:
-
-1. Your browser (**client**) sends a **request** out onto the internet: "Please give me this
-   webpage."
-2. The request travels across the network to the right computer, based on its address.
-3. That computer (**server**) sends a **response** back: the actual webpage content.
-4. Your browser receives it and displays it on your screen.
-
-This request → response pattern is the single most important idea in this entire course.
-Everything you'll build runs on top of it.
-
-## Why this matters for you [#why-this-matters-for-you]
-
-**Backend development means building the "server" side of this picture** — the program that
-sits there, always on, waiting for requests, and deciding what to send back.
-
-Everything you've learned in Python so far — functions, dictionaries, classes — is about to
-become the logic that runs *inside* that server, answering the requests your users' browsers
-and apps send in.
-
-
-# What is the Backend, and Why Do We Need One? (/docs/fastapi/web-fundamentals/why-we-need-a-backend)
-
-
-
-You already know the backend is the "server" side of the client/server picture. This lesson
-is about *why* it needs to exist at all — why can't a website just be HTML, CSS, and
-JavaScript, with everything happening in the browser?
-
-## The one rule that explains everything [#the-one-rule-that-explains-everything]
-
-**Anything you send to the browser, the user can see and change.**
-
-Open any website, right-click, "View Source" or open DevTools — every line of HTML, CSS, and
-JavaScript is right there, fully readable. Nothing that reaches the browser stays private.
-Not "hard to find" — genuinely, completely visible, and editable, by anyone who opens it.
-
-The backend exists because some things must **never** be visible or editable by the user:
-
-* The actual logic that decides prices, discounts, permissions, or scores
-* Passwords, and how they're checked
-* Secret keys for payment providers, email services, or other paid APIs
-* The database itself — where everyone's data actually lives
-
-## What the client is allowed to see [#what-the-client-is-allowed-to-see]
-
-A user only ever sees two things:
-
-1. The **URL** they called (e.g. `POST /orders`)
-2. Whatever **data** came back in the response
-
-They never see the code that ran to produce that response. The backend's internal logic —
-how it validated the request, which database it checked, what business rules it applied — is
-completely invisible on the other side of that URL.
-
-<Mermaid
-  chart="
-graph LR
-subgraph Client [Client - fully visible to the user]
-A[HTML / CSS / JS you sent]
-B[Whatever data arrives back]
-end
-subgraph Backend [Backend - fully hidden from the user]
-C[Your source code]
-D[Database]
-E[Secret keys]
-F[Business rules: pricing, permissions, validation]
-end
-A -- request to a URL --> C
-C --> D
-C --> E
-C --> F
-C -- only the resulting data --> B
-"
-/>
-
-This is the whole point of a backend: it's a boundary. Requests go in, responses come out,
-and everything that happens in between is the developer's business, not the user's.
-
-## What if there were no backend at all? [#what-if-there-were-no-backend-at-all]
-
-Imagine trying to build an online store with *only* HTML, CSS, and JavaScript running in the
-browser — no server, no database, nothing hidden.
-
-**Prices and discounts couldn't be trusted.** If the "final price" is calculated by
-JavaScript running in the user's own browser, the user can open DevTools and change it before
-checkout. There's no second, trusted opinion checking the real price — the browser *is* the
-only opinion, and the user fully controls it.
-
-**Logins couldn't be secure.** If checking a password is a line of JavaScript like
-`if (password === "admin123")`, that string is sitting right there in the page's source code
-for anyone to read. Worse, a user could just skip the check entirely by editing the code
-running in their own browser.
-
-**Data couldn't be shared or kept safe.** Without a database, data can only live in the
-browser itself (e.g. `localStorage`) — meaning it exists on *that one device, in that one
-browser*, invisible to everyone else. Two users could never see each other's posts. You
-couldn't check your own account from your phone. Clear your browser data, and everything is
-gone forever.
-
-**Secrets couldn't stay secret.** Calling a paid third-party service (email, SMS, payments)
-requires a secret API key. If that key lives in browser JavaScript, it ships to every visitor
-— anyone can extract it from the page and use it as their own, at your expense.
-
-None of this is a small inconvenience — it means **nothing on the site could actually be
-trusted**. A backend is what turns "a page that runs some code" into "a system whose rules
-actually hold."
-
-## The takeaway [#the-takeaway]
-
-The backend is the one place in your entire application that only *you*, the developer,
-control. The user can call its URLs and see its responses — but never its code, its
-database, or its secrets. Everything you'll build with FastAPI from here on lives inside that
-trusted boundary.
-
-<Callout title="For you, coming from Express/Nest">
-  This is precisely why an Express/Nest server exists in your past projects too — it's the same
-  "trusted boundary" idea, whether the request handler is written in a Express route, a Nest
-  controller method, or — starting now — a FastAPI path operation function. The concept doesn't
-  change; only the syntax will.
-</Callout>
-
-
 # Final Practice — Build a User Store (/tanglish/docs/final-practice)
 
 
@@ -4778,11 +4778,11 @@ Topics are added here as they're covered, in teaching order.
 ## Topics [#topics]
 
 <Cards>
-  <Card title="Web Fundamentals" href="/docs/fastapi/web-fundamentals/what-is-the-internet" />
+  <Card title="Web Fundamentals" href="/en/docs/fastapi/web-fundamentals/what-is-the-internet" />
 
-  <Card title="Getting Started" href="/docs/fastapi/getting-started/what-is-fastapi" />
+  <Card title="Getting Started" href="/en/docs/fastapi/getting-started/what-is-fastapi" />
 
-  <Card title="Building the Todo API" href="/docs/fastapi/todo-api/creating-the-todo-model" />
+  <Card title="Building the Todo API" href="/en/docs/fastapi/todo-api/creating-the-todo-model" />
 </Cards>
 
 *More topics will appear here as they're added.*
@@ -7769,6 +7769,513 @@ FastAPI app you build, with no setup.
 </Callout>
 
 
+# Putting It Together — How Does YouTube Work? (/tanglish/docs/fastapi/web-fundamentals/how-youtube-works)
+
+
+
+You now know the pieces: client, backend, database. This lesson puts them together through a
+real example everyone already understands — **YouTube** — and along the way, uncovers one
+more piece you haven't met yet.
+
+## Two very different kinds of data [#two-very-different-kinds-of-data]
+
+Think about everything YouTube needs to keep track of for a single video:
+
+* Its **title**, **description**, **upload date**, **view count**, **like count**
+* Its **comments**, and who posted each one
+* The **actual video file** itself — and its thumbnail image
+
+The first two are exactly what you just learned: rows in database tables. A `videos` table
+with a `title` column and a `view_count` column fits perfectly.
+
+But that video file? A single video can be hundreds of megabytes, even gigabytes. That raises
+a real question:
+
+**Can't we just save the video file in the database too, in some column?**
+
+## Why databases aren't built for this [#why-databases-arent-built-for-this]
+
+Technically, some databases can store large binary blobs — but doing this at YouTube's scale
+would be a bad idea:
+
+* Databases are built to be searched, filtered, and sorted quickly across *many small rows* —
+  not to hold enormous files that nobody "searches" the *contents* of
+* A database that also held every raw video file would become massive, making backups,
+  replication, and queries all dramatically slower
+* Databases aren't designed to **stream** a large file out to millions of viewers at once —
+  that's a completely different kind of workload
+
+So real applications split the two apart:
+
+<Mermaid
+  chart="
+graph TD
+A[Everything about a video] --> B[Structured data:<br/>title, description,<br/>views, comments]
+A --> C[The actual files:<br/>video, thumbnail]
+B --> D[(Database)]
+C --> E[Storage Server]
+"
+/>
+
+## Meet the storage server [#meet-the-storage-server]
+
+A **storage server** (often called *object storage* — think AWS S3 or Google Cloud Storage)
+is a service whose only job is storing and serving large files efficiently. The database
+never holds the video itself — it only holds a **reference** to where that file lives on the
+storage server (a URL or file path).
+
+Large platforms also place a **CDN** (Content Delivery Network) in front of their storage —
+copies of popular videos get cached on servers physically close to viewers all over the
+world, so someone in India isn't fetching every byte from a server on the other side of the
+planet. You don't need to build one of these yourself; it's a service you connect to, the
+same way you'd connect to a database.
+
+## The full picture [#the-full-picture]
+
+<Mermaid
+  chart="
+graph LR
+A[Client<br/>browser or app] -- requests --> B[Backend]
+B -- structured data --> C[(Database)]
+B -- file references --> D[Storage Server + CDN]
+D -. video/image bytes .-> A
+"
+/>
+
+## Walking through: uploading a video [#walking-through-uploading-a-video]
+
+1. You select a video file and hit upload in the client.
+2. The client sends the file to the **backend**.
+3. The backend sends the actual video file to the **storage server** to be saved.
+4. The storage server gives back a reference — where that file now lives.
+5. The backend saves the **metadata** (title, description, your user id, and that file
+   reference) as a new row in the **database**.
+
+## Walking through: watching a video [#walking-through-watching-a-video]
+
+1. You open a video page in the client.
+2. The client asks the **backend** for that video's info.
+3. The backend reads the row from the **database** — title, description, view count, and the
+   stored file reference.
+4. The backend sends that data back to the client, including where the actual video file
+   lives.
+5. The client's video player fetches the video bytes **directly from the storage server /
+   CDN** — not routed back through the backend — so playback is fast and doesn't load down
+   your API server.
+
+## Why this matters going forward [#why-this-matters-going-forward]
+
+This same split shows up in almost every real app you'll build: a database for structured,
+searchable data, and a storage service for the files themselves (profile pictures, PDFs,
+audio, video). In this course, you'll build the backend and database side yourself with
+FastAPI; storage servers and CDNs are usually a cloud service you connect to, not something
+you build from scratch.
+
+With client, backend, database, and storage all in place, you now have the complete mental
+map of how a real application is built — everything from here on is about learning the tools
+to build the backend piece of it, properly.
+
+<Callout title="For you, coming from Express/Nest">
+  Same architecture you already know — an Express/Nest API talking to Postgres/MongoDB for
+  structured data, and to S3 (or similar) for files, usually via a pre-signed upload URL or a
+  multipart upload endpoint. FastAPI will follow the identical pattern; you're not learning a
+  new architecture here, just new syntax for a shape you've already built before.
+</Callout>
+
+
+# Web 1.0, Web 2.0 & Why React (/tanglish/docs/fastapi/web-fundamentals/web-evolution-and-why-react)
+
+
+
+Websites haven't always worked the way they do today. To understand why tools like React
+exist, you need to see the problem they were built to solve.
+
+## Web 1.0 — read-only pages [#web-10--read-only-pages]
+
+The earliest websites (roughly the 1990s) were **static and read-only** — closer to a digital
+brochure than an app. A server had a folder of pre-written HTML files, and every visitor got
+exactly the same page. There was no login, no comments, no personalization. You looked, you
+didn't interact.
+
+## Web 2.0 — the interactive web [#web-20--the-interactive-web]
+
+Starting in the 2000s, the web became **interactive and user-driven**: logins, comments,
+likes, posting your own content — think early Facebook, YouTube, blogs with comment sections.
+The server now generated a *different* page for every user, built from data stored in a
+database.
+
+This is a huge leap forward — but under the hood, most Web 2.0 sites still worked the exact
+same way as Web 1.0 for one crucial thing: &#x2A;*every click reloaded the entire page.**
+
+## The full page reload problem [#the-full-page-reload-problem]
+
+Click a link on a traditional website (even a modern-looking one built with plain
+HTML/CSS/JS), and this happens:
+
+<Mermaid
+  chart="
+graph TD
+A[You click a link or submit a form] --> B[Browser throws away the entire current page]
+B --> C[Browser sends a request for a brand new page]
+C --> D[Server builds and sends a full HTML page]
+D --> E[Browser reloads everything from scratch: HTML, CSS, JS, images]
+E --> F[White flash, then the new page appears]
+"
+/>
+
+Every single action — clicking a link, submitting a form, even liking a post — could mean
+throwing away the whole page and rebuilding it from nothing. That means:
+
+* A visible **white flash** while the old page disappears and the new one loads
+* **Everything resets** — scroll position, an open dropdown, a half-filled form, a playing
+  video — all gone, because the browser is starting over completely
+* Re-downloading and re-running the *same* CSS and JS files you already had, every time
+
+Imagine a chat app where sending one message reloaded the entire page, wiped your scroll
+position, and re-downloaded the whole app — just to show one new message. That's not
+acceptable for the kind of apps people expect today.
+
+## Why React [#why-react]
+
+React (and similar tools) exist to fix exactly this. The core idea: **load the page once,
+then only update the small part that actually changed** — never throw away and rebuild the
+whole thing again.
+
+<Mermaid
+  chart="
+graph TD
+A[You click a button] --> B[JavaScript intercepts the click - no reload]
+B --> C[JavaScript asks the server for just the data it needs]
+C --> D[Server sends back data - not a full HTML page]
+D --> E[React updates only the changed part of the page]
+"
+/>
+
+Notice the key difference from the diagram above: the server isn't sending a full HTML page
+anymore — it's sending back **just the data**. That's the piece that matters most for this
+course.
+
+## Why this matters for a backend developer [#why-this-matters-for-a-backend-developer]
+
+This shift changes what a backend server's job even is:
+
+|                             | Web 1.0 / 2.0 style  | Modern React-style            |
+| --------------------------- | -------------------- | ----------------------------- |
+| Server sends back           | A complete HTML page | Just data (usually JSON)      |
+| Who builds the page         | The server           | The browser (React), once     |
+| What happens on each action | Full page reload     | Only the changed part updates |
+
+**This is exactly why we're learning FastAPI**: FastAPI's job in this stack isn't to generate
+HTML pages — it's to answer requests with data. A separate React app (running in the
+browser) is responsible for turning that data into an actual page, and updating it without
+ever reloading. Backend and frontend become two separate programs that talk to each other
+purely through requests and responses of data.
+
+<Callout title="For you, coming from Express/Nest">
+  You've almost certainly already done this: an Express route that calls `res.json({ ... })`
+  instead of rendering a template with something like EJS or Pug is *already* the "modern"
+  approach — server as a pure data API, frontend as a separate React app. FastAPI works on that
+  exact same principle, so this mental model isn't new to you at all — only the Python syntax
+  around it will be.
+</Callout>
+
+
+# What is a Database? (/tanglish/docs/fastapi/web-fundamentals/what-is-a-database)
+
+
+
+The last lesson established that the backend is a trusted boundary — the client never
+touches secrets, source code, or raw data directly. But the backend needs somewhere to
+actually **keep** that data. That's what a database is for.
+
+## Why not just store data in a variable? [#why-not-just-store-data-in-a-variable]
+
+You could imagine a backend that keeps everything in a plain Python list, like the `users`
+list from your Final Practice exercise back in the Python Notes. That works while the program
+is running — but it has a fatal flaw: &#x2A;*the moment the server restarts, everything is gone.**
+A crash, a deploy, a simple reboot — all of it wipes the list clean.
+
+A real application needs data to:
+
+* **Survive** restarts and crashes
+* Be **searched and filtered** quickly, even with millions of records
+* Be **shared safely** across many requests happening at the same time
+
+That's a job for a dedicated piece of software — a **database**.
+
+## What a database actually is [#what-a-database-actually-is]
+
+A database is a separate program (often running as its own server) whose entire purpose is
+storing data reliably and retrieving it fast. Think of it as a very well-organized set of
+spreadsheets:
+
+* A **table** is one spreadsheet — for example, a `users` table, or a `videos` table
+* A **row** is one record in that spreadsheet — one specific user, one specific video
+* A **column** defines one piece of information every row has — `id`, `name`, `email`
+
+```text
+users table
+┌────┬─────────┬───────────────────┐
+│ id │ name    │ email             │
+├────┼─────────┼───────────────────┤
+│ 1  │ John    │ john@example.com  │
+│ 2  │ David   │ david@example.com │
+└────┴─────────┴───────────────────┘
+```
+
+This should look familiar — it's the same shape as the list-of-dicts you already worked with
+in Python Notes' Phase 2 and Final Practice. A database table is essentially that same idea,
+made permanent and searchable at scale.
+
+## Only the backend talks to the database [#only-the-backend-talks-to-the-database]
+
+<Mermaid
+  chart="
+graph LR
+A[Client] -- request to a URL --> B[Backend]
+B -- reads / writes data --> C[(Database)]
+B -- only the resulting data --> A
+"
+/>
+
+The client never connects to the database directly — it never even knows the database
+exists. It only ever talks to the backend, and the backend decides what to read, what to
+write, and what to send back. This is the same trusted-boundary idea from the last lesson,
+just with a concrete example of what's actually being hidden.
+
+## The kind of database you'll use in this course [#the-kind-of-database-youll-use-in-this-course]
+
+There are different families of databases, but the most common kind — and the one this course
+uses with FastAPI — is a **relational database** (like PostgreSQL or MySQL): data organized
+into clearly defined tables with columns, similar to the `users` table above. You'll get
+hands-on with this properly in a later lesson — for now, just hold onto the mental picture:
+&#x2A;*tables, rows, and columns, living inside a server only the backend can reach.**
+
+<Callout title="For you, coming from Express/Nest">
+  Exactly the same relationship as `pg`, Prisma, or TypeORM talking to a Postgres/MySQL
+  database from an Express/Nest server — the client still only ever calls your API, never the
+  database itself. FastAPI will use its own tools for this (you'll meet them soon), but the
+  architecture is identical to what you already do.
+</Callout>
+
+
+# What is a Website? (/tanglish/docs/fastapi/web-fundamentals/what-is-a-website)
+
+
+
+In the last lesson you saw that a **server** answers requests from a **client**. A website is
+simply what most servers send back as their answer.
+
+## The three building blocks [#the-three-building-blocks]
+
+Every website, no matter how complex it looks, is built from three things:
+
+* **HTML** — the structure and content (the text, images, buttons — what's on the page)
+* **CSS** — the styling (colors, spacing, fonts — how it looks)
+* **JavaScript** — the behavior (what happens when you click, type, or scroll)
+
+The server's job is to send these files to whichever browser asks for them. The browser's job
+is to read them and turn them into the page you actually see.
+
+## What happens when you visit a page [#what-happens-when-you-visit-a-page]
+
+Opening a single webpage is rarely just *one* request — it's usually several, one after
+another:
+
+<Mermaid
+  chart="
+graph TD
+A[Browser requests index.html] --> B[Server sends the HTML file]
+B --> C[Browser reads the HTML]
+C --> D[Browser sees a link to style.css and requests it]
+C --> E[Browser sees a link to script.js and requests it]
+D --> F[Page is styled and interactive]
+E --> F
+"
+/>
+
+1. The browser asks for the page itself (`index.html`).
+2. While reading that HTML, the browser notices it references a stylesheet and a script file.
+3. It sends **separate requests** for those too.
+4. Once everything has arrived, the browser combines them into the page you see on screen.
+
+This matters later: every one of those arrows in the diagram is a full round trip across the
+internet — a request, then a response. Keeping that number small (and not repeating it
+unnecessarily) is a big part of why the web has evolved the way it has, which is exactly
+what the next lesson is about.
+
+
+# What is the Internet? (/tanglish/docs/fastapi/web-fundamentals/what-is-the-internet)
+
+
+
+Before writing a single line of backend code, you need a clear picture of what you're
+actually building on top of. So let's start at the very bottom: &#x2A;*what is the internet?**
+
+## A simple definition [#a-simple-definition]
+
+The internet is a huge network of computers all over the world, connected together so they
+can send information to each other.
+
+That's really it. Your phone, your laptop, and the servers that run apps like Instagram or
+Netflix are all just computers on this same giant network — some asking for information,
+others answering.
+
+## Every computer has an address [#every-computer-has-an-address]
+
+For one computer to send data to another, it needs to know where to send it. Every device on
+the internet has an **IP address** — a unique set of numbers that identifies it, the same way
+a house needs a postal address before anyone can deliver mail to it.
+
+```text
+192.168.1.1
+```
+
+You'll rarely type an IP address yourself — that's what domain names like `google.com` are
+for, they're just a human-friendly label that gets translated into an IP address behind the
+scenes. But the underlying idea is the same: &#x2A;*every computer on the internet can be found at
+an address.**
+
+## Two roles: asking and answering [#two-roles-asking-and-answering]
+
+Almost everything that happens on the internet comes down to two roles:
+
+* **Client** — the one asking for something (a browser, a mobile app)
+* **Server** — the one answering (a computer that's always on, waiting for questions)
+
+<Mermaid
+  chart="
+graph LR
+A[Client<br/>your browser or app] -- 1. Request --> B((The Internet))
+B -- forwards it to --> C[Server<br/>a computer that is always on]
+C -- 2. Response --> B
+B -- delivers it back --> A
+"
+/>
+
+For example, when you open a browser and go to a website:
+
+1. Your browser (**client**) sends a **request** out onto the internet: "Please give me this
+   webpage."
+2. The request travels across the network to the right computer, based on its address.
+3. That computer (**server**) sends a **response** back: the actual webpage content.
+4. Your browser receives it and displays it on your screen.
+
+This request → response pattern is the single most important idea in this entire course.
+Everything you'll build runs on top of it.
+
+## Why this matters for you [#why-this-matters-for-you]
+
+**Backend development means building the "server" side of this picture** — the program that
+sits there, always on, waiting for requests, and deciding what to send back.
+
+Everything you've learned in Python so far — functions, dictionaries, classes — is about to
+become the logic that runs *inside* that server, answering the requests your users' browsers
+and apps send in.
+
+
+# What is the Backend, and Why Do We Need One? (/tanglish/docs/fastapi/web-fundamentals/why-we-need-a-backend)
+
+
+
+You already know the backend is the "server" side of the client/server picture. This lesson
+is about *why* it needs to exist at all — why can't a website just be HTML, CSS, and
+JavaScript, with everything happening in the browser?
+
+## The one rule that explains everything [#the-one-rule-that-explains-everything]
+
+**Anything you send to the browser, the user can see and change.**
+
+Open any website, right-click, "View Source" or open DevTools — every line of HTML, CSS, and
+JavaScript is right there, fully readable. Nothing that reaches the browser stays private.
+Not "hard to find" — genuinely, completely visible, and editable, by anyone who opens it.
+
+The backend exists because some things must **never** be visible or editable by the user:
+
+* The actual logic that decides prices, discounts, permissions, or scores
+* Passwords, and how they're checked
+* Secret keys for payment providers, email services, or other paid APIs
+* The database itself — where everyone's data actually lives
+
+## What the client is allowed to see [#what-the-client-is-allowed-to-see]
+
+A user only ever sees two things:
+
+1. The **URL** they called (e.g. `POST /orders`)
+2. Whatever **data** came back in the response
+
+They never see the code that ran to produce that response. The backend's internal logic —
+how it validated the request, which database it checked, what business rules it applied — is
+completely invisible on the other side of that URL.
+
+<Mermaid
+  chart="
+graph LR
+subgraph Client [Client - fully visible to the user]
+A[HTML / CSS / JS you sent]
+B[Whatever data arrives back]
+end
+subgraph Backend [Backend - fully hidden from the user]
+C[Your source code]
+D[Database]
+E[Secret keys]
+F[Business rules: pricing, permissions, validation]
+end
+A -- request to a URL --> C
+C --> D
+C --> E
+C --> F
+C -- only the resulting data --> B
+"
+/>
+
+This is the whole point of a backend: it's a boundary. Requests go in, responses come out,
+and everything that happens in between is the developer's business, not the user's.
+
+## What if there were no backend at all? [#what-if-there-were-no-backend-at-all]
+
+Imagine trying to build an online store with *only* HTML, CSS, and JavaScript running in the
+browser — no server, no database, nothing hidden.
+
+**Prices and discounts couldn't be trusted.** If the "final price" is calculated by
+JavaScript running in the user's own browser, the user can open DevTools and change it before
+checkout. There's no second, trusted opinion checking the real price — the browser *is* the
+only opinion, and the user fully controls it.
+
+**Logins couldn't be secure.** If checking a password is a line of JavaScript like
+`if (password === "admin123")`, that string is sitting right there in the page's source code
+for anyone to read. Worse, a user could just skip the check entirely by editing the code
+running in their own browser.
+
+**Data couldn't be shared or kept safe.** Without a database, data can only live in the
+browser itself (e.g. `localStorage`) — meaning it exists on *that one device, in that one
+browser*, invisible to everyone else. Two users could never see each other's posts. You
+couldn't check your own account from your phone. Clear your browser data, and everything is
+gone forever.
+
+**Secrets couldn't stay secret.** Calling a paid third-party service (email, SMS, payments)
+requires a secret API key. If that key lives in browser JavaScript, it ships to every visitor
+— anyone can extract it from the page and use it as their own, at your expense.
+
+None of this is a small inconvenience — it means **nothing on the site could actually be
+trusted**. A backend is what turns "a page that runs some code" into "a system whose rules
+actually hold."
+
+## The takeaway [#the-takeaway]
+
+The backend is the one place in your entire application that only *you*, the developer,
+control. The user can call its URLs and see its responses — but never its code, its
+database, or its secrets. Everything you'll build with FastAPI from here on lives inside that
+trusted boundary.
+
+<Callout title="For you, coming from Express/Nest">
+  This is precisely why an Express/Nest server exists in your past projects too — it's the same
+  "trusted boundary" idea, whether the request handler is written in a Express route, a Nest
+  controller method, or — starting now — a FastAPI path operation function. The concept doesn't
+  change; only the syntax will.
+</Callout>
+
+
 # Create Todo — Your First Endpoint (/tanglish/docs/fastapi/todo-api/create-todo-endpoint)
 
 
@@ -8647,510 +9154,3 @@ def update_todo(todo_id:int, updated: TodoCreate, db:Session = Depends(get_db)):
     db.refresh(todo)
     return todo
 ```
-
-
-# Putting It Together — How Does YouTube Work? (/tanglish/docs/fastapi/web-fundamentals/how-youtube-works)
-
-
-
-You now know the pieces: client, backend, database. This lesson puts them together through a
-real example everyone already understands — **YouTube** — and along the way, uncovers one
-more piece you haven't met yet.
-
-## Two very different kinds of data [#two-very-different-kinds-of-data]
-
-Think about everything YouTube needs to keep track of for a single video:
-
-* Its **title**, **description**, **upload date**, **view count**, **like count**
-* Its **comments**, and who posted each one
-* The **actual video file** itself — and its thumbnail image
-
-The first two are exactly what you just learned: rows in database tables. A `videos` table
-with a `title` column and a `view_count` column fits perfectly.
-
-But that video file? A single video can be hundreds of megabytes, even gigabytes. That raises
-a real question:
-
-**Can't we just save the video file in the database too, in some column?**
-
-## Why databases aren't built for this [#why-databases-arent-built-for-this]
-
-Technically, some databases can store large binary blobs — but doing this at YouTube's scale
-would be a bad idea:
-
-* Databases are built to be searched, filtered, and sorted quickly across *many small rows* —
-  not to hold enormous files that nobody "searches" the *contents* of
-* A database that also held every raw video file would become massive, making backups,
-  replication, and queries all dramatically slower
-* Databases aren't designed to **stream** a large file out to millions of viewers at once —
-  that's a completely different kind of workload
-
-So real applications split the two apart:
-
-<Mermaid
-  chart="
-graph TD
-A[Everything about a video] --> B[Structured data:<br/>title, description,<br/>views, comments]
-A --> C[The actual files:<br/>video, thumbnail]
-B --> D[(Database)]
-C --> E[Storage Server]
-"
-/>
-
-## Meet the storage server [#meet-the-storage-server]
-
-A **storage server** (often called *object storage* — think AWS S3 or Google Cloud Storage)
-is a service whose only job is storing and serving large files efficiently. The database
-never holds the video itself — it only holds a **reference** to where that file lives on the
-storage server (a URL or file path).
-
-Large platforms also place a **CDN** (Content Delivery Network) in front of their storage —
-copies of popular videos get cached on servers physically close to viewers all over the
-world, so someone in India isn't fetching every byte from a server on the other side of the
-planet. You don't need to build one of these yourself; it's a service you connect to, the
-same way you'd connect to a database.
-
-## The full picture [#the-full-picture]
-
-<Mermaid
-  chart="
-graph LR
-A[Client<br/>browser or app] -- requests --> B[Backend]
-B -- structured data --> C[(Database)]
-B -- file references --> D[Storage Server + CDN]
-D -. video/image bytes .-> A
-"
-/>
-
-## Walking through: uploading a video [#walking-through-uploading-a-video]
-
-1. You select a video file and hit upload in the client.
-2. The client sends the file to the **backend**.
-3. The backend sends the actual video file to the **storage server** to be saved.
-4. The storage server gives back a reference — where that file now lives.
-5. The backend saves the **metadata** (title, description, your user id, and that file
-   reference) as a new row in the **database**.
-
-## Walking through: watching a video [#walking-through-watching-a-video]
-
-1. You open a video page in the client.
-2. The client asks the **backend** for that video's info.
-3. The backend reads the row from the **database** — title, description, view count, and the
-   stored file reference.
-4. The backend sends that data back to the client, including where the actual video file
-   lives.
-5. The client's video player fetches the video bytes **directly from the storage server /
-   CDN** — not routed back through the backend — so playback is fast and doesn't load down
-   your API server.
-
-## Why this matters going forward [#why-this-matters-going-forward]
-
-This same split shows up in almost every real app you'll build: a database for structured,
-searchable data, and a storage service for the files themselves (profile pictures, PDFs,
-audio, video). In this course, you'll build the backend and database side yourself with
-FastAPI; storage servers and CDNs are usually a cloud service you connect to, not something
-you build from scratch.
-
-With client, backend, database, and storage all in place, you now have the complete mental
-map of how a real application is built — everything from here on is about learning the tools
-to build the backend piece of it, properly.
-
-<Callout title="For you, coming from Express/Nest">
-  Same architecture you already know — an Express/Nest API talking to Postgres/MongoDB for
-  structured data, and to S3 (or similar) for files, usually via a pre-signed upload URL or a
-  multipart upload endpoint. FastAPI will follow the identical pattern; you're not learning a
-  new architecture here, just new syntax for a shape you've already built before.
-</Callout>
-
-
-# Web 1.0, Web 2.0 & Why React (/tanglish/docs/fastapi/web-fundamentals/web-evolution-and-why-react)
-
-
-
-Websites haven't always worked the way they do today. To understand why tools like React
-exist, you need to see the problem they were built to solve.
-
-## Web 1.0 — read-only pages [#web-10--read-only-pages]
-
-The earliest websites (roughly the 1990s) were **static and read-only** — closer to a digital
-brochure than an app. A server had a folder of pre-written HTML files, and every visitor got
-exactly the same page. There was no login, no comments, no personalization. You looked, you
-didn't interact.
-
-## Web 2.0 — the interactive web [#web-20--the-interactive-web]
-
-Starting in the 2000s, the web became **interactive and user-driven**: logins, comments,
-likes, posting your own content — think early Facebook, YouTube, blogs with comment sections.
-The server now generated a *different* page for every user, built from data stored in a
-database.
-
-This is a huge leap forward — but under the hood, most Web 2.0 sites still worked the exact
-same way as Web 1.0 for one crucial thing: &#x2A;*every click reloaded the entire page.**
-
-## The full page reload problem [#the-full-page-reload-problem]
-
-Click a link on a traditional website (even a modern-looking one built with plain
-HTML/CSS/JS), and this happens:
-
-<Mermaid
-  chart="
-graph TD
-A[You click a link or submit a form] --> B[Browser throws away the entire current page]
-B --> C[Browser sends a request for a brand new page]
-C --> D[Server builds and sends a full HTML page]
-D --> E[Browser reloads everything from scratch: HTML, CSS, JS, images]
-E --> F[White flash, then the new page appears]
-"
-/>
-
-Every single action — clicking a link, submitting a form, even liking a post — could mean
-throwing away the whole page and rebuilding it from nothing. That means:
-
-* A visible **white flash** while the old page disappears and the new one loads
-* **Everything resets** — scroll position, an open dropdown, a half-filled form, a playing
-  video — all gone, because the browser is starting over completely
-* Re-downloading and re-running the *same* CSS and JS files you already had, every time
-
-Imagine a chat app where sending one message reloaded the entire page, wiped your scroll
-position, and re-downloaded the whole app — just to show one new message. That's not
-acceptable for the kind of apps people expect today.
-
-## Why React [#why-react]
-
-React (and similar tools) exist to fix exactly this. The core idea: **load the page once,
-then only update the small part that actually changed** — never throw away and rebuild the
-whole thing again.
-
-<Mermaid
-  chart="
-graph TD
-A[You click a button] --> B[JavaScript intercepts the click - no reload]
-B --> C[JavaScript asks the server for just the data it needs]
-C --> D[Server sends back data - not a full HTML page]
-D --> E[React updates only the changed part of the page]
-"
-/>
-
-Notice the key difference from the diagram above: the server isn't sending a full HTML page
-anymore — it's sending back **just the data**. That's the piece that matters most for this
-course.
-
-## Why this matters for a backend developer [#why-this-matters-for-a-backend-developer]
-
-This shift changes what a backend server's job even is:
-
-|                             | Web 1.0 / 2.0 style  | Modern React-style            |
-| --------------------------- | -------------------- | ----------------------------- |
-| Server sends back           | A complete HTML page | Just data (usually JSON)      |
-| Who builds the page         | The server           | The browser (React), once     |
-| What happens on each action | Full page reload     | Only the changed part updates |
-
-**This is exactly why we're learning FastAPI**: FastAPI's job in this stack isn't to generate
-HTML pages — it's to answer requests with data. A separate React app (running in the
-browser) is responsible for turning that data into an actual page, and updating it without
-ever reloading. Backend and frontend become two separate programs that talk to each other
-purely through requests and responses of data.
-
-<Callout title="For you, coming from Express/Nest">
-  You've almost certainly already done this: an Express route that calls `res.json({ ... })`
-  instead of rendering a template with something like EJS or Pug is *already* the "modern"
-  approach — server as a pure data API, frontend as a separate React app. FastAPI works on that
-  exact same principle, so this mental model isn't new to you at all — only the Python syntax
-  around it will be.
-</Callout>
-
-
-# What is a Database? (/tanglish/docs/fastapi/web-fundamentals/what-is-a-database)
-
-
-
-The last lesson established that the backend is a trusted boundary — the client never
-touches secrets, source code, or raw data directly. But the backend needs somewhere to
-actually **keep** that data. That's what a database is for.
-
-## Why not just store data in a variable? [#why-not-just-store-data-in-a-variable]
-
-You could imagine a backend that keeps everything in a plain Python list, like the `users`
-list from your Final Practice exercise back in the Python Notes. That works while the program
-is running — but it has a fatal flaw: &#x2A;*the moment the server restarts, everything is gone.**
-A crash, a deploy, a simple reboot — all of it wipes the list clean.
-
-A real application needs data to:
-
-* **Survive** restarts and crashes
-* Be **searched and filtered** quickly, even with millions of records
-* Be **shared safely** across many requests happening at the same time
-
-That's a job for a dedicated piece of software — a **database**.
-
-## What a database actually is [#what-a-database-actually-is]
-
-A database is a separate program (often running as its own server) whose entire purpose is
-storing data reliably and retrieving it fast. Think of it as a very well-organized set of
-spreadsheets:
-
-* A **table** is one spreadsheet — for example, a `users` table, or a `videos` table
-* A **row** is one record in that spreadsheet — one specific user, one specific video
-* A **column** defines one piece of information every row has — `id`, `name`, `email`
-
-```text
-users table
-┌────┬─────────┬───────────────────┐
-│ id │ name    │ email             │
-├────┼─────────┼───────────────────┤
-│ 1  │ John    │ john@example.com  │
-│ 2  │ David   │ david@example.com │
-└────┴─────────┴───────────────────┘
-```
-
-This should look familiar — it's the same shape as the list-of-dicts you already worked with
-in Python Notes' Phase 2 and Final Practice. A database table is essentially that same idea,
-made permanent and searchable at scale.
-
-## Only the backend talks to the database [#only-the-backend-talks-to-the-database]
-
-<Mermaid
-  chart="
-graph LR
-A[Client] -- request to a URL --> B[Backend]
-B -- reads / writes data --> C[(Database)]
-B -- only the resulting data --> A
-"
-/>
-
-The client never connects to the database directly — it never even knows the database
-exists. It only ever talks to the backend, and the backend decides what to read, what to
-write, and what to send back. This is the same trusted-boundary idea from the last lesson,
-just with a concrete example of what's actually being hidden.
-
-## The kind of database you'll use in this course [#the-kind-of-database-youll-use-in-this-course]
-
-There are different families of databases, but the most common kind — and the one this course
-uses with FastAPI — is a **relational database** (like PostgreSQL or MySQL): data organized
-into clearly defined tables with columns, similar to the `users` table above. You'll get
-hands-on with this properly in a later lesson — for now, just hold onto the mental picture:
-&#x2A;*tables, rows, and columns, living inside a server only the backend can reach.**
-
-<Callout title="For you, coming from Express/Nest">
-  Exactly the same relationship as `pg`, Prisma, or TypeORM talking to a Postgres/MySQL
-  database from an Express/Nest server — the client still only ever calls your API, never the
-  database itself. FastAPI will use its own tools for this (you'll meet them soon), but the
-  architecture is identical to what you already do.
-</Callout>
-
-
-# What is a Website? (/tanglish/docs/fastapi/web-fundamentals/what-is-a-website)
-
-
-
-In the last lesson you saw that a **server** answers requests from a **client**. A website is
-simply what most servers send back as their answer.
-
-## The three building blocks [#the-three-building-blocks]
-
-Every website, no matter how complex it looks, is built from three things:
-
-* **HTML** — the structure and content (the text, images, buttons — what's on the page)
-* **CSS** — the styling (colors, spacing, fonts — how it looks)
-* **JavaScript** — the behavior (what happens when you click, type, or scroll)
-
-The server's job is to send these files to whichever browser asks for them. The browser's job
-is to read them and turn them into the page you actually see.
-
-## What happens when you visit a page [#what-happens-when-you-visit-a-page]
-
-Opening a single webpage is rarely just *one* request — it's usually several, one after
-another:
-
-<Mermaid
-  chart="
-graph TD
-A[Browser requests index.html] --> B[Server sends the HTML file]
-B --> C[Browser reads the HTML]
-C --> D[Browser sees a link to style.css and requests it]
-C --> E[Browser sees a link to script.js and requests it]
-D --> F[Page is styled and interactive]
-E --> F
-"
-/>
-
-1. The browser asks for the page itself (`index.html`).
-2. While reading that HTML, the browser notices it references a stylesheet and a script file.
-3. It sends **separate requests** for those too.
-4. Once everything has arrived, the browser combines them into the page you see on screen.
-
-This matters later: every one of those arrows in the diagram is a full round trip across the
-internet — a request, then a response. Keeping that number small (and not repeating it
-unnecessarily) is a big part of why the web has evolved the way it has, which is exactly
-what the next lesson is about.
-
-
-# What is the Internet? (/tanglish/docs/fastapi/web-fundamentals/what-is-the-internet)
-
-
-
-Before writing a single line of backend code, you need a clear picture of what you're
-actually building on top of. So let's start at the very bottom: &#x2A;*what is the internet?**
-
-## A simple definition [#a-simple-definition]
-
-The internet is a huge network of computers all over the world, connected together so they
-can send information to each other.
-
-That's really it. Your phone, your laptop, and the servers that run apps like Instagram or
-Netflix are all just computers on this same giant network — some asking for information,
-others answering.
-
-## Every computer has an address [#every-computer-has-an-address]
-
-For one computer to send data to another, it needs to know where to send it. Every device on
-the internet has an **IP address** — a unique set of numbers that identifies it, the same way
-a house needs a postal address before anyone can deliver mail to it.
-
-```text
-192.168.1.1
-```
-
-You'll rarely type an IP address yourself — that's what domain names like `google.com` are
-for, they're just a human-friendly label that gets translated into an IP address behind the
-scenes. But the underlying idea is the same: &#x2A;*every computer on the internet can be found at
-an address.**
-
-## Two roles: asking and answering [#two-roles-asking-and-answering]
-
-Almost everything that happens on the internet comes down to two roles:
-
-* **Client** — the one asking for something (a browser, a mobile app)
-* **Server** — the one answering (a computer that's always on, waiting for questions)
-
-<Mermaid
-  chart="
-graph LR
-A[Client<br/>your browser or app] -- 1. Request --> B((The Internet))
-B -- forwards it to --> C[Server<br/>a computer that is always on]
-C -- 2. Response --> B
-B -- delivers it back --> A
-"
-/>
-
-For example, when you open a browser and go to a website:
-
-1. Your browser (**client**) sends a **request** out onto the internet: "Please give me this
-   webpage."
-2. The request travels across the network to the right computer, based on its address.
-3. That computer (**server**) sends a **response** back: the actual webpage content.
-4. Your browser receives it and displays it on your screen.
-
-This request → response pattern is the single most important idea in this entire course.
-Everything you'll build runs on top of it.
-
-## Why this matters for you [#why-this-matters-for-you]
-
-**Backend development means building the "server" side of this picture** — the program that
-sits there, always on, waiting for requests, and deciding what to send back.
-
-Everything you've learned in Python so far — functions, dictionaries, classes — is about to
-become the logic that runs *inside* that server, answering the requests your users' browsers
-and apps send in.
-
-
-# What is the Backend, and Why Do We Need One? (/tanglish/docs/fastapi/web-fundamentals/why-we-need-a-backend)
-
-
-
-You already know the backend is the "server" side of the client/server picture. This lesson
-is about *why* it needs to exist at all — why can't a website just be HTML, CSS, and
-JavaScript, with everything happening in the browser?
-
-## The one rule that explains everything [#the-one-rule-that-explains-everything]
-
-**Anything you send to the browser, the user can see and change.**
-
-Open any website, right-click, "View Source" or open DevTools — every line of HTML, CSS, and
-JavaScript is right there, fully readable. Nothing that reaches the browser stays private.
-Not "hard to find" — genuinely, completely visible, and editable, by anyone who opens it.
-
-The backend exists because some things must **never** be visible or editable by the user:
-
-* The actual logic that decides prices, discounts, permissions, or scores
-* Passwords, and how they're checked
-* Secret keys for payment providers, email services, or other paid APIs
-* The database itself — where everyone's data actually lives
-
-## What the client is allowed to see [#what-the-client-is-allowed-to-see]
-
-A user only ever sees two things:
-
-1. The **URL** they called (e.g. `POST /orders`)
-2. Whatever **data** came back in the response
-
-They never see the code that ran to produce that response. The backend's internal logic —
-how it validated the request, which database it checked, what business rules it applied — is
-completely invisible on the other side of that URL.
-
-<Mermaid
-  chart="
-graph LR
-subgraph Client [Client - fully visible to the user]
-A[HTML / CSS / JS you sent]
-B[Whatever data arrives back]
-end
-subgraph Backend [Backend - fully hidden from the user]
-C[Your source code]
-D[Database]
-E[Secret keys]
-F[Business rules: pricing, permissions, validation]
-end
-A -- request to a URL --> C
-C --> D
-C --> E
-C --> F
-C -- only the resulting data --> B
-"
-/>
-
-This is the whole point of a backend: it's a boundary. Requests go in, responses come out,
-and everything that happens in between is the developer's business, not the user's.
-
-## What if there were no backend at all? [#what-if-there-were-no-backend-at-all]
-
-Imagine trying to build an online store with *only* HTML, CSS, and JavaScript running in the
-browser — no server, no database, nothing hidden.
-
-**Prices and discounts couldn't be trusted.** If the "final price" is calculated by
-JavaScript running in the user's own browser, the user can open DevTools and change it before
-checkout. There's no second, trusted opinion checking the real price — the browser *is* the
-only opinion, and the user fully controls it.
-
-**Logins couldn't be secure.** If checking a password is a line of JavaScript like
-`if (password === "admin123")`, that string is sitting right there in the page's source code
-for anyone to read. Worse, a user could just skip the check entirely by editing the code
-running in their own browser.
-
-**Data couldn't be shared or kept safe.** Without a database, data can only live in the
-browser itself (e.g. `localStorage`) — meaning it exists on *that one device, in that one
-browser*, invisible to everyone else. Two users could never see each other's posts. You
-couldn't check your own account from your phone. Clear your browser data, and everything is
-gone forever.
-
-**Secrets couldn't stay secret.** Calling a paid third-party service (email, SMS, payments)
-requires a secret API key. If that key lives in browser JavaScript, it ships to every visitor
-— anyone can extract it from the page and use it as their own, at your expense.
-
-None of this is a small inconvenience — it means **nothing on the site could actually be
-trusted**. A backend is what turns "a page that runs some code" into "a system whose rules
-actually hold."
-
-## The takeaway [#the-takeaway]
-
-The backend is the one place in your entire application that only *you*, the developer,
-control. The user can call its URLs and see its responses — but never its code, its
-database, or its secrets. Everything you'll build with FastAPI from here on lives inside that
-trusted boundary.
-
-<Callout title="For you, coming from Express/Nest">
-  This is precisely why an Express/Nest server exists in your past projects too — it's the same
-  "trusted boundary" idea, whether the request handler is written in a Express route, a Nest
-  controller method, or — starting now — a FastAPI path operation function. The concept doesn't
-  change; only the syntax will.
-</Callout>

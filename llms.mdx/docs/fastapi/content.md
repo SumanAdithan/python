@@ -11,11 +11,11 @@ Topics are added here as they're covered, in teaching order.
 ## Topics [#topics]
 
 <Cards>
-  <Card title="Web Fundamentals" href="/docs/fastapi/web-fundamentals/what-is-the-internet" />
+  <Card title="Web Fundamentals" href="/en/docs/fastapi/web-fundamentals/what-is-the-internet" />
 
-  <Card title="Getting Started" href="/docs/fastapi/getting-started/what-is-fastapi" />
+  <Card title="Getting Started" href="/en/docs/fastapi/getting-started/what-is-fastapi" />
 
-  <Card title="Building the Todo API" href="/docs/fastapi/todo-api/creating-the-todo-model" />
+  <Card title="Building the Todo API" href="/en/docs/fastapi/todo-api/creating-the-todo-model" />
 </Cards>
 
 *More topics will appear here as they're added.*
