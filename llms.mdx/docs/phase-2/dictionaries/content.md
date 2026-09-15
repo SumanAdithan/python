@@ -1,0 +1,63 @@
+# dict (/docs/phase-2/dictionaries)
+
+
+
+A `dict` (dictionary) stores **key-value pairs**. It's Python's equivalent of a JS object, and
+you'll use it everywhere — request bodies, JSON responses, database rows, config values.
+
+JavaScript:
+
+```js
+const user = {
+  id: 1,
+  name: 'John',
+  email: 'john@example.com',
+};
+
+console.log(user.name);
+
+user.age = 25;
+```
+
+Python:
+
+```python
+user = {
+    "id": 1,
+    "name": "John",
+    "email": "john@example.com"
+}
+
+print(user["name"])
+
+user["age"] = 25
+```
+
+## Key differences from a JS object [#key-differences-from-a-js-object]
+
+**Python only uses bracket access — there's no dot notation.**
+
+```python
+user["name"]   # ✅ works
+user.name      # ❌ AttributeError
+```
+
+JS lets you use `user.name` or `user["name"]` interchangeably. Python dicts only support the
+bracket form.
+
+**Adding a new key** works the same way in both languages — just assign to a key that doesn't
+exist yet:
+
+```python
+user["age"] = 25
+```
+
+**Accessing a missing key** behaves differently:
+
+```python
+user["phone"]
+# ❌ KeyError: 'phone'
+```
+
+In JS, `user.phone` would just quietly give you `undefined`. Python raises an error instead —
+which is exactly why the `.get()` method (covered on the next page) exists.

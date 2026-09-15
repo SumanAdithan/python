@@ -1,0 +1,67 @@
+# What is the Internet? (/docs/fastapi/web-fundamentals/what-is-the-internet)
+
+
+
+Before writing a single line of backend code, you need a clear picture of what you're
+actually building on top of. So let's start at the very bottom: &#x2A;*what is the internet?**
+
+## A simple definition [#a-simple-definition]
+
+The internet is a huge network of computers all over the world, connected together so they
+can send information to each other.
+
+That's really it. Your phone, your laptop, and the servers that run apps like Instagram or
+Netflix are all just computers on this same giant network — some asking for information,
+others answering.
+
+## Every computer has an address [#every-computer-has-an-address]
+
+For one computer to send data to another, it needs to know where to send it. Every device on
+the internet has an **IP address** — a unique set of numbers that identifies it, the same way
+a house needs a postal address before anyone can deliver mail to it.
+
+```text
+192.168.1.1
+```
+
+You'll rarely type an IP address yourself — that's what domain names like `google.com` are
+for, they're just a human-friendly label that gets translated into an IP address behind the
+scenes. But the underlying idea is the same: &#x2A;*every computer on the internet can be found at
+an address.**
+
+## Two roles: asking and answering [#two-roles-asking-and-answering]
+
+Almost everything that happens on the internet comes down to two roles:
+
+* **Client** — the one asking for something (a browser, a mobile app)
+* **Server** — the one answering (a computer that's always on, waiting for questions)
+
+<Mermaid
+  chart="
+graph LR
+A[Client<br/>your browser or app] -- 1. Request --> B((The Internet))
+B -- forwards it to --> C[Server<br/>a computer that is always on]
+C -- 2. Response --> B
+B -- delivers it back --> A
+"
+/>
+
+For example, when you open a browser and go to a website:
+
+1. Your browser (**client**) sends a **request** out onto the internet: "Please give me this
+   webpage."
+2. The request travels across the network to the right computer, based on its address.
+3. That computer (**server**) sends a **response** back: the actual webpage content.
+4. Your browser receives it and displays it on your screen.
+
+This request → response pattern is the single most important idea in this entire course.
+Everything you'll build runs on top of it.
+
+## Why this matters for you [#why-this-matters-for-you]
+
+**Backend development means building the "server" side of this picture** — the program that
+sits there, always on, waiting for requests, and deciding what to send back.
+
+Everything you've learned in Python so far — functions, dictionaries, classes — is about to
+become the logic that runs *inside* that server, answering the requests your users' browsers
+and apps send in.

@@ -1,0 +1,103 @@
+# Project Setup (/docs/fastapi/getting-started/project-setup)
+
+
+
+Before writing any FastAPI code, you need a properly isolated project. This lesson sets that
+up.
+
+## Why a virtual environment? [#why-a-virtual-environment]
+
+When you install a Python package, it normally installs **globally** on your machine — not
+just for one project. If Project A needs version 1 of a package and Project B needs version
+2, installing globally means they'd conflict with each other.
+
+A **virtual environment** fixes this: it's a self-contained folder holding its own copy of
+Python and its own packages, completely separate from your system-wide Python and from every
+other project.
+
+<Callout title="For you, coming from Express/Nest">
+  In Node, you get this isolation for free — every project has its own `node_modules` folder
+  automatically. Python has no equivalent by default, which is exactly why this extra step
+  exists: a virtual environment is what makes a Python project behave like a Node project's
+  `node_modules`, isolated per project.
+</Callout>
+
+## Creating the virtual environment [#creating-the-virtual-environment]
+
+Inside your project folder, run:
+
+```bash
+python -m venv venv
+```
+
+This creates a new folder named `venv` containing an isolated Python environment. (The name
+`venv` is just a convention — the command is `venv`, the folder it creates can technically be
+named anything, but `venv` is what you'll see almost everywhere.)
+
+## Activating it [#activating-it]
+
+Creating the virtual environment isn't enough — you need to **activate** it in your terminal
+so that `pip` (Python's package installer) and `python` both point at this isolated
+environment instead of your system-wide one.
+
+On Windows:
+
+```bash
+.\venv\Scripts\activate
+```
+
+On macOS/Linux:
+
+```bash
+source venv/bin/activate
+```
+
+Once activated, your terminal prompt will show `(venv)` at the start of the line — that's
+your confirmation that everything you install next goes into this project's isolated
+environment, not your entire system.
+
+You'll need to activate the virtual environment again every time you open a fresh terminal to
+work on this project.
+
+## Installing the core dependencies [#installing-the-core-dependencies]
+
+With the virtual environment active, install FastAPI's core toolkit:
+
+```bash
+pip install fastapi uvicorn sqlalchemy psycopg2-binary python-dotenv mysqlclient pydantic
+```
+
+Here's what each one does:
+
+| Package           | Purpose                                                             |
+| ----------------- | ------------------------------------------------------------------- |
+| `fastapi`         | The web framework itself — routing, request handling, validation    |
+| `uvicorn`         | The server that actually runs your FastAPI app                      |
+| `sqlalchemy`      | The ORM you'll use to work with the database                        |
+| `psycopg2-binary` | A PostgreSQL driver — lets SQLAlchemy talk to Postgres              |
+| `python-dotenv`   | Loads configuration from a `.env` file                              |
+| `mysqlclient`     | A MySQL driver — lets SQLAlchemy talk to MySQL                      |
+| `pydantic`        | Validates data and defines the schemas your API accepts and returns |
+
+`pydantic` is actually installed automatically as part of `fastapi` — you don't strictly need
+to list it yourself. It's included explicitly here because you'll import from it directly and
+often (you already saw why back in "What is FastAPI?"), so it's worth having on your radar as
+its own dependency rather than a hidden detail of FastAPI.
+
+You'll notice both a PostgreSQL driver **and** a MySQL driver in that list. SQLAlchemy itself
+doesn't know how to speak to any specific database on its own — it needs a driver matching
+whichever database you actually connect to. This course's project uses **MySQL**, so
+`mysqlclient` is the one that matters going forward; `psycopg2-binary` is there in case you
+ever point the same project at Postgres instead.
+
+The one worth pausing on is &#x2A;*`uvicorn`**. FastAPI code by itself doesn't run as a server —
+it's just Python code describing routes and logic. `uvicorn` is the actual program that
+starts a server process, listens for requests, and feeds them into your FastAPI app.
+
+<Callout title="For you, coming from Express/Nest">
+  `uvicorn` plays the role that Node.js itself plays for an Express app, or that `nest start`
+  handles for you under the hood — the thing that actually opens a port and starts serving
+  requests. `sqlalchemy` maps to TypeORM/Prisma/Sequelize (an ORM), the database drivers are
+  the same idea as the `pg` or `mysql2` packages those tools need under the hood, and
+  `python-dotenv` is the exact same job as Node's `dotenv` package — even the name matches.
+</Callout>

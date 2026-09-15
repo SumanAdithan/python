@@ -1,0 +1,75 @@
+# Environment Configuration (/docs/fastapi/getting-started/environment-configuration)
+
+
+
+Back in Web Fundamentals, you learned that secrets like database credentials must never be
+visible to a user. There's a second rule that follows from that: they shouldn't be
+**hardcoded directly into your source code** either — code gets committed to git, shared with
+teammates, and pushed to hosting providers, and not everyone who sees your code should see
+your production database password.
+
+## Environment variables [#environment-variables]
+
+The fix is to keep configuration **outside** your code, as **environment variables** — values
+supplied to your program at runtime by whatever is running it, rather than written into a
+file.
+
+In local development, the standard way to manage these is a `.env` file — a plain text file
+of `KEY=VALUE` pairs, sitting in your project root, that your program reads on startup. This
+is exactly what the `python-dotenv` package you installed last lesson is for.
+
+## Creating your .env file [#creating-your-env-file]
+
+Create a file named `.env` in your project root, and add your database connection string:
+
+```text title=".env"
+DATABASE_URL=mysql://app_user:test@localhost:3306/todo
+```
+
+## Reading a connection string [#reading-a-connection-string]
+
+That `DATABASE_URL` value is called a **connection string** — a single line that packs in
+everything needed to reach a specific database. Breaking it apart:
+
+```text
+mysql://app_user:test@localhost:3306/todo
+ │        │        │     │        │      │
+ │        │        │     │        │      └─ database name
+ │        │        │     │        └──────── port (3306 is MySQL's default)
+ │        │        │     └───────────────── host (where the database server runs)
+ │        │        └─────────────────────── password
+ │        └──────────────────────────────── username
+ └───────────────────────────────────────── which database engine to use
+```
+
+So this line says: &#x2A;"connect to a MySQL server running on this machine, on port 3306, log in
+as `app_user` with password `test`, and use the database named `todo`."*
+
+## Never commit .env to git [#never-commit-env-to-git]
+
+Your `.env` file contains real credentials — it should **never** be committed to version
+control. Add it to `.gitignore` immediately:
+
+```text title=".gitignore"
+.env
+```
+
+Anyone setting up the project fresh creates their own local `.env` with their own database
+details — it's part of each developer's local setup, not part of the shared codebase.
+
+<Callout title="For you, coming from Express/Nest">
+  Identical pattern to Node: a `.env` file, a `.gitignore` entry for it, and `dotenv` loading it
+  at startup. The only thing that changes going forward is *how* you read a value in code —
+  Node's `process.env.DATABASE_URL` becomes Python's `os.getenv("DATABASE_URL")`, which you'll
+  see in the very next lesson.
+</Callout>
+
+## `.env` so far [#env-so-far]
+
+```text title=".env"
+DATABASE_URL=mysql://app_user:test@localhost:3306/todo
+```
+
+```text title=".gitignore"
+.env
+```

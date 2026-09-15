@@ -1,0 +1,43 @@
+# Phase 5 — Python-specific Features (/docs/phase-5)
+
+
+
+Estimated time: **\~1.5 hours**.
+
+These don't have a clean JS/TS equivalent, but you'll see them constantly in real Python
+code. Don't spend hours perfecting them — the goal is just to become **comfortable reading**
+them.
+
+## Goals [#goals]
+
+By the end of this phase you should be comfortable reading:
+
+* list comprehension
+* dictionary comprehension
+* `enumerate`
+* `zip`
+
+Each topic is its own page in the sidebar, taught with a JS/TS → Python comparison, followed
+by a small example.
+
+## Cheat sheet [#cheat-sheet]
+
+```text
+JavaScript / TypeScript                        Python
+────────────────────────────────────────────────────────────
+arr.map(x => x * x)                            [x * x for x in arr]
+
+arr.filter(x => x % 2 === 0)                   [x for x in arr if x % 2 == 0]
+   .map(x => x * x)                                x * x
+
+Object.fromEntries(                            {x: x * x for x in range(5)}
+  Array.from({ length: 5 },
+    (_, x) => [x, x * x])
+)
+
+arr.forEach((v, i) => { ... })                 for i, v in enumerate(arr):
+for (const [i, v] of arr.entries())
+
+manual index loop /                            for a, b in zip(arr1, arr2):
+lodash zip(arr1, arr2)
+```

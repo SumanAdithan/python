@@ -1,0 +1,100 @@
+# What is the Backend, and Why Do We Need One? (/docs/fastapi/web-fundamentals/why-we-need-a-backend)
+
+
+
+You already know the backend is the "server" side of the client/server picture. This lesson
+is about *why* it needs to exist at all — why can't a website just be HTML, CSS, and
+JavaScript, with everything happening in the browser?
+
+## The one rule that explains everything [#the-one-rule-that-explains-everything]
+
+**Anything you send to the browser, the user can see and change.**
+
+Open any website, right-click, "View Source" or open DevTools — every line of HTML, CSS, and
+JavaScript is right there, fully readable. Nothing that reaches the browser stays private.
+Not "hard to find" — genuinely, completely visible, and editable, by anyone who opens it.
+
+The backend exists because some things must **never** be visible or editable by the user:
+
+* The actual logic that decides prices, discounts, permissions, or scores
+* Passwords, and how they're checked
+* Secret keys for payment providers, email services, or other paid APIs
+* The database itself — where everyone's data actually lives
+
+## What the client is allowed to see [#what-the-client-is-allowed-to-see]
+
+A user only ever sees two things:
+
+1. The **URL** they called (e.g. `POST /orders`)
+2. Whatever **data** came back in the response
+
+They never see the code that ran to produce that response. The backend's internal logic —
+how it validated the request, which database it checked, what business rules it applied — is
+completely invisible on the other side of that URL.
+
+<Mermaid
+  chart="
+graph LR
+subgraph Client [Client - fully visible to the user]
+A[HTML / CSS / JS you sent]
+B[Whatever data arrives back]
+end
+subgraph Backend [Backend - fully hidden from the user]
+C[Your source code]
+D[Database]
+E[Secret keys]
+F[Business rules: pricing, permissions, validation]
+end
+A -- request to a URL --> C
+C --> D
+C --> E
+C --> F
+C -- only the resulting data --> B
+"
+/>
+
+This is the whole point of a backend: it's a boundary. Requests go in, responses come out,
+and everything that happens in between is the developer's business, not the user's.
+
+## What if there were no backend at all? [#what-if-there-were-no-backend-at-all]
+
+Imagine trying to build an online store with *only* HTML, CSS, and JavaScript running in the
+browser — no server, no database, nothing hidden.
+
+**Prices and discounts couldn't be trusted.** If the "final price" is calculated by
+JavaScript running in the user's own browser, the user can open DevTools and change it before
+checkout. There's no second, trusted opinion checking the real price — the browser *is* the
+only opinion, and the user fully controls it.
+
+**Logins couldn't be secure.** If checking a password is a line of JavaScript like
+`if (password === "admin123")`, that string is sitting right there in the page's source code
+for anyone to read. Worse, a user could just skip the check entirely by editing the code
+running in their own browser.
+
+**Data couldn't be shared or kept safe.** Without a database, data can only live in the
+browser itself (e.g. `localStorage`) — meaning it exists on *that one device, in that one
+browser*, invisible to everyone else. Two users could never see each other's posts. You
+couldn't check your own account from your phone. Clear your browser data, and everything is
+gone forever.
+
+**Secrets couldn't stay secret.** Calling a paid third-party service (email, SMS, payments)
+requires a secret API key. If that key lives in browser JavaScript, it ships to every visitor
+— anyone can extract it from the page and use it as their own, at your expense.
+
+None of this is a small inconvenience — it means **nothing on the site could actually be
+trusted**. A backend is what turns "a page that runs some code" into "a system whose rules
+actually hold."
+
+## The takeaway [#the-takeaway]
+
+The backend is the one place in your entire application that only *you*, the developer,
+control. The user can call its URLs and see its responses — but never its code, its
+database, or its secrets. Everything you'll build with FastAPI from here on lives inside that
+trusted boundary.
+
+<Callout title="For you, coming from Express/Nest">
+  This is precisely why an Express/Nest server exists in your past projects too — it's the same
+  "trusted boundary" idea, whether the request handler is written in a Express route, a Nest
+  controller method, or — starting now — a FastAPI path operation function. The concept doesn't
+  change; only the syntax will.
+</Callout>

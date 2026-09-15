@@ -1,0 +1,62 @@
+# Phase 1 — Python Core Foundations (/docs/phase-1)
+
+
+
+Since you already know JavaScript/TypeScript, this phase is taught by comparing the two
+languages, not like a beginner who has never programmed before.
+
+## Goals [#goals]
+
+By the end of this phase you should be comfortable with:
+
+* Python syntax
+* Variables
+* Basic data types
+* Operators
+* `if` / `elif` / `else`
+* `for` / `while`
+* `range()`
+* `break` / `continue` / `pass`
+
+Each topic is its own page in the sidebar, taught with a JS/TS → Python comparison, followed
+by a small example.
+
+## Cheat sheet [#cheat-sheet]
+
+Keep this in your mind — it's the fast summary of everything in this phase.
+
+```text
+JavaScript / TypeScript       Python
+──────────────────────────────────────
+const x = 10                  x = 10
+let x = 10                    x = 10
+
+true                          True
+false                         False
+null                          None
+
+console.log()                 print()
+
+===                           ==
+!==                           !=
+
+&&                            and
+||                            or
+!                             not
+
+if (...) {                    if ...:
+}                             indentation
+
+else if                       elif
+
+for (const x of arr)          for x in arr:
+
+for (let i=0; i<10; i++)      for i in range(10):
+
+while (...) {                 while ...:
+
+i++                           i += 1
+
+break                         break
+continue                      continue
+```
