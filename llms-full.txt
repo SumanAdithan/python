@@ -219,523 +219,6 @@ Topics are added here as they're covered, in teaching order.
 *More topics will appear here as they're added.*
 
 
-# dict (/en/docs/phase-2/dictionaries)
-
-
-
-A `dict` (dictionary) stores **key-value pairs**. It's Python's equivalent of a JS object, and
-you'll use it everywhere — request bodies, JSON responses, database rows, config values.
-
-JavaScript:
-
-```js
-const user = {
-  id: 1,
-  name: 'John',
-  email: 'john@example.com',
-};
-
-console.log(user.name);
-
-user.age = 25;
-```
-
-Python:
-
-```python
-user = {
-    "id": 1,
-    "name": "John",
-    "email": "john@example.com"
-}
-
-print(user["name"])
-
-user["age"] = 25
-```
-
-## Key differences from a JS object [#key-differences-from-a-js-object]
-
-**Python only uses bracket access — there's no dot notation.**
-
-```python
-user["name"]   # ✅ works
-user.name      # ❌ AttributeError
-```
-
-JS lets you use `user.name` or `user["name"]` interchangeably. Python dicts only support the
-bracket form.
-
-**Adding a new key** works the same way in both languages — just assign to a key that doesn't
-exist yet:
-
-```python
-user["age"] = 25
-```
-
-**Accessing a missing key** behaves differently:
-
-```python
-user["phone"]
-# ❌ KeyError: 'phone'
-```
-
-In JS, `user.phone` would just quietly give you `undefined`. Python raises an error instead —
-which is exactly why the `.get()` method (covered on the next page) exists.
-
-
-# get, keys, values & items (/en/docs/phase-2/dictionary-methods)
-
-
-
-## get — safe access [#get--safe-access]
-
-`.get()` reads a key without raising an error if it's missing.
-
-```python
-user = {"id": 1, "name": "John"}
-
-user.get("name")            # "John"
-user.get("phone")           # None
-user.get("phone", "N/A")    # "N/A" — a default value if the key is missing
-```
-
-This is basically Python's version of JS's `??` fallback:
-
-```js
-user.phone ?? 'N/A';
-```
-
-Prefer `.get()` over `user["key"]` whenever the key might not exist.
-
-## keys — just the keys [#keys--just-the-keys]
-
-```python
-user = {"id": 1, "name": "John"}
-
-print(user.keys())   # dict_keys(['id', 'name'])
-```
-
-Same as JS's `Object.keys(user)`.
-
-## values — just the values [#values--just-the-values]
-
-```python
-print(user.values())   # dict_values([1, 'John'])
-```
-
-Same as JS's `Object.values(user)`.
-
-## items — key and value together [#items--key-and-value-together]
-
-`.items()` is what you'll use most, especially in a `for` loop:
-
-```python
-for key, value in user.items():
-    print(key, value)
-```
-
-```text
-id 1
-name John
-```
-
-This is the same shape as JS's `Object.entries(user)` combined with array destructuring:
-
-```js
-for (const [key, value] of Object.entries(user)) {
-  console.log(key, value);
-}
-```
-
-
-# Phase 2 — Collections (/en/docs/phase-2)
-
-
-
-Estimated time: **\~2 hours**.
-
-This is probably the **most important** Python section for backend development. Almost every
-API you write will pass data around as lists and dicts.
-
-## Goals [#goals]
-
-By the end of this phase you should be comfortable with:
-
-* `list`
-* `tuple`
-* `set`
-* `dict` (especially this one)
-* indexing
-* slicing
-* `append`, `remove`, `pop`
-* `get`, `keys`, `values`, `items`
-* `in`
-
-Each topic is its own page in the sidebar, taught with a JS/TS → Python comparison, followed
-by a small example.
-
-## Cheat sheet [#cheat-sheet]
-
-```text
-JavaScript / TypeScript        Python
-──────────────────────────────────────────
-Array                          list
-Object                         dict
-Set                            set
-frozen array / tuple-like       tuple
-
-arr.push(x)                    list.append(x)
-arr.pop()                      list.pop()
-arr.splice(i, 1)                del list[i]
-arr.filter(v => v !== x)        list.remove(x)
-
-arr[0]                         list[0]
-arr.at(-1)                      list[-1]
-arr.slice(1, 3)                  list[1:3]
-
-Object.keys(obj)                dict.keys()
-Object.values(obj)               dict.values()
-Object.entries(obj)              dict.items()
-obj.x ?? obj["x"]                 dict.get("x")
-
-'x' in obj                       'x' in dict
-arr.includes(x)                   x in list
-```
-
-
-# append, remove & pop (/en/docs/phase-2/list-methods)
-
-
-
-## append — add to the end [#append--add-to-the-end]
-
-JavaScript:
-
-```js
-const fruits = ['apple', 'banana'];
-fruits.push('cherry');
-```
-
-Python:
-
-```python
-fruits = ["apple", "banana"]
-fruits.append("cherry")
-
-print(fruits)   # ["apple", "banana", "cherry"]
-```
-
-`append()` is Python's `push()` — it always adds to the **end** of the list.
-
-## remove — delete by value [#remove--delete-by-value]
-
-Python's `remove()` deletes the **first matching value**, not an index.
-
-```python
-fruits = ["apple", "banana", "cherry"]
-fruits.remove("banana")
-
-print(fruits)   # ["apple", "cherry"]
-```
-
-JS doesn't have a direct "remove by value" method — you'd normally write
-`arr.filter(f => f !== 'banana')` to get a new array without it.
-
-**Note:** if the value doesn't exist, `remove()` raises an error, so make sure it's actually
-in the list first (more on checking that with `in` later in this phase).
-
-## pop — remove and return [#pop--remove-and-return]
-
-`pop()` removes an item and gives it back to you.
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-last = fruits.pop()
-print(last)      # "cherry"
-print(fruits)    # ["apple", "banana"]
-```
-
-Just like JS's `arr.pop()`. But Python's `pop()` also accepts an **index**, which JS's
-`pop()` doesn't support directly:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-first = fruits.pop(0)
-print(first)     # "apple"
-print(fruits)    # ["banana", "cherry"]
-```
-
-
-# list, Indexing & Slicing (/en/docs/phase-2/lists)
-
-
-
-## list [#list]
-
-Python's `list` is the equivalent of a JavaScript array. It's ordered, you can change it after
-creating it, and it can hold duplicate values.
-
-JavaScript:
-
-```js
-const fruits = ['apple', 'banana', 'cherry'];
-```
-
-Python:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-```
-
-Same idea — square brackets, comma-separated values. `len()` gives you the size:
-
-```python
-len(fruits)   # 3
-```
-
-## Indexing [#indexing]
-
-Just like JS arrays, indexing starts at `0`.
-
-```python
-fruits[0]   # "apple"
-fruits[1]   # "banana"
-```
-
-Python also supports **negative indexing** — a clean way to count from the end:
-
-```python
-fruits[-1]   # "cherry" (last item)
-fruits[-2]   # "banana" (second-last item)
-```
-
-In JS you'd reach for `arr.at(-1)` to get the same result; in Python `-1` just works directly
-inside the brackets.
-
-## Slicing [#slicing]
-
-Slicing lets you grab a sub-list using `list[start:stop]`. Just like `range()`, `stop` is
-**not included**.
-
-```python
-fruits = ["apple", "banana", "cherry", "date"]
-
-fruits[1:3]    # ["banana", "cherry"]
-fruits[:2]     # ["apple", "banana"]   (start defaults to 0)
-fruits[2:]     # ["cherry", "date"]    (stop defaults to the end)
-fruits[:]      # ["apple", "banana", "cherry", "date"]  (a full copy)
-```
-
-JavaScript's closest equivalent is `arr.slice(start, stop)` — same start/stop behavior, just a
-method instead of bracket syntax.
-
-A common trick — reverse a list with a slice:
-
-```python
-fruits[::-1]   # ["date", "cherry", "banana", "apple"]
-```
-
-
-# Nested Data & in (/en/docs/phase-2/nested-data-and-in)
-
-
-
-## Nested data — a list of dicts [#nested-data--a-list-of-dicts]
-
-This is one of the most common shapes you'll deal with in backend code: a **list of
-dictionaries**, e.g. a list of users from a database.
-
-JavaScript:
-
-```js
-const users = [
-  { id: 1, name: 'John' },
-  { id: 2, name: 'David' },
-];
-
-for (const user of users) {
-  console.log(user.name);
-}
-```
-
-Python:
-
-```python
-users = [
-    {
-        "id": 1,
-        "name": "John"
-    },
-    {
-        "id": 2,
-        "name": "David"
-    }
-]
-
-for user in users:
-    print(user["name"])
-```
-
-Each loop iteration gives you one dict, and you read from it with brackets — exactly like a
-standalone dict.
-
-## in — membership check [#in--membership-check]
-
-`in` checks whether something exists inside a collection. It works on lists, dicts, sets, and
-strings.
-
-**Checking a list** — checks if a **value** is present:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-"banana" in fruits   # True
-"mango" in fruits    # False
-```
-
-**Checking a dict** — checks if a **key** is present (not a value):
-
-```python
-user = {"id": 1, "name": "John"}
-
-"name" in user   # True
-"John" in user   # False — "John" is a value, not a key
-```
-
-**Checking a string** — checks for a substring:
-
-```python
-"John" in "John Doe"   # True
-```
-
-### A gotcha coming from JS [#a-gotcha-coming-from-js]
-
-JS also has an `in` operator, but for **arrays** it checks the **index**, not the value —
-which is a common source of confusion:
-
-```js
-const fruits = ['apple', 'banana', 'cherry'];
-
-0 in fruits; // true  — index 0 exists
-'banana' in fruits; // false — this is NOT how you check for a value in JS
-fruits.includes('banana'); // true — this is what you actually want in JS
-```
-
-Python's `in` on a list always checks **values**, which matches JS's `arr.includes(x)` — not
-JS's own `in` operator. Keep that distinction in mind when moving between the two languages.
-
-
-# set (/en/docs/phase-2/sets)
-
-
-
-A `set` stores **unique values only** — duplicates are automatically dropped, and there's no
-guaranteed order.
-
-JavaScript:
-
-```js
-const numbers = new Set([1, 2, 2, 3]);
-```
-
-Python:
-
-```python
-numbers = {1, 2, 2, 3}
-
-print(numbers)   # {1, 2, 3}
-```
-
-Notice sets use curly braces `{ }`, just like a dict — but with plain values instead of
-key-value pairs. (An empty `{}` in Python actually creates a `dict`, not a set — use `set()`
-for an empty set.)
-
-## Adding and removing [#adding-and-removing]
-
-```python
-numbers = {1, 2, 3}
-
-numbers.add(4)
-print(numbers)   # {1, 2, 3, 4}
-
-numbers.remove(2)
-print(numbers)   # {1, 3, 4}
-```
-
-Same idea as JS's `set.add()` and `set.delete()`.
-
-## Why use a set? [#why-use-a-set]
-
-The most common reason: removing duplicates from a list.
-
-```python
-fruits = ["apple", "banana", "apple", "cherry"]
-
-unique_fruits = list(set(fruits))
-print(unique_fruits)   # ["apple", "banana", "cherry"] (order not guaranteed)
-```
-
-Sets are also very fast for checking whether a value exists — you'll see this combined with
-the `in` keyword later in this phase.
-
-
-# tuple (/en/docs/phase-2/tuples)
-
-
-
-A `tuple` looks like a list, but once it's created, it **can't be changed** — no adding,
-removing, or replacing items.
-
-JS doesn't have a true built-in equivalent — the closest is `Object.freeze()` on an array:
-
-```js
-const point = Object.freeze([4, 5]);
-```
-
-Python has a dedicated syntax for this — parentheses instead of square brackets:
-
-```python
-point = (4, 5)
-```
-
-Indexing and slicing work exactly the same as with a list:
-
-```python
-point[0]     # 4
-point[-1]    # 5
-```
-
-But trying to change it fails:
-
-```python
-point[0] = 10
-# ❌ TypeError: 'tuple' object does not support item assignment
-```
-
-## Why use a tuple? [#why-use-a-tuple]
-
-Use a tuple when a value shouldn't change after it's created — for example, coordinates, an
-RGB color, or a fixed pair of values returned from a function. It signals to anyone reading
-the code: "this is a fixed collection, not something to mutate."
-
-```python
-def get_coordinates():
-    return (12.9716, 77.5946)
-
-lat, lng = get_coordinates()
-```
-
-That last line — unpacking a tuple straight into two variables — is something JS can also do,
-via array destructuring:
-
-```js
-const [lat, lng] = getCoordinates();
-```
-
-
 # if / elif / else (/en/docs/phase-1/conditionals)
 
 
@@ -1362,6 +845,523 @@ API_VERSION = "v1"
 
 It's just a naming convention — nothing stops you from changing it. Python doesn't enforce it
 the way `const` does in JS/TS.
+
+
+# dict (/en/docs/phase-2/dictionaries)
+
+
+
+A `dict` (dictionary) stores **key-value pairs**. It's Python's equivalent of a JS object, and
+you'll use it everywhere — request bodies, JSON responses, database rows, config values.
+
+JavaScript:
+
+```js
+const user = {
+  id: 1,
+  name: 'John',
+  email: 'john@example.com',
+};
+
+console.log(user.name);
+
+user.age = 25;
+```
+
+Python:
+
+```python
+user = {
+    "id": 1,
+    "name": "John",
+    "email": "john@example.com"
+}
+
+print(user["name"])
+
+user["age"] = 25
+```
+
+## Key differences from a JS object [#key-differences-from-a-js-object]
+
+**Python only uses bracket access — there's no dot notation.**
+
+```python
+user["name"]   # ✅ works
+user.name      # ❌ AttributeError
+```
+
+JS lets you use `user.name` or `user["name"]` interchangeably. Python dicts only support the
+bracket form.
+
+**Adding a new key** works the same way in both languages — just assign to a key that doesn't
+exist yet:
+
+```python
+user["age"] = 25
+```
+
+**Accessing a missing key** behaves differently:
+
+```python
+user["phone"]
+# ❌ KeyError: 'phone'
+```
+
+In JS, `user.phone` would just quietly give you `undefined`. Python raises an error instead —
+which is exactly why the `.get()` method (covered on the next page) exists.
+
+
+# get, keys, values & items (/en/docs/phase-2/dictionary-methods)
+
+
+
+## get — safe access [#get--safe-access]
+
+`.get()` reads a key without raising an error if it's missing.
+
+```python
+user = {"id": 1, "name": "John"}
+
+user.get("name")            # "John"
+user.get("phone")           # None
+user.get("phone", "N/A")    # "N/A" — a default value if the key is missing
+```
+
+This is basically Python's version of JS's `??` fallback:
+
+```js
+user.phone ?? 'N/A';
+```
+
+Prefer `.get()` over `user["key"]` whenever the key might not exist.
+
+## keys — just the keys [#keys--just-the-keys]
+
+```python
+user = {"id": 1, "name": "John"}
+
+print(user.keys())   # dict_keys(['id', 'name'])
+```
+
+Same as JS's `Object.keys(user)`.
+
+## values — just the values [#values--just-the-values]
+
+```python
+print(user.values())   # dict_values([1, 'John'])
+```
+
+Same as JS's `Object.values(user)`.
+
+## items — key and value together [#items--key-and-value-together]
+
+`.items()` is what you'll use most, especially in a `for` loop:
+
+```python
+for key, value in user.items():
+    print(key, value)
+```
+
+```text
+id 1
+name John
+```
+
+This is the same shape as JS's `Object.entries(user)` combined with array destructuring:
+
+```js
+for (const [key, value] of Object.entries(user)) {
+  console.log(key, value);
+}
+```
+
+
+# Phase 2 — Collections (/en/docs/phase-2)
+
+
+
+Estimated time: **\~2 hours**.
+
+This is probably the **most important** Python section for backend development. Almost every
+API you write will pass data around as lists and dicts.
+
+## Goals [#goals]
+
+By the end of this phase you should be comfortable with:
+
+* `list`
+* `tuple`
+* `set`
+* `dict` (especially this one)
+* indexing
+* slicing
+* `append`, `remove`, `pop`
+* `get`, `keys`, `values`, `items`
+* `in`
+
+Each topic is its own page in the sidebar, taught with a JS/TS → Python comparison, followed
+by a small example.
+
+## Cheat sheet [#cheat-sheet]
+
+```text
+JavaScript / TypeScript        Python
+──────────────────────────────────────────
+Array                          list
+Object                         dict
+Set                            set
+frozen array / tuple-like       tuple
+
+arr.push(x)                    list.append(x)
+arr.pop()                      list.pop()
+arr.splice(i, 1)                del list[i]
+arr.filter(v => v !== x)        list.remove(x)
+
+arr[0]                         list[0]
+arr.at(-1)                      list[-1]
+arr.slice(1, 3)                  list[1:3]
+
+Object.keys(obj)                dict.keys()
+Object.values(obj)               dict.values()
+Object.entries(obj)              dict.items()
+obj.x ?? obj["x"]                 dict.get("x")
+
+'x' in obj                       'x' in dict
+arr.includes(x)                   x in list
+```
+
+
+# append, remove & pop (/en/docs/phase-2/list-methods)
+
+
+
+## append — add to the end [#append--add-to-the-end]
+
+JavaScript:
+
+```js
+const fruits = ['apple', 'banana'];
+fruits.push('cherry');
+```
+
+Python:
+
+```python
+fruits = ["apple", "banana"]
+fruits.append("cherry")
+
+print(fruits)   # ["apple", "banana", "cherry"]
+```
+
+`append()` is Python's `push()` — it always adds to the **end** of the list.
+
+## remove — delete by value [#remove--delete-by-value]
+
+Python's `remove()` deletes the **first matching value**, not an index.
+
+```python
+fruits = ["apple", "banana", "cherry"]
+fruits.remove("banana")
+
+print(fruits)   # ["apple", "cherry"]
+```
+
+JS doesn't have a direct "remove by value" method — you'd normally write
+`arr.filter(f => f !== 'banana')` to get a new array without it.
+
+**Note:** if the value doesn't exist, `remove()` raises an error, so make sure it's actually
+in the list first (more on checking that with `in` later in this phase).
+
+## pop — remove and return [#pop--remove-and-return]
+
+`pop()` removes an item and gives it back to you.
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+last = fruits.pop()
+print(last)      # "cherry"
+print(fruits)    # ["apple", "banana"]
+```
+
+Just like JS's `arr.pop()`. But Python's `pop()` also accepts an **index**, which JS's
+`pop()` doesn't support directly:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+first = fruits.pop(0)
+print(first)     # "apple"
+print(fruits)    # ["banana", "cherry"]
+```
+
+
+# list, Indexing & Slicing (/en/docs/phase-2/lists)
+
+
+
+## list [#list]
+
+Python's `list` is the equivalent of a JavaScript array. It's ordered, you can change it after
+creating it, and it can hold duplicate values.
+
+JavaScript:
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+```
+
+Python:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+```
+
+Same idea — square brackets, comma-separated values. `len()` gives you the size:
+
+```python
+len(fruits)   # 3
+```
+
+## Indexing [#indexing]
+
+Just like JS arrays, indexing starts at `0`.
+
+```python
+fruits[0]   # "apple"
+fruits[1]   # "banana"
+```
+
+Python also supports **negative indexing** — a clean way to count from the end:
+
+```python
+fruits[-1]   # "cherry" (last item)
+fruits[-2]   # "banana" (second-last item)
+```
+
+In JS you'd reach for `arr.at(-1)` to get the same result; in Python `-1` just works directly
+inside the brackets.
+
+## Slicing [#slicing]
+
+Slicing lets you grab a sub-list using `list[start:stop]`. Just like `range()`, `stop` is
+**not included**.
+
+```python
+fruits = ["apple", "banana", "cherry", "date"]
+
+fruits[1:3]    # ["banana", "cherry"]
+fruits[:2]     # ["apple", "banana"]   (start defaults to 0)
+fruits[2:]     # ["cherry", "date"]    (stop defaults to the end)
+fruits[:]      # ["apple", "banana", "cherry", "date"]  (a full copy)
+```
+
+JavaScript's closest equivalent is `arr.slice(start, stop)` — same start/stop behavior, just a
+method instead of bracket syntax.
+
+A common trick — reverse a list with a slice:
+
+```python
+fruits[::-1]   # ["date", "cherry", "banana", "apple"]
+```
+
+
+# Nested Data & in (/en/docs/phase-2/nested-data-and-in)
+
+
+
+## Nested data — a list of dicts [#nested-data--a-list-of-dicts]
+
+This is one of the most common shapes you'll deal with in backend code: a **list of
+dictionaries**, e.g. a list of users from a database.
+
+JavaScript:
+
+```js
+const users = [
+  { id: 1, name: 'John' },
+  { id: 2, name: 'David' },
+];
+
+for (const user of users) {
+  console.log(user.name);
+}
+```
+
+Python:
+
+```python
+users = [
+    {
+        "id": 1,
+        "name": "John"
+    },
+    {
+        "id": 2,
+        "name": "David"
+    }
+]
+
+for user in users:
+    print(user["name"])
+```
+
+Each loop iteration gives you one dict, and you read from it with brackets — exactly like a
+standalone dict.
+
+## in — membership check [#in--membership-check]
+
+`in` checks whether something exists inside a collection. It works on lists, dicts, sets, and
+strings.
+
+**Checking a list** — checks if a **value** is present:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+"banana" in fruits   # True
+"mango" in fruits    # False
+```
+
+**Checking a dict** — checks if a **key** is present (not a value):
+
+```python
+user = {"id": 1, "name": "John"}
+
+"name" in user   # True
+"John" in user   # False — "John" is a value, not a key
+```
+
+**Checking a string** — checks for a substring:
+
+```python
+"John" in "John Doe"   # True
+```
+
+### A gotcha coming from JS [#a-gotcha-coming-from-js]
+
+JS also has an `in` operator, but for **arrays** it checks the **index**, not the value —
+which is a common source of confusion:
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+
+0 in fruits; // true  — index 0 exists
+'banana' in fruits; // false — this is NOT how you check for a value in JS
+fruits.includes('banana'); // true — this is what you actually want in JS
+```
+
+Python's `in` on a list always checks **values**, which matches JS's `arr.includes(x)` — not
+JS's own `in` operator. Keep that distinction in mind when moving between the two languages.
+
+
+# set (/en/docs/phase-2/sets)
+
+
+
+A `set` stores **unique values only** — duplicates are automatically dropped, and there's no
+guaranteed order.
+
+JavaScript:
+
+```js
+const numbers = new Set([1, 2, 2, 3]);
+```
+
+Python:
+
+```python
+numbers = {1, 2, 2, 3}
+
+print(numbers)   # {1, 2, 3}
+```
+
+Notice sets use curly braces `{ }`, just like a dict — but with plain values instead of
+key-value pairs. (An empty `{}` in Python actually creates a `dict`, not a set — use `set()`
+for an empty set.)
+
+## Adding and removing [#adding-and-removing]
+
+```python
+numbers = {1, 2, 3}
+
+numbers.add(4)
+print(numbers)   # {1, 2, 3, 4}
+
+numbers.remove(2)
+print(numbers)   # {1, 3, 4}
+```
+
+Same idea as JS's `set.add()` and `set.delete()`.
+
+## Why use a set? [#why-use-a-set]
+
+The most common reason: removing duplicates from a list.
+
+```python
+fruits = ["apple", "banana", "apple", "cherry"]
+
+unique_fruits = list(set(fruits))
+print(unique_fruits)   # ["apple", "banana", "cherry"] (order not guaranteed)
+```
+
+Sets are also very fast for checking whether a value exists — you'll see this combined with
+the `in` keyword later in this phase.
+
+
+# tuple (/en/docs/phase-2/tuples)
+
+
+
+A `tuple` looks like a list, but once it's created, it **can't be changed** — no adding,
+removing, or replacing items.
+
+JS doesn't have a true built-in equivalent — the closest is `Object.freeze()` on an array:
+
+```js
+const point = Object.freeze([4, 5]);
+```
+
+Python has a dedicated syntax for this — parentheses instead of square brackets:
+
+```python
+point = (4, 5)
+```
+
+Indexing and slicing work exactly the same as with a list:
+
+```python
+point[0]     # 4
+point[-1]    # 5
+```
+
+But trying to change it fails:
+
+```python
+point[0] = 10
+# ❌ TypeError: 'tuple' object does not support item assignment
+```
+
+## Why use a tuple? [#why-use-a-tuple]
+
+Use a tuple when a value shouldn't change after it's created — for example, coordinates, an
+RGB color, or a fixed pair of values returned from a function. It signals to anyone reading
+the code: "this is a fixed collection, not something to mutate."
+
+```python
+def get_coordinates():
+    return (12.9716, 77.5946)
+
+lat, lng = get_coordinates()
+```
+
+That last line — unpacking a tuple straight into two variables — is something JS can also do,
+via array destructuring:
+
+```js
+const [lat, lng] = getCoordinates();
+```
 
 
 # *args & **kwargs (/en/docs/phase-3/args-and-kwargs)
@@ -4765,550 +4765,27 @@ la kooda padikalam.
 </Cards>
 
 
-# Backend Development with FastAPI (/tanglish/docs/fastapi)
+# Backend Development with FastAPI (Tanglish) (/tanglish/docs/fastapi)
 
 
 
-This is a teaching syllabus, not a personal notebook — each page is written to be taught to
-students directly, one topic at a time, building on the Python fundamentals from **Python
-Notes**.
+Idhu oru teaching syllabus, personal notebook illa — ovvoru page-um students ku direct ah
+teach panna ezhudhirukkom, one topic at a time, **Python Notes**-la irukkura Python
+fundamentals mela build panni.
 
-Topics are added here as they're covered, in teaching order.
+Topics cover aana maadhiri, teaching order-la idhula add pannuvom.
 
 ## Topics [#topics]
 
 <Cards>
-  <Card title="Web Fundamentals" href="/en/docs/fastapi/web-fundamentals/what-is-the-internet" />
+  <Card title="Web Fundamentals" href="/tanglish/docs/fastapi/web-fundamentals/what-is-the-internet" />
 
-  <Card title="Getting Started" href="/en/docs/fastapi/getting-started/what-is-fastapi" />
+  <Card title="Getting Started" href="/tanglish/docs/fastapi/getting-started/what-is-fastapi" />
 
-  <Card title="Building the Todo API" href="/en/docs/fastapi/todo-api/creating-the-todo-model" />
+  <Card title="Building the Todo API" href="/tanglish/docs/fastapi/todo-api/creating-the-todo-model" />
 </Cards>
 
-*More topics will appear here as they're added.*
-
-
-# dict (/tanglish/docs/phase-2/dictionaries)
-
-
-
-`dict` (dictionary) **key-value pairs** store pannum. Idhu JS object oda equivalent, nee idha
-everywhere use pannuva — request bodies, JSON responses, database rows, config values.
-
-JavaScript:
-
-```js
-const user = {
-  id: 1,
-  name: 'John',
-  email: 'john@example.com',
-};
-
-console.log(user.name);
-
-user.age = 25;
-```
-
-Python:
-
-```python
-user = {
-    "id": 1,
-    "name": "John",
-    "email": "john@example.com"
-}
-
-print(user["name"])
-
-user["age"] = 25
-```
-
-## JS object-la irundhu key differences [#js-object-la-irundhu-key-differences]
-
-**Python-la bracket access matum than use pannuvom — dot notation kidayathu.**
-
-```python
-user["name"]   # ✅ work aagum
-user.name      # ❌ AttributeError
-```
-
-JS-la `user.name` allathu `user["name"]` — rendum interchangeable ah use pannalaam. Python
-dicts bracket form matum than support pannum.
-
-**New key add pannradhu** rendu languages-layum same way than — illatha key-ku assign
-pannina podhum:
-
-```python
-user["age"] = 25
-```
-
-**Illatha key-a access pannina** different-a behave pannum:
-
-```python
-user["phone"]
-# ❌ KeyError: 'phone'
-```
-
-JS-la, `user.phone` quietly `undefined`-a kudukkum. Python error throw pannum — idhu than
-next page-la paakura `.get()` method yen irukku-nu exact reason.
-
-
-# get, keys, values & items (/tanglish/docs/phase-2/dictionary-methods)
-
-
-
-## get — safe access [#get--safe-access]
-
-`.get()` oru key illana error throw pannama read pannum.
-
-```python
-user = {"id": 1, "name": "John"}
-
-user.get("name")            # "John"
-user.get("phone")           # None
-user.get("phone", "N/A")    # "N/A" — key illana idhu default value
-```
-
-Idhu basically JS oda `??` fallback oda Python version:
-
-```js
-user.phone ?? 'N/A';
-```
-
-Key irukka-illaya-nu sure illana `user["key"]` ku badhila `.get()` use pannu.
-
-## keys — keys matum [#keys--keys-matum]
-
-```python
-user = {"id": 1, "name": "John"}
-
-print(user.keys())   # dict_keys(['id', 'name'])
-```
-
-JS oda `Object.keys(user)` maadhiri than.
-
-## values — values matum [#values--values-matum]
-
-```python
-print(user.values())   # dict_values([1, 'John'])
-```
-
-JS oda `Object.values(user)` maadhiri than.
-
-## items — key mattrum value onnaaga [#items--key-mattrum-value-onnaaga]
-
-`.items()` than nee mostly use pannuva, especially `for` loop-la:
-
-```python
-for key, value in user.items():
-    print(key, value)
-```
-
-```text
-id 1
-name John
-```
-
-Idhu JS oda `Object.entries(user)`, array destructuring oda serthu use pannuvadhu maadhiri
-than:
-
-```js
-for (const [key, value] of Object.entries(user)) {
-  console.log(key, value);
-}
-```
-
-
-# Phase 2 — Collections (/tanglish/docs/phase-2)
-
-
-
-Estimated time: **\~2 hours**.
-
-Idhu probably backend development ku romba important-ana Python section. Nee eluthura almost
-ella API-um data-va list mattrum dict vazhiye than pass pannum.
-
-## Goals [#goals]
-
-Indha phase mudichadhukku apparam, intha topics ellam unakku comfortable ah irukanum:
-
-* `list`
-* `tuple`
-* `set`
-* `dict` (idha especially)
-* indexing
-* slicing
-* `append`, `remove`, `pop`
-* `get`, `keys`, `values`, `items`
-* `in`
-
-Ovvoru topic-um sidebar-la thani page ah irukku. Ella page-layum JS/TS → Python compare
-panni explain pannirukom, adha followed by oru chinna example.
-
-## Cheat sheet [#cheat-sheet]
-
-```text
-JavaScript / TypeScript        Python
-──────────────────────────────────────────
-Array                          list
-Object                         dict
-Set                            set
-frozen array / tuple-like       tuple
-
-arr.push(x)                    list.append(x)
-arr.pop()                      list.pop()
-arr.splice(i, 1)                del list[i]
-arr.filter(v => v !== x)        list.remove(x)
-
-arr[0]                         list[0]
-arr.at(-1)                      list[-1]
-arr.slice(1, 3)                  list[1:3]
-
-Object.keys(obj)                dict.keys()
-Object.values(obj)               dict.values()
-Object.entries(obj)              dict.items()
-obj.x ?? obj["x"]                 dict.get("x")
-
-'x' in obj                       'x' in dict
-arr.includes(x)                   x in list
-```
-
-
-# append, remove & pop (/tanglish/docs/phase-2/list-methods)
-
-
-
-## append — end-la add pannradhu [#append--end-la-add-pannradhu]
-
-JavaScript:
-
-```js
-const fruits = ['apple', 'banana'];
-fruits.push('cherry');
-```
-
-Python:
-
-```python
-fruits = ["apple", "banana"]
-fruits.append("cherry")
-
-print(fruits)   # ["apple", "banana", "cherry"]
-```
-
-`append()` na Python oda `push()` than — idhu eppovum list oda **end**-la than add pannum.
-
-## remove — value vechi delete pannradhu [#remove--value-vechi-delete-pannradhu]
-
-Python oda `remove()`, **first matching value**-a delete pannum, index illa.
-
-```python
-fruits = ["apple", "banana", "cherry"]
-fruits.remove("banana")
-
-print(fruits)   # ["apple", "cherry"]
-```
-
-JS-la direct-a "value vechi remove pannu" nu oru method kidayathu — usually
-`arr.filter(f => f !== 'banana')` vechi andha value illama oru new array create pannuvom.
-
-**Note:** andha value list-la illana, `remove()` error throw pannum, so first andha value
-irukka-nu check pannikonga (idha `in` vechi eppadi check pannaradhu-nu indha phase-oda
-last-la paapom).
-
-## pop — remove pannitu return pannradhu [#pop--remove-pannitu-return-pannradhu]
-
-`pop()` oru item-a remove pannitu, adha unakku thirumba kudukkum.
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-last = fruits.pop()
-print(last)      # "cherry"
-print(fruits)    # ["apple", "banana"]
-```
-
-JS oda `arr.pop()` maadhiri than. Aana Python oda `pop()`, oru **index**-um accept pannum,
-adha JS oda `pop()` direct-a support pannadhu:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-first = fruits.pop(0)
-print(first)     # "apple"
-print(fruits)    # ["banana", "cherry"]
-```
-
-
-# list, Indexing & Slicing (/tanglish/docs/phase-2/lists)
-
-
-
-## list [#list]
-
-Python oda `list` na JavaScript array oda equivalent. Idhu ordered, create pannina apparam
-change pannalam, duplicate values-um vechikalam.
-
-JavaScript:
-
-```js
-const fruits = ['apple', 'banana', 'cherry'];
-```
-
-Python:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-```
-
-Same idea than — square brackets, comma-separated values. `len()` size-a kudukkum:
-
-```python
-len(fruits)   # 3
-```
-
-## Indexing [#indexing]
-
-JS arrays maadhiri than, indexing `0`-la irundhu start aagum.
-
-```python
-fruits[0]   # "apple"
-fruits[1]   # "banana"
-```
-
-Python-la **negative indexing** nu oru feature irukku — last-la irundhu count panna clean
-way:
-
-```python
-fruits[-1]   # "cherry" (last item)
-fruits[-2]   # "banana" (second-last item)
-```
-
-JS-la idha pannanum na `arr.at(-1)` use pannanum; Python-la `-1` andha bracket-kulla direct-a
-work aagidum.
-
-## Slicing [#slicing]
-
-`list[start:stop]` vechi sub-list-a edukalam. `range()` maadhiri than, `stop` **include
-aagadhu**.
-
-```python
-fruits = ["apple", "banana", "cherry", "date"]
-
-fruits[1:3]    # ["banana", "cherry"]
-fruits[:2]     # ["apple", "banana"]   (start default-a 0)
-fruits[2:]     # ["cherry", "date"]    (stop default-a end)
-fruits[:]      # ["apple", "banana", "cherry", "date"]  (full copy)
-```
-
-JavaScript-la idhukku close-a irukura option `arr.slice(start, stop)` — same start/stop
-behavior than, method form-la irukku.
-
-Oru common trick — slice vechi list-a reverse pannalaam:
-
-```python
-fruits[::-1]   # ["date", "cherry", "banana", "apple"]
-```
-
-
-# Nested Data & in (/tanglish/docs/phase-2/nested-data-and-in)
-
-
-
-## Nested data — dicts oda list [#nested-data--dicts-oda-list]
-
-Idhu backend code-la nee romba paakura shapes-la onnu: oru **list of dictionaries**,
-example-ku database-la irundhu varra users oda list.
-
-JavaScript:
-
-```js
-const users = [
-  { id: 1, name: 'John' },
-  { id: 2, name: 'David' },
-];
-
-for (const user of users) {
-  console.log(user.name);
-}
-```
-
-Python:
-
-```python
-users = [
-    {
-        "id": 1,
-        "name": "John"
-    },
-    {
-        "id": 2,
-        "name": "David"
-    }
-]
-
-for user in users:
-    print(user["name"])
-```
-
-Ovvoru loop iteration-um unakku oru dict-a kudukkum, adha nee bracket vechi read pannuva —
-exact-a oru standalone dict maadhiri than.
-
-## in — membership check [#in--membership-check]
-
-`in` oru collection-kulla edhavadhu irukka-nu check pannum. Idhu list, dict, set, string
-ellathulayum work aagum.
-
-**List check pannradhu** — oru **value** irukka-nu check pannum:
-
-```python
-fruits = ["apple", "banana", "cherry"]
-
-"banana" in fruits   # True
-"mango" in fruits    # False
-```
-
-**Dict check pannradhu** — oru **key** irukka-nu check pannum (value illa):
-
-```python
-user = {"id": 1, "name": "John"}
-
-"name" in user   # True
-"John" in user   # False — "John" oru value, key illa
-```
-
-**String check pannradhu** — substring irukka-nu check pannum:
-
-```python
-"John" in "John Doe"   # True
-```
-
-### JS-la irundhu varra oru gotcha [#js-la-irundhu-varra-oru-gotcha]
-
-JS-la kooda `in` operator irukku, aana **arrays**-ku idhu **index**-a check pannum, value-a
-illa — idhu romba confusion create pannum:
-
-```js
-const fruits = ['apple', 'banana', 'cherry'];
-
-0 in fruits; // true  — index 0 irukku
-'banana' in fruits; // false — idhu JS-la value check panna correct way illa
-fruits.includes('banana'); // true — idhu than actual-a nee vendradhu JS-la
-```
-
-Python-oda list-la `in`, eppovum **values**-a than check pannum — idhu JS oda
-`arr.includes(x)` oda match aagum, JS-oda `in` operator oda illa. Rendu languages-ku
-switch aagum bothu idha ninaivula vechiko.
-
-
-# set (/tanglish/docs/phase-2/sets)
-
-
-
-`set` na **unique values matum** than store pannum — duplicates automatic-a drop aagidum,
-order edhuvum guarantee illa.
-
-JavaScript:
-
-```js
-const numbers = new Set([1, 2, 2, 3]);
-```
-
-Python:
-
-```python
-numbers = {1, 2, 2, 3}
-
-print(numbers)   # {1, 2, 3}
-```
-
-Kavanikanum — sets curly braces `{ }` use pannum, dict maadhiri than — aana key-value pairs
-ku badhila plain values than irukkum. (Python-la empty `{}` na yeppovume `dict` than
-create pannum, set illa — empty set ku `set()` use pannanum.)
-
-## Add pannradhu, remove pannradhu [#add-pannradhu-remove-pannradhu]
-
-```python
-numbers = {1, 2, 3}
-
-numbers.add(4)
-print(numbers)   # {1, 2, 3, 4}
-
-numbers.remove(2)
-print(numbers)   # {1, 3, 4}
-```
-
-JS oda `set.add()` mattrum `set.delete()` maadhiri than same idea.
-
-## Set yen use pannanum? [#set-yen-use-pannanum]
-
-Romba common reason: list-la irundhu duplicates-a remove pannradhu.
-
-```python
-fruits = ["apple", "banana", "apple", "cherry"]
-
-unique_fruits = list(set(fruits))
-print(unique_fruits)   # ["apple", "banana", "cherry"] (order guarantee illa)
-```
-
-Oru value irukka-nu check pannradhukku-um sets romba fast — idha indha phase-oda last-la
-`in` keyword oda serthu paapom.
-
-
-# tuple (/tanglish/docs/phase-2/tuples)
-
-
-
-`tuple` na paakumbothu list maadhiri than irukkum, aana oru vaati create pannitta, adha
-**change panna mudiyathu** — add pannradhu, remove pannradhu, replace pannradhu edhuvum illa.
-
-JS-la idhukku direct-a oru built-in equivalent kidayathu — close-a irukura option array-la
-`Object.freeze()` use pannradhu than:
-
-```js
-const point = Object.freeze([4, 5]);
-```
-
-Python-la idhukku thani syntax irukku — square brackets ku badhila parentheses:
-
-```python
-point = (4, 5)
-```
-
-Indexing mattrum slicing, list maadhiri exact-a same than work aagum:
-
-```python
-point[0]     # 4
-point[-1]    # 5
-```
-
-Aana change panna try pannina fail aagidum:
-
-```python
-point[0] = 10
-# ❌ TypeError: 'tuple' object does not support item assignment
-```
-
-## Tuple yen use pannanum? [#tuple-yen-use-pannanum]
-
-Oru value create panniya apparam change aaga koodadhu-nu bothu tuple use pannu — example-ku,
-coordinates, RGB color, allathu function-la irundhu return aagura fixed pair of values. Idhu
-code padikura yaarukkum "idhu fixed collection, mutate panna vendiya onnu illa"-nu clear-a
-solradhu.
-
-```python
-def get_coordinates():
-    return (12.9716, 77.5946)
-
-lat, lng = get_coordinates()
-```
-
-Andha last line — tuple-a straight-a rendu variables-ku unpack pannradhu — idha JS-um kooda
-array destructuring vechi pannum:
-
-```js
-const [lat, lng] = getCoordinates();
-```
+*Innum topics add aana maadhiri, idhu inga appear aagum.*
 
 
 # if / elif / else (/tanglish/docs/phase-1/conditionals)
@@ -5940,6 +5417,529 @@ API_VERSION = "v1"
 
 Idhu just oru naming convention than — nee value-a change panna edhuvum block panradhu
 illa. `const` maadhiri Python force pannadhu.
+
+
+# dict (/tanglish/docs/phase-2/dictionaries)
+
+
+
+`dict` (dictionary) **key-value pairs** store pannum. Idhu JS object oda equivalent, nee idha
+everywhere use pannuva — request bodies, JSON responses, database rows, config values.
+
+JavaScript:
+
+```js
+const user = {
+  id: 1,
+  name: 'John',
+  email: 'john@example.com',
+};
+
+console.log(user.name);
+
+user.age = 25;
+```
+
+Python:
+
+```python
+user = {
+    "id": 1,
+    "name": "John",
+    "email": "john@example.com"
+}
+
+print(user["name"])
+
+user["age"] = 25
+```
+
+## JS object-la irundhu key differences [#js-object-la-irundhu-key-differences]
+
+**Python-la bracket access matum than use pannuvom — dot notation kidayathu.**
+
+```python
+user["name"]   # ✅ work aagum
+user.name      # ❌ AttributeError
+```
+
+JS-la `user.name` allathu `user["name"]` — rendum interchangeable ah use pannalaam. Python
+dicts bracket form matum than support pannum.
+
+**New key add pannradhu** rendu languages-layum same way than — illatha key-ku assign
+pannina podhum:
+
+```python
+user["age"] = 25
+```
+
+**Illatha key-a access pannina** different-a behave pannum:
+
+```python
+user["phone"]
+# ❌ KeyError: 'phone'
+```
+
+JS-la, `user.phone` quietly `undefined`-a kudukkum. Python error throw pannum — idhu than
+next page-la paakura `.get()` method yen irukku-nu exact reason.
+
+
+# get, keys, values & items (/tanglish/docs/phase-2/dictionary-methods)
+
+
+
+## get — safe access [#get--safe-access]
+
+`.get()` oru key illana error throw pannama read pannum.
+
+```python
+user = {"id": 1, "name": "John"}
+
+user.get("name")            # "John"
+user.get("phone")           # None
+user.get("phone", "N/A")    # "N/A" — key illana idhu default value
+```
+
+Idhu basically JS oda `??` fallback oda Python version:
+
+```js
+user.phone ?? 'N/A';
+```
+
+Key irukka-illaya-nu sure illana `user["key"]` ku badhila `.get()` use pannu.
+
+## keys — keys matum [#keys--keys-matum]
+
+```python
+user = {"id": 1, "name": "John"}
+
+print(user.keys())   # dict_keys(['id', 'name'])
+```
+
+JS oda `Object.keys(user)` maadhiri than.
+
+## values — values matum [#values--values-matum]
+
+```python
+print(user.values())   # dict_values([1, 'John'])
+```
+
+JS oda `Object.values(user)` maadhiri than.
+
+## items — key mattrum value onnaaga [#items--key-mattrum-value-onnaaga]
+
+`.items()` than nee mostly use pannuva, especially `for` loop-la:
+
+```python
+for key, value in user.items():
+    print(key, value)
+```
+
+```text
+id 1
+name John
+```
+
+Idhu JS oda `Object.entries(user)`, array destructuring oda serthu use pannuvadhu maadhiri
+than:
+
+```js
+for (const [key, value] of Object.entries(user)) {
+  console.log(key, value);
+}
+```
+
+
+# Phase 2 — Collections (/tanglish/docs/phase-2)
+
+
+
+Estimated time: **\~2 hours**.
+
+Idhu probably backend development ku romba important-ana Python section. Nee eluthura almost
+ella API-um data-va list mattrum dict vazhiye than pass pannum.
+
+## Goals [#goals]
+
+Indha phase mudichadhukku apparam, intha topics ellam unakku comfortable ah irukanum:
+
+* `list`
+* `tuple`
+* `set`
+* `dict` (idha especially)
+* indexing
+* slicing
+* `append`, `remove`, `pop`
+* `get`, `keys`, `values`, `items`
+* `in`
+
+Ovvoru topic-um sidebar-la thani page ah irukku. Ella page-layum JS/TS → Python compare
+panni explain pannirukom, adha followed by oru chinna example.
+
+## Cheat sheet [#cheat-sheet]
+
+```text
+JavaScript / TypeScript        Python
+──────────────────────────────────────────
+Array                          list
+Object                         dict
+Set                            set
+frozen array / tuple-like       tuple
+
+arr.push(x)                    list.append(x)
+arr.pop()                      list.pop()
+arr.splice(i, 1)                del list[i]
+arr.filter(v => v !== x)        list.remove(x)
+
+arr[0]                         list[0]
+arr.at(-1)                      list[-1]
+arr.slice(1, 3)                  list[1:3]
+
+Object.keys(obj)                dict.keys()
+Object.values(obj)               dict.values()
+Object.entries(obj)              dict.items()
+obj.x ?? obj["x"]                 dict.get("x")
+
+'x' in obj                       'x' in dict
+arr.includes(x)                   x in list
+```
+
+
+# append, remove & pop (/tanglish/docs/phase-2/list-methods)
+
+
+
+## append — end-la add pannradhu [#append--end-la-add-pannradhu]
+
+JavaScript:
+
+```js
+const fruits = ['apple', 'banana'];
+fruits.push('cherry');
+```
+
+Python:
+
+```python
+fruits = ["apple", "banana"]
+fruits.append("cherry")
+
+print(fruits)   # ["apple", "banana", "cherry"]
+```
+
+`append()` na Python oda `push()` than — idhu eppovum list oda **end**-la than add pannum.
+
+## remove — value vechi delete pannradhu [#remove--value-vechi-delete-pannradhu]
+
+Python oda `remove()`, **first matching value**-a delete pannum, index illa.
+
+```python
+fruits = ["apple", "banana", "cherry"]
+fruits.remove("banana")
+
+print(fruits)   # ["apple", "cherry"]
+```
+
+JS-la direct-a "value vechi remove pannu" nu oru method kidayathu — usually
+`arr.filter(f => f !== 'banana')` vechi andha value illama oru new array create pannuvom.
+
+**Note:** andha value list-la illana, `remove()` error throw pannum, so first andha value
+irukka-nu check pannikonga (idha `in` vechi eppadi check pannaradhu-nu indha phase-oda
+last-la paapom).
+
+## pop — remove pannitu return pannradhu [#pop--remove-pannitu-return-pannradhu]
+
+`pop()` oru item-a remove pannitu, adha unakku thirumba kudukkum.
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+last = fruits.pop()
+print(last)      # "cherry"
+print(fruits)    # ["apple", "banana"]
+```
+
+JS oda `arr.pop()` maadhiri than. Aana Python oda `pop()`, oru **index**-um accept pannum,
+adha JS oda `pop()` direct-a support pannadhu:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+first = fruits.pop(0)
+print(first)     # "apple"
+print(fruits)    # ["banana", "cherry"]
+```
+
+
+# list, Indexing & Slicing (/tanglish/docs/phase-2/lists)
+
+
+
+## list [#list]
+
+Python oda `list` na JavaScript array oda equivalent. Idhu ordered, create pannina apparam
+change pannalam, duplicate values-um vechikalam.
+
+JavaScript:
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+```
+
+Python:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+```
+
+Same idea than — square brackets, comma-separated values. `len()` size-a kudukkum:
+
+```python
+len(fruits)   # 3
+```
+
+## Indexing [#indexing]
+
+JS arrays maadhiri than, indexing `0`-la irundhu start aagum.
+
+```python
+fruits[0]   # "apple"
+fruits[1]   # "banana"
+```
+
+Python-la **negative indexing** nu oru feature irukku — last-la irundhu count panna clean
+way:
+
+```python
+fruits[-1]   # "cherry" (last item)
+fruits[-2]   # "banana" (second-last item)
+```
+
+JS-la idha pannanum na `arr.at(-1)` use pannanum; Python-la `-1` andha bracket-kulla direct-a
+work aagidum.
+
+## Slicing [#slicing]
+
+`list[start:stop]` vechi sub-list-a edukalam. `range()` maadhiri than, `stop` **include
+aagadhu**.
+
+```python
+fruits = ["apple", "banana", "cherry", "date"]
+
+fruits[1:3]    # ["banana", "cherry"]
+fruits[:2]     # ["apple", "banana"]   (start default-a 0)
+fruits[2:]     # ["cherry", "date"]    (stop default-a end)
+fruits[:]      # ["apple", "banana", "cherry", "date"]  (full copy)
+```
+
+JavaScript-la idhukku close-a irukura option `arr.slice(start, stop)` — same start/stop
+behavior than, method form-la irukku.
+
+Oru common trick — slice vechi list-a reverse pannalaam:
+
+```python
+fruits[::-1]   # ["date", "cherry", "banana", "apple"]
+```
+
+
+# Nested Data & in (/tanglish/docs/phase-2/nested-data-and-in)
+
+
+
+## Nested data — dicts oda list [#nested-data--dicts-oda-list]
+
+Idhu backend code-la nee romba paakura shapes-la onnu: oru **list of dictionaries**,
+example-ku database-la irundhu varra users oda list.
+
+JavaScript:
+
+```js
+const users = [
+  { id: 1, name: 'John' },
+  { id: 2, name: 'David' },
+];
+
+for (const user of users) {
+  console.log(user.name);
+}
+```
+
+Python:
+
+```python
+users = [
+    {
+        "id": 1,
+        "name": "John"
+    },
+    {
+        "id": 2,
+        "name": "David"
+    }
+]
+
+for user in users:
+    print(user["name"])
+```
+
+Ovvoru loop iteration-um unakku oru dict-a kudukkum, adha nee bracket vechi read pannuva —
+exact-a oru standalone dict maadhiri than.
+
+## in — membership check [#in--membership-check]
+
+`in` oru collection-kulla edhavadhu irukka-nu check pannum. Idhu list, dict, set, string
+ellathulayum work aagum.
+
+**List check pannradhu** — oru **value** irukka-nu check pannum:
+
+```python
+fruits = ["apple", "banana", "cherry"]
+
+"banana" in fruits   # True
+"mango" in fruits    # False
+```
+
+**Dict check pannradhu** — oru **key** irukka-nu check pannum (value illa):
+
+```python
+user = {"id": 1, "name": "John"}
+
+"name" in user   # True
+"John" in user   # False — "John" oru value, key illa
+```
+
+**String check pannradhu** — substring irukka-nu check pannum:
+
+```python
+"John" in "John Doe"   # True
+```
+
+### JS-la irundhu varra oru gotcha [#js-la-irundhu-varra-oru-gotcha]
+
+JS-la kooda `in` operator irukku, aana **arrays**-ku idhu **index**-a check pannum, value-a
+illa — idhu romba confusion create pannum:
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+
+0 in fruits; // true  — index 0 irukku
+'banana' in fruits; // false — idhu JS-la value check panna correct way illa
+fruits.includes('banana'); // true — idhu than actual-a nee vendradhu JS-la
+```
+
+Python-oda list-la `in`, eppovum **values**-a than check pannum — idhu JS oda
+`arr.includes(x)` oda match aagum, JS-oda `in` operator oda illa. Rendu languages-ku
+switch aagum bothu idha ninaivula vechiko.
+
+
+# set (/tanglish/docs/phase-2/sets)
+
+
+
+`set` na **unique values matum** than store pannum — duplicates automatic-a drop aagidum,
+order edhuvum guarantee illa.
+
+JavaScript:
+
+```js
+const numbers = new Set([1, 2, 2, 3]);
+```
+
+Python:
+
+```python
+numbers = {1, 2, 2, 3}
+
+print(numbers)   # {1, 2, 3}
+```
+
+Kavanikanum — sets curly braces `{ }` use pannum, dict maadhiri than — aana key-value pairs
+ku badhila plain values than irukkum. (Python-la empty `{}` na yeppovume `dict` than
+create pannum, set illa — empty set ku `set()` use pannanum.)
+
+## Add pannradhu, remove pannradhu [#add-pannradhu-remove-pannradhu]
+
+```python
+numbers = {1, 2, 3}
+
+numbers.add(4)
+print(numbers)   # {1, 2, 3, 4}
+
+numbers.remove(2)
+print(numbers)   # {1, 3, 4}
+```
+
+JS oda `set.add()` mattrum `set.delete()` maadhiri than same idea.
+
+## Set yen use pannanum? [#set-yen-use-pannanum]
+
+Romba common reason: list-la irundhu duplicates-a remove pannradhu.
+
+```python
+fruits = ["apple", "banana", "apple", "cherry"]
+
+unique_fruits = list(set(fruits))
+print(unique_fruits)   # ["apple", "banana", "cherry"] (order guarantee illa)
+```
+
+Oru value irukka-nu check pannradhukku-um sets romba fast — idha indha phase-oda last-la
+`in` keyword oda serthu paapom.
+
+
+# tuple (/tanglish/docs/phase-2/tuples)
+
+
+
+`tuple` na paakumbothu list maadhiri than irukkum, aana oru vaati create pannitta, adha
+**change panna mudiyathu** — add pannradhu, remove pannradhu, replace pannradhu edhuvum illa.
+
+JS-la idhukku direct-a oru built-in equivalent kidayathu — close-a irukura option array-la
+`Object.freeze()` use pannradhu than:
+
+```js
+const point = Object.freeze([4, 5]);
+```
+
+Python-la idhukku thani syntax irukku — square brackets ku badhila parentheses:
+
+```python
+point = (4, 5)
+```
+
+Indexing mattrum slicing, list maadhiri exact-a same than work aagum:
+
+```python
+point[0]     # 4
+point[-1]    # 5
+```
+
+Aana change panna try pannina fail aagidum:
+
+```python
+point[0] = 10
+# ❌ TypeError: 'tuple' object does not support item assignment
+```
+
+## Tuple yen use pannanum? [#tuple-yen-use-pannanum]
+
+Oru value create panniya apparam change aaga koodadhu-nu bothu tuple use pannu — example-ku,
+coordinates, RGB color, allathu function-la irundhu return aagura fixed pair of values. Idhu
+code padikura yaarukkum "idhu fixed collection, mutate panna vendiya onnu illa"-nu clear-a
+solradhu.
+
+```python
+def get_coordinates():
+    return (12.9716, 77.5946)
+
+lat, lng = get_coordinates()
+```
+
+Andha last line — tuple-a straight-a rendu variables-ku unpack pannradhu — idha JS-um kooda
+array destructuring vechi pannum:
+
+```js
+const [lat, lng] = getCoordinates();
+```
 
 
 # *args & **kwargs (/tanglish/docs/phase-3/args-and-kwargs)
@@ -7427,21 +7427,21 @@ await getUser()                             await get_user()   (async def-kulla 
 
 
 
-You have a `DATABASE_URL` sitting in `.env`. Now you need actual code that reads it and
-prepares a connection to the database. This lives in its own file, `database.py` — every
-other file in the project that needs the database will import from here, rather than
-connecting on its own.
+`.env`-la unakku oru `DATABASE_URL` irukku. Ippo idha read panni database-ku oru
+connection prepare pannura actual code venum. Idhu adhoda own file-la irukkum,
+`database.py` — indha project-la database venum na vera every file, thaniya connect
+pannadhu, idhula irundhu than import pannum.
 
-## Three pieces SQLAlchemy needs [#three-pieces-sqlalchemy-needs]
+## SQLAlchemy ku venum moonu pieces [#sqlalchemy-ku-venum-moonu-pieces]
 
-Before the code, know what you're building:
+Code paakura munnadi, nee enna build panra-nu therinjuko:
 
-* **Engine** — the actual connection to the database. It knows which database you're talking
-  to and manages a pool of connections behind the scenes.
-* **Session** — think of this as one conversation with the database, used to run queries and
-  save changes. You'll create a new one per request, later.
-* **Base** — a base class that every database model (table) you define in a future lesson
-  will inherit from.
+* **Engine** — database ku actual connection. Nee endha database oda pesuraan-nu idhukku
+  theriyum, and background-la connections oda oru pool manage pannum.
+* **Session** — idha database oda one conversation-nu nenachiko, queries run panna and
+  changes save panna use pannuva. Aprom, per request oru puthu session create pannuva.
+* **Base** — nee future lesson-la define pannura every database model (table) idhu
+  irundhu than inherit pannum, oru base class.
 
 ## database.py [#databasepy]
 
@@ -7459,46 +7459,50 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False)
 Base = declarative_base()
 ```
 
-## Walking through it [#walking-through-it]
+## Idha step-by-step paakalam [#idha-step-by-step-paakalam]
 
-**`load_dotenv()`** reads your `.env` file and makes its values available through
-`os.getenv()` — this must run before you try to read anything from it.
+**`load_dotenv()`** unnoda `.env` file read pannum, adhoda values `os.getenv()`-la
+irundhu available ah pannum — adhula irundhu edhachum read panna munnadi idhu run
+aaganum.
 
-**`os.getenv("DATABASE_URL")`** reads the exact connection string you set up in the last
-lesson.
+**`os.getenv("DATABASE_URL")`** last lesson-la nee set up pannina exact connection
+string-a read pannum.
 
-**`create_engine(DATABASE_URL)`** hands that connection string to SQLAlchemy. It parses the
-`mysql://` part and knows to use the MySQL driver (`mysqlclient`, installed back in Project
-Setup) to talk to it. Worth knowing: this line doesn't actually open a connection yet — the
-engine connects lazily, the first time it's actually used.
+**`create_engine(DATABASE_URL)`** andha connection string-a SQLAlchemy-ku kudukkum. Idhu
+`mysql://` part-a parse pannum, adha pesa MySQL driver (`mysqlclient`, Project Setup-la
+install pannirukkom) use pannanum-nu therinjikkum. Idha therinjuko: indha line actual ah
+oru connection open pannadhu — engine lazy-ah connect aagum, adha first time actually use
+pannumbodhu than.
 
-**`sessionmaker(bind=engine, autoflush=False)`** doesn't create a session either — it creates
-a *factory*, `SessionLocal`, a function you'll call later (`SessionLocal()`) whenever a piece
-of code needs an actual session to run queries with. `bind=engine` ties every session it
-creates to the engine above; `autoflush=False` means SQLAlchemy won't automatically send
-pending changes to the database before every query — you decide when that happens.
+**`sessionmaker(bind=engine, autoflush=False)`** kooda oru session create pannadhu — idhu
+oru *factory* create pannum, `SessionLocal`, oru function, appuram edhavadhu code-ku
+queries run panna real session venum-na nee adha call pannuva (`SessionLocal()`).
+`bind=engine`, idhu create pannura ovvoru session-ayum mela irukkura engine oda tie
+pannum; `autoflush=False` meaning, ovvoru query munnadi-yum SQLAlchemy pending changes-a
+automatic ah database-ku send pannadhu — adhu eppo nadakkum-nu nee decide pannuva.
 
-**`declarative_base()`** creates the `Base` class. Every table you define as a Python class in
-a future lesson will inherit from this `Base`, which is how SQLAlchemy knows those classes
-represent database tables.
+**`declarative_base()`** `Base` class create pannum. Future lesson-la nee Python class ah
+define pannura every table, indha `Base`-la irundhu than inherit pannum, adhu than andha
+classes database tables-nu SQLAlchemy-kku theriyum.
 
-## What's next [#whats-next]
+## Ippo enna nadakkala [#ippo-enna-nadakkala]
 
-This file only *prepares* the connection — nothing in your app uses it yet. In a future
-lesson, you'll write a small function that hands out a `SessionLocal()` session to each
-request that needs one, and closes it automatically when the request finishes. For now, your
-project has everything it needs to actually reach the database.
+Indha file just connection-a *prepare* pannudhu — unnoda app-la ippo edhuvum idha use
+pannadhu. Future lesson-la, nee oru chinna function ezhudhuva, adhu session venum na
+ovvoru request-ku `SessionLocal()` session kudukkum, and request mudinjadhum automatic ah
+close pannum. Ippozhukku, database-ku actual ah reach aaga unnoda project-kku venum ella
+irukku.
 
 <Callout title="For you, coming from Express/Nest">
-  This is the same role as setting up a TypeORM `DataSource` or a Prisma `PrismaClient` — one
-  shared connection object, created once, that the rest of the app imports and reuses instead
-  of opening a new database connection per request. `engine` is the connection itself,
-  `SessionLocal` is what you'd call to get a usable client/query-runner, and `Base` plays the
-  role TypeORM's `@Entity()` base or Prisma's generated model types play for your future
-  table classes.
+  Idhu TypeORM `DataSource` illa Prisma `PrismaClient` set up pannura same role than — oru
+  shared connection object, once create pannirukkum, adha app-oda rest-um import pannitu
+  reuse pannum, per request oru puthu database connection open pannradhukku pathila.
+  `engine` connection than, `SessionLocal` nee call panni oru usable client/query-runner
+  vaanga use pannuva, and `Base`, future table classes ku TypeORM oda `@Entity()` base illa
+  Prisma oda generated model types pannura role-a than play pannum.
 </Callout>
 
-## `database.py` so far [#databasepy-so-far]
+## `database.py` ippo varaikkum [#databasepy-ippo-varaikkum]
 
 ```python title="database.py"
 from sqlalchemy import create_engine; # to connect python and database
@@ -7519,34 +7523,37 @@ Base = declarative_base()
 
 
 
-Back in Web Fundamentals, you learned that secrets like database credentials must never be
-visible to a user. There's a second rule that follows from that: they shouldn't be
-**hardcoded directly into your source code** either — code gets committed to git, shared with
-teammates, and pushed to hosting providers, and not everyone who sees your code should see
-your production database password.
+Web Fundamentals-la, database credentials maadhiri secrets oru user ku epozhume visible ah
+irukka koodadhu-nu nee kathukiten. Adhula irundhu varura innoru rule irukku: avanga
+unnoda source code-la kooda **hardcode** pannakoodadhu — code git-ku commit aagum,
+teammates-oda share aagum, hosting providers-ku push aagum, and unnoda code paakura
+everyone unnoda production database password paakanum-nu illa.
 
 ## Environment variables [#environment-variables]
 
-The fix is to keep configuration **outside** your code, as **environment variables** — values
-supplied to your program at runtime by whatever is running it, rather than written into a
-file.
+Idhukku fix enna na, configuration-a unnoda code-ku **veliya** vekradhu, **environment
+variables** ah — oru file-la ezhudradhu ku pathila, adha run pannura edhavadhu program
+runtime-la unnoda program ku kudukkura values.
 
-In local development, the standard way to manage these is a `.env` file — a plain text file
-of `KEY=VALUE` pairs, sitting in your project root, that your program reads on startup. This
-is exactly what the `python-dotenv` package you installed last lesson is for.
+Local development-la, idha manage panna standard way oru `.env` file — `KEY=VALUE` pairs
+irukkura oru plain text file, unnoda project root-la irukkum, unnoda program startup-la
+idha read pannum. Idhu than last lesson-la nee install pannina `python-dotenv` package
+ku exact ah purpose.
 
-## Creating your .env file [#creating-your-env-file]
+## Unnoda .env file create panradhu [#unnoda-env-file-create-panradhu]
 
-Create a file named `.env` in your project root, and add your database connection string:
+Unnoda project root-la `.env`-nu peru vecha oru file create pannu, unnoda database
+connection string add pannu:
 
 ```text title=".env"
 DATABASE_URL=mysql://app_user:test@localhost:3306/todo
 ```
 
-## Reading a connection string [#reading-a-connection-string]
+## Connection string read panradhu [#connection-string-read-panradhu]
 
-That `DATABASE_URL` value is called a **connection string** — a single line that packs in
-everything needed to reach a specific database. Breaking it apart:
+Andha `DATABASE_URL` value-a **connection string**-nu solluvom — oru specific database ku
+reach aaga venum na venum ella details-um oru single line-la pack panniruppanga. Idha
+break pannunga:
 
 ```text
 mysql://app_user:test@localhost:3306/todo
@@ -7559,29 +7566,31 @@ mysql://app_user:test@localhost:3306/todo
  └───────────────────────────────────────── which database engine to use
 ```
 
-So this line says: &#x2A;"connect to a MySQL server running on this machine, on port 3306, log in
-as `app_user` with password `test`, and use the database named `todo`."*
+So indha line solradhu enna na: &#x2A;"indha machine-la run aagura oru MySQL server ku connect
+pannu, port 3306-la, `app_user`-nu login pannu password `test` vechu, and `todo`-nu peru
+vecha database use pannu."*
 
-## Never commit .env to git [#never-commit-env-to-git]
+## `.env`-a epozhume git-ku commit pannadhu [#env-a-epozhume-git-ku-commit-pannadhu]
 
-Your `.env` file contains real credentials — it should **never** be committed to version
-control. Add it to `.gitignore` immediately:
+Unnoda `.env` file-la real credentials irukku — idha version control-ku **epozhume**
+commit pannakoodadhu. Idha uடane `.gitignore`-la add pannu:
 
 ```text title=".gitignore"
 .env
 ```
 
-Anyone setting up the project fresh creates their own local `.env` with their own database
-details — it's part of each developer's local setup, not part of the shared codebase.
+Project-a fresh ah set up pannura yaar-yaaravadhu, avanga own local `.env`-a avanga own
+database details vechu create pannuvanga — idhu ovvoru developer oda local setup-la
+part than, shared codebase oda part illa.
 
 <Callout title="For you, coming from Express/Nest">
-  Identical pattern to Node: a `.env` file, a `.gitignore` entry for it, and `dotenv` loading it
-  at startup. The only thing that changes going forward is *how* you read a value in code —
-  Node's `process.env.DATABASE_URL` becomes Python's `os.getenv("DATABASE_URL")`, which you'll
-  see in the very next lesson.
+  Node-la irundha same pattern than: oru `.env` file, adhukku oru `.gitignore` entry, and
+  startup-la `dotenv` idha load pannudhu. Ippa-idhirundhu change aagura ondru enna na, code-la
+  oru value-a *epadi* read pannuraradhu than — Node oda `process.env.DATABASE_URL`, Python
+  oda `os.getenv("DATABASE_URL")`-a maarum, adha next lesson-la than nee paapa.
 </Callout>
 
-## `.env` so far [#env-so-far]
+## `.env` ippa varaikkum [#env-ippa-varaikkum]
 
 ```text title=".env"
 DATABASE_URL=mysql://app_user:test@localhost:3306/todo
@@ -7596,104 +7605,109 @@ DATABASE_URL=mysql://app_user:test@localhost:3306/todo
 
 
 
-Before writing any FastAPI code, you need a properly isolated project. This lesson sets that
-up.
+Edhavadhu FastAPI code ezhudura munnadi, unakku properly isolated aana oru project venum.
+Idha set up panradhu than indha lesson.
 
-## Why a virtual environment? [#why-a-virtual-environment]
+## Virtual environment ஏன் venum? [#virtual-environment-ஏன்-venum]
 
-When you install a Python package, it normally installs **globally** on your machine — not
-just for one project. If Project A needs version 1 of a package and Project B needs version
-2, installing globally means they'd conflict with each other.
+Nee oru Python package install pannumbodhu, adhu normally unnoda machine-la **globally**
+install aagum — just one project ku mattum illa. Project A ku package oda version 1 venum,
+Project B ku version 2 venum-na, globally install panradhu ellam rendu project-um oru
+odana conflict aagum.
 
-A **virtual environment** fixes this: it's a self-contained folder holding its own copy of
-Python and its own packages, completely separate from your system-wide Python and from every
-other project.
+Oru **virtual environment** idha fix pannum: idhu oru self-contained folder, adhula thani
+Python copy and thani packages irukkum, unnoda system-wide Python-la irundhum, vera every
+project-la irundhum completely separate ah.
 
 <Callout title="For you, coming from Express/Nest">
-  In Node, you get this isolation for free — every project has its own `node_modules` folder
-  automatically. Python has no equivalent by default, which is exactly why this extra step
-  exists: a virtual environment is what makes a Python project behave like a Node project's
-  `node_modules`, isolated per project.
+  Node-la, idhu free-ah kidaikkum — every project ku automatic ah adhoda own `node_modules`
+  folder irukkum. Python-la default ah idhu maadhiri edhuvum kidayathu, adhukkaga than indha
+  extra step irukku: oru virtual environment than Python project-a, Node project oda
+  `node_modules` maadhiri, per project isolated ah behave panna vekkum.
 </Callout>
 
-## Creating the virtual environment [#creating-the-virtual-environment]
+## Virtual environment create panradhu [#virtual-environment-create-panradhu]
 
-Inside your project folder, run:
+Unnoda project folder kulla, idha run pannu:
 
 ```bash
 python -m venv venv
 ```
 
-This creates a new folder named `venv` containing an isolated Python environment. (The name
-`venv` is just a convention — the command is `venv`, the folder it creates can technically be
-named anything, but `venv` is what you'll see almost everywhere.)
+Idhu `venv`-nu peru vecha oru new folder create pannum, adhula oru isolated Python
+environment irukkum. (`venv` peru just oru convention — command peru `venv`, adhu create
+pannura folder-ku technically edhavadhu peru vechikalam, aana almost everywhere `venv`-nu
+than nee paapa.)
 
-## Activating it [#activating-it]
+## Idha activate panradhu [#idha-activate-panradhu]
 
-Creating the virtual environment isn't enough — you need to **activate** it in your terminal
-so that `pip` (Python's package installer) and `python` both point at this isolated
-environment instead of your system-wide one.
+Virtual environment create panradhu podhathu illa — unnoda terminal-la idha **activate**
+pannanum, so that `pip` (Python oda package installer) mattrum `python` rendume unnoda
+system-wide environment ku pathila indha isolated environment-a than point pannum.
 
-On Windows:
+Windows-la:
 
 ```bash
 .\venv\Scripts\activate
 ```
 
-On macOS/Linux:
+macOS/Linux-la:
 
 ```bash
 source venv/bin/activate
 ```
 
-Once activated, your terminal prompt will show `(venv)` at the start of the line — that's
-your confirmation that everything you install next goes into this project's isolated
-environment, not your entire system.
+Once activate pannina apparam, unnoda terminal prompt line start-la `(venv)`-nu kaatum —
+adhu than confirmation, next-la nee install pannura edhuvum indha project oda isolated
+environment-ku than pogudhu-nu, unnoda entire system-ku illa.
 
-You'll need to activate the virtual environment again every time you open a fresh terminal to
-work on this project.
+Indha project mela work panna, oru fresh terminal open pannum bodhu ella time-um virtual
+environment-a again activate pannanum.
 
-## Installing the core dependencies [#installing-the-core-dependencies]
+## Core dependencies install panradhu [#core-dependencies-install-panradhu]
 
-With the virtual environment active, install FastAPI's core toolkit:
+Virtual environment active ah irukkumbodhu, FastAPI oda core toolkit install pannu:
 
 ```bash
 pip install fastapi uvicorn sqlalchemy psycopg2-binary python-dotenv mysqlclient pydantic
 ```
 
-Here's what each one does:
+Ovvondrum enna pannum-nu paakalam:
 
-| Package           | Purpose                                                             |
-| ----------------- | ------------------------------------------------------------------- |
-| `fastapi`         | The web framework itself — routing, request handling, validation    |
-| `uvicorn`         | The server that actually runs your FastAPI app                      |
-| `sqlalchemy`      | The ORM you'll use to work with the database                        |
-| `psycopg2-binary` | A PostgreSQL driver — lets SQLAlchemy talk to Postgres              |
-| `python-dotenv`   | Loads configuration from a `.env` file                              |
-| `mysqlclient`     | A MySQL driver — lets SQLAlchemy talk to MySQL                      |
-| `pydantic`        | Validates data and defines the schemas your API accepts and returns |
+| Package           | Purpose                                                                          |
+| ----------------- | -------------------------------------------------------------------------------- |
+| `fastapi`         | Web framework than — routing, request handling, validation                       |
+| `uvicorn`         | Unnoda FastAPI app-a actual ah run pannura server                                |
+| `sqlalchemy`      | Database vechu velai panna nee use pannura ORM                                   |
+| `psycopg2-binary` | Oru PostgreSQL driver — SQLAlchemy Postgres oda pesa help pannum                 |
+| `python-dotenv`   | `.env` file-la irundhu configuration load pannum                                 |
+| `mysqlclient`     | Oru MySQL driver — SQLAlchemy MySQL oda pesa help pannum                         |
+| `pydantic`        | Data validate pannum, unnoda API accept and return pannura schemas define pannum |
 
-`pydantic` is actually installed automatically as part of `fastapi` — you don't strictly need
-to list it yourself. It's included explicitly here because you'll import from it directly and
-often (you already saw why back in "What is FastAPI?"), so it's worth having on your radar as
-its own dependency rather than a hidden detail of FastAPI.
+`pydantic` actually ah `fastapi`-oda part ah automatic ah install aagidum — nee strictly
+adha separately list panna venam. Idha inga explicit ah include panradhu, en na nee adhula
+irundhu directly and often import pannuva (idhu ஏன்-nu "What is FastAPI?"-la already
+paatha), so idha FastAPI oda hidden detail-a vida adhoda own dependency-a nenaikardhu
+better.
 
-You'll notice both a PostgreSQL driver **and** a MySQL driver in that list. SQLAlchemy itself
-doesn't know how to speak to any specific database on its own — it needs a driver matching
-whichever database you actually connect to. This course's project uses **MySQL**, so
-`mysqlclient` is the one that matters going forward; `psycopg2-binary` is there in case you
-ever point the same project at Postgres instead.
+List-la PostgreSQL driver **and** MySQL driver rendume irukardha nee notice pannirupa.
+SQLAlchemy-kku thaniya edhavadhu specific database oda pesa theriyathu — nee actual ah
+connect pannura database matching oru driver adhukku venum. Indha course oda project
+**MySQL** use pannudhu, so `mysqlclient` than ippo mukkiyam; `psycopg2-binary`, epavadhu
+nee same project-a Postgres ku point pannina use aagum-nu apdiye vechirukkom.
 
-The one worth pausing on is &#x2A;*`uvicorn`**. FastAPI code by itself doesn't run as a server —
-it's just Python code describing routes and logic. `uvicorn` is the actual program that
-starts a server process, listens for requests, and feeds them into your FastAPI app.
+Pause pannanum-nu irukkura one dhan &#x2A;*`uvicorn`**. FastAPI code thaniya server ah run
+aagadhu — adhu just routes and logic describe pannura Python code than. `uvicorn` than
+actual ah server process start pannum, requests-ku listen pannum, avatha unnoda FastAPI
+app-ku feed pannum program.
 
 <Callout title="For you, coming from Express/Nest">
-  `uvicorn` plays the role that Node.js itself plays for an Express app, or that `nest start`
-  handles for you under the hood — the thing that actually opens a port and starts serving
-  requests. `sqlalchemy` maps to TypeORM/Prisma/Sequelize (an ORM), the database drivers are
-  the same idea as the `pg` or `mysql2` packages those tools need under the hood, and
-  `python-dotenv` is the exact same job as Node's `dotenv` package — even the name matches.
+  `uvicorn`, Node.js itself Express app ku pannura role-a, illa `nest start` unakku hood-ku
+  kelaya pannura velaya than pannudhu — actual ah oru port open panni requests serve panna
+  start pannura thing. `sqlalchemy`, TypeORM/Prisma/Sequelize (oru ORM) oda maps aagum,
+  database drivers andha tools ku hood-la venum `pg` illa `mysql2` packages oda same idea
+  than, and `python-dotenv`, Node oda `dotenv` package pannura exact same velai than pannum —
+  peru kooda match aagudhu.
 </Callout>
 
 
@@ -7701,71 +7715,76 @@ starts a server process, listens for requests, and feeds them into your FastAPI 
 
 
 
-You now understand *why* a backend exists. From here on, you'll learn to build one — using
-**FastAPI**, a Python framework built specifically for writing APIs.
+Backend enna-nu ippo unakku *why* level-la puriyum. Ippo idhirundhu, nee ondha build panna
+kathukapora — **FastAPI** vechu, APIs ezhuda specific ah build pannina oru Python framework.
 
-## A micro framework [#a-micro-framework]
+## Oru micro framework [#oru-micro-framework]
 
-FastAPI is a **micro framework** — it gives you a small, focused core (routing, request
-handling) rather than a huge all-in-one system with a rigid structure. You choose your own
-project layout and add only the pieces you actually need. This also makes it **flexible**:
-there's no single "correct" way FastAPI forces your code into.
+FastAPI oru **micro framework** — idhu unakku oru small, focused core (routing, request
+handling) kudukkum, rigid structure vecha oru huge all-in-one system illa. Nee unnoda own
+project layout choose pannikalam, unakku actual ah venum na piece mattum add pannikalam.
+Idhu vechu FastAPI **flexible** aagidhu: FastAPI unnoda code-a force panni "idhu than correct
+way"-nu oru single method-la push pannadhu.
 
-## Validation and docs, built in [#validation-and-docs-built-in]
+## Validation and docs, built-in ah irukku [#validation-and-docs-built-in-ah-irukku]
 
-FastAPI is built on top of two other libraries, and it's worth knowing their names because
-you'll see them constantly:
+FastAPI innoru two libraries mela build aagirukku, avanga peru theriyardhu useful, epavum
+avaanga kanpippanga:
 
-* **Starlette** — handles the actual web layer underneath FastAPI: receiving requests,
-  routing them to the right function, sending responses
-* **Pydantic** — handles data validation, using the type hints you learned in Phase 7 of
-  Python Notes
+* **Starlette** — FastAPI kula irukkura actual web layer-a handle pannudhu: requests
+  receive pannradhu, correct function ku route pannradhu, response send pannradhu
+* **Pydantic** — data validation handle pannudhu, Python Notes-la Phase 7-la nee
+  kathukitta type hints vechu
 
-That second point is the big one. Write a type hint on your endpoint's data, like `age: int`,
-and FastAPI automatically:
+Andha second point than periya deal. Unnoda endpoint data mela oru type hint ezhudhu, like
+`age: int`, appuram FastAPI automatic ah:
 
-1. **Validates** incoming data against it — a request sending `age: "abc"` gets rejected
-   automatically, before your code even runs
-2. **Generates interactive documentation** for it — a page where anyone can see every
-   endpoint, what data it expects, and try it out live, with zero extra code from you
+1. Incoming data-a andha type mela **validate** pannum — `age: "abc"`-nu ஒரு request
+   varradhuna, unnoda code run aaguradhukku munnadiye automatic ah reject pannidum
+2. Adhukku **interactive documentation** **generate** pannum — every endpoint, adhukku
+   expect aagura data, live-a try pannradhu ellathayum kaatura oru page, unakku extra
+   code edhuvum ezhudama.
 
-That second point is genuinely one of FastAPI's best features: the moment you define an
-endpoint with type hints, you get a working documentation page for free.
+Andha second point genuinely FastAPI oda best features-la ondru: nee type hints vechu oru
+endpoint define pannina second-la, free-ah oru working documentation page kidaikkum.
 
 ## Fast — genuinely fast [#fast--genuinely-fast]
 
-"FastAPI" isn't just a name. Because it's built on **Starlette**, which supports Python's
-`async`/`await` (Phase 8 of Python Notes), FastAPI can handle a very high volume of requests
-efficiently. In real benchmarks, it performs competitively with — and sometimes faster than —
-Node.js and Go, which is unusual for a Python framework.
+"FastAPI" just oru peru illa. Idhu **Starlette** mela build aagirukkardhala, adhu Python
+oda `async`/`await` (Python Notes Phase 8) support pannudhu, FastAPI oru very high volume
+requests-a efficient ah handle pannum. Real benchmarks-la, idhu Node.js and Go-oda
+competitive ah — sometimes andha rendaiyum vida fast ah — perform pannudhu, idhu oru Python
+framework ku unusual than.
 
 ## Less code, more power [#less-code-more-power]
 
-Because type hints drive both validation and documentation automatically, you end up writing
-far less repetitive code than frameworks that require separate, hand-written validation
-schemas. The type hints you'd write anyway, just to describe your data, *are* the validation
-rules.
+Type hints validation and documentation rendaiyum automatic ah drive pannradhala, separate,
+hand-written validation schemas venum vera frameworks vida nee romba kammi repetitive code
+than ezhudanum. Nee edholadhu unnoda data describe panna ezhuda pora type hints than, adhuve
+*than* validation rules.
 
-## Great for ML and data apps [#great-for-ml-and-data-apps]
+## ML and data apps ku perfect [#ml-and-data-apps-ku-perfect]
 
-Python is the dominant language for machine learning and data science (NumPy, Pandas,
-PyTorch, and so on). Because FastAPI is Python, it's a natural way to take a trained ML model
-or a data pipeline and expose it as an API — no cross-language bridge required.
+Machine learning and data science ku (NumPy, Pandas, PyTorch, etc.) Python than dominant
+language. FastAPI Python nala irukkardhala, oru trained ML model illa oru data pipeline-a
+edhuthu, adha API ah expose panna idhu oru natural way — cross-language bridge edhuvum
+venaam.
 
-## Built on the OpenAPI standard [#built-on-the-openapi-standard]
+## OpenAPI standard mela build aagirukku [#openapi-standard-mela-build-aagirukku]
 
-FastAPI automatically generates an **OpenAPI** specification for your entire API — an
-industry-standard, machine-readable description of every endpoint. This is what powers the
-interactive **Swagger UI** docs mentioned above, available out of the box at `/docs` on any
-FastAPI app you build, with no setup.
+FastAPI unnoda entire API ku automatic ah oru **OpenAPI** specification generate pannum —
+every endpoint-a describe pannura oru industry-standard, machine-readable description. Idhu
+than mேlе mention pannina interactive **Swagger UI** docs-a power pannudhu, nee build panna
+edhavadhu FastAPI app-la `/docs`-la out of the box available irukkum, setup edhuvum venaam.
 
 <Callout title="For you, coming from Express/Nest">
-  Think of Starlette as FastAPI's equivalent of the HTTP layer Express itself provides, and
-  Pydantic as replacing manual validation (`express-validator`, Zod) or Nest's DTOs +
-  `class-validator` — except it's automatic from your type hints, not extra decorators or
-  schemas you write by hand. And the auto-generated Swagger docs replace what you'd normally
-  set up yourself with `swagger-jsdoc`/`swagger-ui-express` in Express, or `@nestjs/swagger` in
-  Nest — in FastAPI, it's there from the first endpoint you write, automatically.
+  Starlette-a, Express thane kudukkura HTTP layer oda FastAPI equivalent-a nenachikko, and
+  Pydantic manual validation-a (`express-validator`, Zod) illa Nest oda DTOs +
+  `class-validator`-a replace pannudhu-nu nenachikko — except idhu unnoda type hints-la
+  irundhu automatic ah aagum, extra decorators illa nee hand-la ezhudura schemas illa. And
+  auto-generated Swagger docs, Express-la `swagger-jsdoc`/`swagger-ui-express` illa Nest-la
+  `@nestjs/swagger` vechu nee usually setup pannuradha replace pannudhu — FastAPI-la, nee
+  ezhudura first endpoint-la irundhe idhu automatic ah irukkum.
 </Callout>
 
 
@@ -7773,10 +7792,11 @@ FastAPI app you build, with no setup.
 
 
 
-You have a model and a schema. Now it's time to actually serve requests: `main.py` is where
-your FastAPI app comes together, and where you'll write your first real endpoint.
+Unakku oru model and oru schema irukku. Ippo actual ah requests serve panna time — `main.py`
+than unnoda FastAPI app onna varradhu, and ippo than nee unnoda first real endpoint
+ezhuduva.
 
-## The app [#the-app]
+## App [#app]
 
 ```python
 from fastapi import FastAPI, Depends
@@ -7789,33 +7809,32 @@ Base.metadata.create_all(bind = engine)
 app = FastAPI()
 ```
 
-`app = FastAPI()` creates the actual application object. Every route you write attaches to
-this `app`, and it's this object that `uvicorn` (installed back in Project Setup) actually
-runs as a server.
+`app = FastAPI()` actual application object create pannudhu. Nee ezhudhura every route
+indha `app`-la attach aagum, and `uvicorn` (Project Setup-la install pannirukkom) idha
+than actual ah server ah run pannum.
 
-## Creating the table for real [#creating-the-table-for-real]
+## Table-a actual ah create panradhu [#table-a-actual-ah-create-panradhu]
 
-`models.py` only ever *described* the `todo` table — nothing had told the database to
-actually create it, until now:
+`models.py` `todo` table-a describe pannina mattum than — idhu varaikkum database ku adha
+actual ah create pannu-nu evanume sollala:
 
 ```python
 Base.metadata.create_all(bind = engine)
 ```
 
-`Base.metadata` knows about every model that inherits from `Base` — `Todo`, in this case,
-registered simply because `main.py` imports it above. `create_all(bind=engine)` checks the
-database behind that `engine` and creates any of those tables that don't already exist yet.
-It's safe to leave running every time the app starts: existing tables are left alone, and
-only what's missing gets created.
+`Base.metadata`-ku `Base`-la irundhu inherit pannura every model-um theriyum — indha case-la
+`Todo`, `main.py` mேlе adha import pannurathala just register aaguchu. `create_all(bind =engine)` andha `engine`-oda database-a check pannum, and innum exist pannama irukkura
+edhavadhu tables-a create pannum. App start aagum every time idha run pannalam safe ah
+irukku: already irukkura tables-a touch pannadhu, missing-a mattum create pannum.
 
 <Callout title="MySQL and column lengths">
-  If a model's `String` columns don't specify a length, this exact line is where you'd find out
-  — MySQL requires an explicit length on every `VARCHAR` column, so `create_all` fails with
-  `VARCHAR requires a length on dialect mysql` until every `String` in `models.py` is given one
-  (`String(200)`, for example).
+  Oru model oda `String` columns length specify pannalanadha, indha exact line-la than nee
+  idha find aaguva — MySQL every `VARCHAR` column ku explicit length require pannum, so
+  `models.py`-la every `String` ku oru length (`String(200)`, example ku) kudukkura
+  varaikkum `create_all`, `VARCHAR requires a length on dialect mysql`-nu fail aagum.
 </Callout>
 
-## The database session dependency [#the-database-session-dependency]
+## Database session dependency [#database-session-dependency]
 
 ```python
 # Dependency for DB session
@@ -7827,27 +7846,29 @@ def get_db():
         db.close()
 ```
 
-This is the function the Database Connection lesson promised was coming. It's a **FastAPI
-dependency** — a function a route can ask for something from, without worrying about how
-that something is created or cleaned up.
+Idhu than Database Connection lesson promise pannina function. Idhu oru **FastAPI
+dependency** — oru function, oru route adhula irundhu edhavadhu vaanga kekkalam, adhu
+epadi create aagum, epadi clean up aagum-nu worry pannama.
 
-Notice it uses `yield` instead of `return` (Phase 5 and 8 of Python Notes covered generators
-and `async`/`await` — this is a related idea): calling `SessionLocal()` creates a new
-session, `yield db` hands that session to whichever route asked for it, and once that route
-finishes — successfully *or* with an error — execution resumes right after the `yield`, and
-`finally: db.close()` guarantees the session gets closed either way.
+`return`-ku pathila `yield` use pannirukku-nu notice pannu (Python Notes-la Phase 5 and
+8 generators and `async`/`await` cover pannirukku — idhu oru related idea than): `SessionLocal()`
+call panradhu oru new session create pannum, `yield db` andha session-a kekkura route
+ku hand pannum, and andha route mudinja apparam — successfully *illa* oru error-oda —
+execution `yield`-ku apparam than resume aagum, and `finally: db.close()` rendu
+ways-layum session close aagum-nu guarantee pannum.
 
-## Depends — wiring the dependency into a route [#depends--wiring-the-dependency-into-a-route]
+## Depends — dependency-a route-la wire panradhu [#depends--dependency-a-route-la-wire-panradhu]
 
 ```python
 def create(todo: TodoCreate, db: Session = Depends(get_db)):
 ```
 
-`db: Session = Depends(get_db)` tells FastAPI: &#x2A;before running this route, call `get_db()`,
-wait for its `yield`, and pass whatever it yields in as `db`.* You never call `get_db()`
-yourself — FastAPI calls it for you, for every request that needs a database session.
+`db: Session = Depends(get_db)` FastAPI ku sollum: &#x2A;indha route run panna munnadi,
+`get_db()`-a call pannu, adhoda `yield`-ku wait pannu, and adhu yield pannuradha `db`-nu
+kudu.* Nee epozhume `get_db()`-a thaniya call panna maatta — FastAPI than adha unnoda
+place-la call pannum, database session venum na every request ku.
 
-## The route [#the-route]
+## Route [#route]
 
 ```python
 # POST - Create TODO
@@ -7860,40 +7881,43 @@ def create(todo: TodoCreate, db:Session = Depends(get_db)):
     return db_todo
 ```
 
-**`@app.post("/todos", response_model=TodoSchema)`** — a decorator that registers this
-function to handle `POST` requests to `/todos`. `response_model=TodoSchema` tells FastAPI
-what shape the returned data should be validated and serialized into before it's sent back —
-and it's also what shows up in your auto-generated docs for this endpoint.
+**`@app.post("/todos", response_model=TodoSchema)`** — oru decorator, idhu indha
+function-a `POST` requests-a `/todos`-ku handle panna register pannum. `response_model=
+TodoSchema` FastAPI ku sollum, return aagura data enna shape-la validate and serialize
+aaganum-nu — and idhu than indha endpoint ku unnoda auto-generated docs-la kooda kaanum.
 
-**`todo: TodoCreate`** — the request body. FastAPI reads the incoming JSON and validates it
-against `TodoCreate` automatically — the same automatic validation from the very first
-FastAPI lesson, now applied to a real request. This is the payoff from the Creating the Todo
-Schema lesson: the **input** type (`TodoCreate`) has no `id`, so a client can't send one —
-while the **output** type (`response_model=TodoSchema`) does, since only the database can
-assign it. Input and output finally use two different shapes, exactly as planned.
+**`todo: TodoCreate`** — request body. FastAPI incoming JSON-a read panni, `TodoCreate`
+oda automatic ah validate pannum — first FastAPI lesson-la irundha same automatic
+validation, ippo oru real request-ku apply pannirukku. Idhu than Creating the Todo Schema
+lesson-oda payoff: **input** type (`TodoCreate`) ku `id` illa, so oru client adha send
+panna mudiyadhu — aana **output** type (`response_model=TodoSchema`) ku irukku, en na
+database mattum than adha assign panna mudiyum. Input and output, finally, rendu different
+shapes use pannudhu, exactly plan pannina maadhiri.
 
-**`db_todo = Todo(**todo.dict())`** — `todo` is a Pydantic schema instance; `.dict()` turns it
-into a plain dict, and `**` unpacks that dict as keyword arguments into `Todo(...)` — turning
-validated request data into an actual SQLAlchemy model instance, ready to be saved.
+**`db_todo = Todo(**todo.dict())`** — `todo` oru Pydantic schema instance; `.dict()` adha
+plain dict ah maatrum, and `**` andha dict-a keyword arguments ah `Todo(...)`-la unpack
+pannum — validated request data-a oru actual SQLAlchemy model instance ah maatrum, save
+panna ready ah.
 
-**`db.add(db_todo)`*&#x2A; stages the new row. &#x2A;*`db.commit()`*&#x2A; actually writes it to the
-database. &#x2A;*`db.refresh(db_todo)`** reloads `db_todo` with the values the database assigned
-during commit — most importantly, the auto-generated `id`, which `db_todo` doesn't have until
-this line runs.
+**`db.add(db_todo)`*&#x2A; new row-a stage pannum. &#x2A;*`db.commit()`*&#x2A; actual ah adha database-la
+write pannum. &#x2A;*`db.refresh(db_todo)`** commit time-la database assign pannina values
+vechu `db_todo`-a reload pannum — mukkiyamana, auto-generated `id`, idhu line run
+aagardhukku munnadi `db_todo`-kku irukkadhu.
 
-**`return db_todo`** — returning the SQLAlchemy object directly, which FastAPI converts into
-the `response_model` shape before sending it back as JSON.
+**`return db_todo`** — SQLAlchemy object-a directly return pannudhu, adha FastAPI back
+JSON ah send panna munnadi `response_model` shape ah convert pannum.
 
 <Callout title="For you, coming from Express/Nest">
-  `Depends(get_db)` is FastAPI's version of dependency injection — the same idea as a Nest
-  provider injected into a controller's constructor, or an Express middleware that attaches
-  `req.db` before your handler runs. `@app.post("/todos")` is the same job as Nest's `@Post()`
-  decorator or Express's `router.post()`. And `response_model` is what a Nest response DTO (or
-  manual `class-transformer` serialization) does — controlling exactly what shape leaves your
-  API, separate from your internal database object.
+  `Depends(get_db)` FastAPI oda dependency injection version than — oru Nest controller oda
+  constructor-la inject pannirukkura oru Nest provider, illa unnoda handler run aaga munnadi
+  `req.db` attach pannura oru Express middleware pannura same idea than. `@app.post("/todos")`
+  Nest oda `@Post()` decorator illa Express oda `router.post()` pannura same job than. And
+  `response_model`, oru Nest response DTO (illa manual `class-transformer` serialization)
+  pannuradha pannum — unnoda internal database object-la irundhu separate ah, unnoda API-la
+  irundhu exact ah enna leave aagum-nu control panradhu.
 </Callout>
 
-## `main.py` so far [#mainpy-so-far]
+## `main.py` ippo varaikkum [#mainpy-ippo-varaikkum]
 
 ```python title="main.py"
 from fastapi import FastAPI, Depends
@@ -7929,16 +7953,16 @@ def create(todo: TodoCreate, db:Session = Depends(get_db)):
 
 
 
-`database.py` gave you a `Base` class, but nothing inherits from it yet — there's no table
-described anywhere. This lesson creates the first one: a `Todo` model, for the app this
-course is building.
+`database.py` unakku oru `Base` class kudutha, aana ippo varaikkum edhuvum adhula irundhu
+inherit pannala — enga oru table describe pannala. Indha lesson mudhal ondra create
+pannum: oru `Todo` model, indha course build panra app ku.
 
-## What a model actually is [#what-a-model-actually-is]
+## Model-nu actual ah enna [#model-nu-actual-ah-enna]
 
-In an ORM, a **model** is a Python class that represents one database table. Each class
-**attribute** represents one **column** in that table. You'll create actual rows later by
-creating instances of this class — but the class itself just describes the *shape* of the
-table.
+Oru ORM-la, oru **model** solradhu oru Python class, adhu database table-la one table-a
+represent pannum. Ovvoru class **attribute**-um andha table-la one **column**-a
+represent pannum. Aprom nee indha class oda instances create panni actual rows create
+pannuva — aana class itself just table oda *shape*-a describe pannum.
 
 ## models.py [#modelspy]
 
@@ -7954,51 +7978,53 @@ class Todo(Base):
     completed = Column(Boolean, default=False)
 ```
 
-## Walking through it [#walking-through-it]
+## Idha step-by-step paakalam [#idha-step-by-step-paakalam]
 
-**`class Todo(Base):`** — inheriting from `Base` (from `database.py`) is what tells
-SQLAlchemy "this class describes a database table," not just a normal Python class.
+**`class Todo(Base):`** — (`database.py`-la irundhu) `Base`-la irundhu inherit
+panradhu than SQLAlchemy ku sollum "indha class oru database table-a describe
+pannudhu"-nu, normal Python class illa-nu.
 
-**`__tablename__ = "todo"`** — the actual table name SQLAlchemy will use in the database.
+**`__tablename__ = "todo"`** — database-la SQLAlchemy use pannura actual table name.
 
-**Each `Column(...)`** describes one field:
+**Ovvoru `Column(...)`**-um one field describe pannum:
 
-* `id = Column(Integer, primary_key=True, index=True)` — a whole number that uniquely
-  identifies each row. `primary_key=True` means the database guarantees it's unique, and
-  will fill it in automatically (1, 2, 3, ...) — you never set it yourself.
-* `title = Column(String(200), nullable=False)` — text, capped at 200 characters, and
-  `nullable=False` means every todo **must** have a title — the database will reject a row
-  without one.
-* `description = Column(String(500))` — also text, capped at 500 characters, but optional:
-  since `nullable` isn't set, it defaults to `True`, so a todo can exist without a
-  description.
-* `completed = Column(Boolean, default=False)` — true/false, and every new todo starts as
-  `False` unless you say otherwise.
+* `id = Column(Integer, primary_key=True, index=True)` — ovvoru row-a uniquely identify
+  pannura oru whole number. `primary_key=True` meaning, database adha unique-nu
+  guarantee pannum, and adha automatic ah fill pannum (1, 2, 3, ...) — nee epozhume
+  thaniya set pannama.
+* `title = Column(String(200), nullable=False)` — text, 200 characters ku cap
+  pannirukku, and `nullable=False` meaning every todo ku title **mandatory ah** irukanum —
+  title illama oru row-a database reject pannidum.
+* `description = Column(String(500))` — idhu kooda text than, 500 characters ku cap
+  pannirukku, aana optional: `nullable` set pannalanadha, default ah `True`-nu irukkum,
+  so oru todo description illama exist pannalam.
+* `completed = Column(Boolean, default=False)` — true/false, and every new todo, nee
+  vera edhavadhu sollala na `False`-nu start aagum.
 
 <Callout title="Why String needs a length here">
-  MySQL's `VARCHAR` type **requires** an explicit maximum length — unlike some other databases,
-  it simply won't let you create a text column without one. Leave the length off, and you
-  won't notice anything wrong until the moment SQLAlchemy actually tries to create this table,
-  when it'll fail with `VARCHAR requires a length on dialect mysql`. Pick whatever limit makes
-  sense for the field — there's nothing special about 200 or 500 here, just reasonable caps for
-  a title and a description.
+  MySQL oda `VARCHAR` type ku **explicit maximum length** vendiyadhu than — chila vera
+  databases pola illa, adhu length illama oru text column create panna simply let pannadhu.
+  Length-a vittuduna, SQLAlchemy actual ah indha table create panna try pannumbodhu than nee
+  enna wrong-nu notice pannuva, `VARCHAR requires a length on dialect mysql`-nu adhu fail
+  aagum. Field ku edhu makes sense-nu andha limit-a pick pannu — 200 illa 500 idhula special
+  edhuvum illa, title and description ku reasonable caps than.
 </Callout>
 
-## What this doesn't do yet [#what-this-doesnt-do-yet]
+## Idhu ippo varaikkum panradhu illa [#idhu-ippo-varaikkum-panradhu-illa]
 
-Writing this class doesn't create the `todo` table in your actual MySQL database — it just
-*describes* it. Telling SQLAlchemy to actually create the table is a separate step, coming up
-next.
+Indha class ezhudradhu, unnoda actual MySQL database-la `todo` table create pannadhu —
+adha just *describe* pannudhu than. SQLAlchemy ku table-a actual ah create pannu-nu
+sollradhu, oru separate step, adhu next varum.
 
 <Callout title="For you, coming from Express/Nest">
-  This is the same job as a TypeORM `@Entity()` class with `@Column()` decorators, or a Mongoose
-  schema — a class that describes a table's shape, which the ORM later uses to generate SQL.
-  `primary_key=True` is the same idea as TypeORM's `@PrimaryGeneratedColumn()`, and
-  `nullable=False` matches marking a column `NOT NULL` (or a required field in a Mongoose
-  schema).
+  Idhu than TypeORM `@Entity()` class oda `@Column()` decorators, illa oru Mongoose
+  schema pannura same job — table oda shape-a describe pannura oru class, adha ORM aprom
+  SQL generate panna use pannum. `primary_key=True`, TypeORM oda
+  `@PrimaryGeneratedColumn()` same idea than, and `nullable=False`, oru column `NOT NULL`
+  mark panradhu (illa Mongoose schema-la oru required field) match pannum.
 </Callout>
 
-## `models.py` so far [#modelspy-so-far]
+## `models.py` ippo varaikkum [#modelspy-ippo-varaikkum]
 
 ```python title="models.py"
 from sqlalchemy import Column, Integer, String, Boolean;
@@ -8017,25 +8043,27 @@ class Todo(Base):
 
 
 
-`models.py` describes the `todo` table in your database. Now you need something different: a
-way to describe what data looks like when it travels **in and out of your API** over HTTP.
-That's what a **schema** is — and it's a separate concept from a model, on purpose.
+`models.py`, unnoda database-la `todo` table describe pannudhu. Ippo unakku vera edhavadhu
+venum: data **unnoda API-la in and out** HTTP mela travel pannumbodhu adhu epadi kaanum-nu
+describe panna oru vazhi. Adhu than oru **schema** — and purpose-a vechu, idhu model-la
+irundhu oru separate concept than.
 
-## Why not just reuse the model? [#why-not-just-reuse-the-model]
+## Model-a enne reuse pannakoodadha? [#model-a-enne-reuse-pannakoodadha]
 
-It's tempting to think "I already described a `Todo`, why describe it again?" A few real
-reasons this doesn't work:
+"Naan already oru `Todo`-a describe pannirukken, enna adha again describe pannanum" nu
+nenaikardhu tempting than. Idhu ஏன் work aagadhu-nu chila real reasons:
 
-* **Different fields for different situations.** When a client *creates* a todo, they
-  shouldn't have to send `id` — the database assigns it, and it doesn't exist yet. But when
-  the API *returns* a todo, you want `id` included. One shape can't represent both.
-* **Control over what leaves your API.** A database model can end up with fields you never
-  want a client to see. A schema is where you decide, explicitly, what actually gets sent
-  back.
-* **Different tools for different jobs.** `models.py` uses SQLAlchemy's `Base` — it's built
-  for talking to the database. Schemas use **Pydantic**'s `BaseModel` — the same validation
-  library from the very first FastAPI lesson — and it's what FastAPI actually uses to
-  validate requests and generate your API docs.
+* **Different situations ku different fields.** Oru client oru todo *create* pannumbodhu,
+  avanga `id` send panna venaam — database than adha assign pannum, and adhu innum exist
+  pannala. Aana API oru todo *return* pannumbodhu, `id` include aaganum-nu venum. Oru
+  shape rendaiyum represent panna mudiyadhu.
+* **Unnoda API-la irundhu enna leave aagum-nu control.** Oru database model-la, client
+  epozhume paakka koodadha fields kooda irukkalam. Actual ah enna back send aagum-nu
+  explicit ah decide pannura place than schema.
+* **Different jobs ku different tools.** `models.py`, SQLAlchemy oda `Base` use pannudhu
+  — idhu database oda pesa build pannirukku. Schemas **Pydantic**-oda `BaseModel` use
+  pannum — first FastAPI lesson-la irundha same validation library — and FastAPI actual
+  ah idha than requests validate panna and unnoda API docs generate panna use pannum.
 
 ## schemas.py [#schemaspy]
 
@@ -8058,59 +8086,62 @@ class Todo(TodoBase):
         orm_mode = True # for automatic json parsing
 ```
 
-## Walking through it [#walking-through-it]
+## Idha step-by-step paakalam [#idha-step-by-step-paakalam]
 
-**`TodoBase`** holds the fields shared by every shape a todo can take — `title`,
-`description`, and `completed`, each written once. Both schemas below build on it. Because
-`completed` has a default (`False`), it's optional wherever it's inherited — a client can
-leave it out entirely and still get a valid todo.
+**`TodoBase`** oru todo take pannalam-nu irukkura every shape-um share pannura
+fields-a vechirukku — `title`, `description`, and `completed`, ovvondrum once mattum
+ezhudhi. Kelu irukkura rendu schemas-um idha mela build aagum. `completed`-ku oru
+default (`False`) irukkardhala, adhu inherit aagura endha place-layum optional than — oru
+client adha entirely leave out pannalam, still oru valid todo kidaikkum.
 
-**`TodoCreate(TodoBase)`** is what a client sends to create a new todo. It doesn't add
-anything beyond `TodoBase` — everything a client is allowed to provide (`title`,
-`description`, optionally `completed`) is already there. Keeping it as its own class means
-you can add creation-only fields later without touching the shape used for reading a todo
-back.
+**`TodoCreate(TodoBase)`** oru client puthu todo create panna send pannuradhu. `TodoBase`
+vida idhu edhuvum extra add pannala — client provide panna allowed aana ella something-um
+(`title`, `description`, optionally `completed`) already adhula irukku. Idha adhoda own
+class ah vekkardhu, meaning aprom creation-only fields add pannalam, todo back read
+panna use pannura shape-a touch pannama.
 
-**`Todo(TodoBase)`** is what the API sends **back**. It adds `id` — the one field that only
-exists once a todo has actually been saved to the database, which is exactly why it's not on
-`TodoCreate`.
+**`Todo(TodoBase)`** API **back** send pannuradhu. Idhu `id` add pannum — oru todo
+actual ah database-la save aana apparam than exist pannura field, adhukku than idhu
+`TodoCreate`-la illa.
 
-**`class Config: orm_mode = True`** is the detail that connects this back to your SQLAlchemy
-model. By default, a Pydantic schema expects to be built from a plain dict. `orm_mode = True`
-tells it "it's also fine to build this from an object with matching attributes" — which is
-exactly what a `models.Todo` instance is. It's what lets you return a SQLAlchemy object
-straight from a route, and have FastAPI convert it into this schema automatically, field by
-field — the "automatic json parsing" in the comment.
+**`class Config: orm_mode = True`** idha unnoda SQLAlchemy model-oda back connect
+pannura detail. Default ah, oru Pydantic schema oru plain dict-la irundhu build aagum-nu
+expect pannum. `orm_mode = True` adhukku sollum "matching attributes vecha oru object-la
+irundhum idha build pannalam" — adhu than exactly oru `models.Todo` instance. Idhu than
+oru SQLAlchemy object-a route-la irundhu straight ah return panna, and FastAPI adha
+automatic ah, field by field, indha schema ah convert panna vidum — comment-la irukkura
+"automatic json parsing".
 
 <Callout title="Pydantic version note">
-  `orm_mode` is the Pydantic v1 name for this setting. Newer Pydantic versions renamed it to
-  `from_attributes` (set via `model_config = ConfigDict(from_attributes=True)`), but both do
-  exactly the same job — you may see either spelling depending on the Pydantic version a
-  project uses.
+  `orm_mode` idha setting ku Pydantic v1 name than. Newer Pydantic versions idha
+  `from_attributes`-nu rename pannirukku (`model_config = ConfigDict(from_attributes=True)`
+  vazhi set pannuvanga), aana rendume exact same job than pannum — oru project use pannura
+  Pydantic version-a vechu, nee edhavadhu spelling paakkalam.
 </Callout>
 
-## Two `Todo`s, on purpose [#two-todos-on-purpose]
+## Rendu `Todo`s, purpose vechu [#rendu-todos-purpose-vechu]
 
-Notice `models.py` has a `Todo` class, and now `schemas.py` has one too. That's intentional
-and completely safe — they live in separate files, so you refer to them as `models.Todo` and
-`schemas.Todo`. It's a common enough pattern that you'll recognize it instantly once you've
-seen it:
+`models.py`-la oru `Todo` class irukku, ippo `schemas.py`-lam kooda ondru irukku-nu
+notice pannu. Idhu intentional than and completely safe than — avanga separate files-la
+irukkuranga, so nee avatha `models.Todo` and `schemas.Todo`-nu refer pannuva. Idhu oru
+common pattern than, nee once paatha udane recognize pannuva:
 
-|            | `models.py` (SQLAlchemy)  | `schemas.py` (Pydantic)            |
-| ---------- | ------------------------- | ---------------------------------- |
-| Describes  | A database table          | An API request/response shape      |
-| Used by    | The ORM, to talk to MySQL | FastAPI, to validate and serialize |
-| Base class | `Base`                    | `BaseModel`                        |
+|                     | `models.py` (SQLAlchemy) | `schemas.py` (Pydantic)               |
+| ------------------- | ------------------------ | ------------------------------------- |
+| Describe pannuradhu | Oru database table       | Oru API request/response shape        |
+| Yaar use pannuranga | ORM, MySQL oda pesa      | FastAPI, validate and serialize panna |
+| Base class          | `Base`                   | `BaseModel`                           |
 
 <Callout title="For you, coming from Express/Nest">
-  This is precisely the separation Nest already pushes you toward: a `CreateTodoDto` (validated
-  with `class-validator`) versus a TypeORM `@Entity()` — "what the API accepts/returns" kept
-  apart from "what the table looks like." In plain Express, it's the difference between a Zod
-  or Joi validation schema and a Sequelize/TypeORM model. A Pydantic schema is FastAPI's version
-  of a DTO — same idea, same reason for existing.
+  Idhu than exactly Nest already unnaya push pannura separation: oru `CreateTodoDto`
+  (`class-validator` vechu validate pannirukku) vs oru TypeORM `@Entity()` — "API accept /
+  return pannuradhu" "table epadi irukku"-la irundhu separate ah vekkardhu. Plain
+  Express-la, oru Zod illa Joi validation schema vs oru Sequelize/TypeORM model-oda
+  difference than idhu. Oru Pydantic schema, FastAPI oda DTO version than — same idea,
+  same exist pannura reason.
 </Callout>
 
-## `schemas.py` so far [#schemaspy-so-far]
+## `schemas.py` ippo varaikkum [#schemaspy-ippo-varaikkum]
 
 ```python title="schemas.py"
 from pydantic import BaseModel
@@ -8136,9 +8167,9 @@ class Todo(TodoBase):
 
 
 
-The last CRUD operation: removing a todo entirely.
+Last CRUD operation: oru todo-a entirely remove panradhu.
 
-## The route [#the-route]
+## Route [#route]
 
 ```python
 #DELETE - Delete Todo
@@ -8152,35 +8183,40 @@ def delete_todo(todo_id:int,  db:Session = Depends(get_db)):
     return {"message":"Todo deleted successfully"}
 ```
 
-## Walking through it [#walking-through-it]
+## Idha step-by-step paakalam [#idha-step-by-step-paakalam]
 
-**`@app.delete("/todos/{todo_id}")`** — the `DELETE` method, same path parameter pattern as
-fetching or updating a single todo. Notice there's no `response_model` this time — once a
-todo is deleted, there's no `Todo` left to shape a response around.
+**`@app.delete("/todos/{todo_id}")`** — `DELETE` method than, oru single todo fetch illa
+update panradhu-la irundha same path parameter pattern. Indha time `response_model`
+edhuvum illa-nu notice pannu — oru todo delete aana apparam, response-a shape panna
+`Todo` edhuvum illa.
 
-**Find it, or 404** — the same lookup-then-check pattern from Fetch a Single Todo and Update
-Todo: query by id, and raise `HTTPException(404, ...)` if nothing matches. By now you've
-written this exact pattern three times — a good sign it could be pulled into a single shared
-dependency later, once you're comfortable with how `Depends()` works.
+**Find pannu, illana 404** — Fetch a Single Todo and Update Todo-la irundha same
+lookup-then-check pattern than: id vechu query pannu, and onnume match aagalana
+`HTTPException(404, ...)` raise pannu. Ippozhukku idha exact ah pattern-a three
+times ezhudhirukka — idha future-la, `Depends()` epadi work aagum-nu unakku comfortable
+aana apparam, oru single shared dependency-la pull panna mudiyum-nu oru good sign than.
 
-**`db.delete(todo)`** stages the row for removal — the delete equivalent of `db.add()&#x60;.
-&#x2A;*`db.commit()`** actually removes it from the database.
+**`db.delete(todo)`** row-a removal ku stage pannum — `db.add()&#x60;-oda delete equivalent
+than. &#x2A;*`db.commit()`** actual ah adha database-la irundhu remove pannum.
 
-**`return {"message":"Todo deleted successfully"}`** — a plain Python dict, not a `Todo`.
-Since there's no `response_model` on this route, FastAPI just serializes whatever you return
-directly to JSON. Returning a small confirmation message like this is the normal choice for
-a delete endpoint — there's nothing meaningful left to hand back.
+**`return {"message":"Todo deleted successfully"}`** — oru plain Python dict than, `Todo`
+illa. Indha route-la `response_model` illama irukkardhala, FastAPI nee return pannura
+edhuvum directly JSON ah serialize pannum. Idha maadhiri oru chinna confirmation message
+return panradhu, oru delete endpoint ku normal choice than — back kudukka meaningful ah
+onnume illa.
 
 <Callout title="For you, coming from Express/Nest">
-  `db.delete(todo)` + `db.commit()` is the same job as `todo.destroy()` in Sequelize,
-  `repository.remove(todo)` in TypeORM, or `prisma.todo.delete()` in Prisma. And returning a
-  plain `{"message": "..."}` instead of the deleted resource is exactly what you'd do with
-  `res.json({ message: 'Deleted' })` in Express — nothing FastAPI-specific about that choice.
+  `db.delete(todo)` + `db.commit()`, Sequelize-la `todo.destroy()`, TypeORM-la
+  `repository.remove(todo)`, illa Prisma-la `prisma.todo.delete()` pannura same job than.
+  And deleted resource-ku pathila plain `{"message": "..."}` return panradhu, Express-la
+  `res.json({ message: 'Deleted' })` pannura exact ah same thing than — idhula FastAPI
+  specific ah edhuvum illa.
 </Callout>
 
-## `main.py` so far [#mainpy-so-far]
+## `main.py` ippo varaikkum [#mainpy-ippo-varaikkum]
 
-Every CRUD operation is now in place: create, read all, read one, update, delete.
+Ippo every CRUD operation-um place-la irukku: create, read all, read one, update,
+delete.
 
 ```python title="main.py"
 from fastapi import FastAPI, Depends, HTTPException
@@ -8250,10 +8286,10 @@ def delete_todo(todo_id:int,  db:Session = Depends(get_db)):
 
 
 
-With creating a todo working, the next endpoint reads them back — every todo in the
-database.
+Todo create panradhu work aaguthu, next endpoint avatha back read pannum — database-la
+irukkura every todo-a.
 
-## The route [#the-route]
+## Route [#route]
 
 ```python
 # GET - All Todos
@@ -8262,36 +8298,38 @@ def read_todos(db:Session = Depends(get_db)):
     return db.query(Todo).all()
 ```
 
-## Walking through it [#walking-through-it]
+## Idha step-by-step paakalam [#idha-step-by-step-paakalam]
 
-**`@app.get("/todos", ...)`** — same decorator pattern as `create`, but `@app.get` instead of
-`@app.post`. A `GET` request doesn't carry a request body, which is why `read_todos` doesn't
-take a `todo` parameter the way `create` did.
+**`@app.get("/todos", ...)`** — `create`-la irundha same decorator pattern than, aana
+`@app.post`-ku pathila `@app.get`. Oru `GET` request oru request body kondu varadhu, adhukku
+than `create` maadhiri `read_todos`, `todo` parameter edukkadhu.
 
-**`response_model = list[TodoSchema]`** — this is the container type hints from Phase 7 of
-Python Notes, now doing real work: `list[TodoSchema]` tells FastAPI "the response is a list,
-where every item is a `TodoSchema`." It validates and serializes every item in the returned
-list the same way a single `response_model=TodoSchema` handles one.
+**`response_model = list[TodoSchema]`** — Python Notes Phase 7-la irundha container type
+hints, ippo real velai pannudhu: `list[TodoSchema]` FastAPI ku sollum "response oru list,
+adhula every item-um oru `TodoSchema`". Single `response_model=TodoSchema` oru item
+handle pannura maadhiri than, return aagura list-la irukkura every item-um idhu validate
+and serialize pannum.
 
-**`db:Session = Depends(get_db)`** — the same database dependency from the `create` route.
-Reading data still needs a session, exactly like writing it did.
+**`db:Session = Depends(get_db)`** — `create` route-la irundha same database dependency
+than. Data read panna kooda oru session venum, write pannina maadhiri exact ah.
 
-**`db.query(Todo).all()`** — SQLAlchemy's query syntax: `db.query(Todo)` starts a query
-against the `todo` table, and `.all()` runs it and returns every matching row, as a list of
-`Todo` (SQLAlchemy) instances. With no filtering added, that means every row in the table.
+**`db.query(Todo).all()`** — SQLAlchemy oda query syntax: `db.query(Todo)` `todo` table ku
+oru query start pannum, and `.all()` adha run panni, match aana every row-a, `Todo`
+(SQLAlchemy) instances oda oru list ah return pannum. Filtering edhuvum add pannalanadha,
+meaning table-la irukkura every row-um.
 
-**`return db.query(Todo).all()`** — same as `create`: returning SQLAlchemy objects directly,
-and `orm_mode` (from the schema lesson) is what lets FastAPI convert each one into a
-`TodoSchema` automatically.
+**`return db.query(Todo).all()`** — `create` maadhiri than: SQLAlchemy objects-a directly
+return pannudhu, and (schema lesson-la irundha) `orm_mode` than FastAPI ku ovvondrayum
+automatic ah oru `TodoSchema` ah convert panna vidum.
 
 <Callout title="For you, coming from Express/Nest">
-  `db.query(Todo).all()` is the same job as `Model.findAll()` in Sequelize, `repository.find()`
-  in TypeORM, or `prisma.todo.findMany()` in Prisma — "give me every row," with no filter
-  applied yet. You'll narrow this down with actual filters once you get to fetching a single
-  todo by id.
+  `db.query(Todo).all()`, Sequelize-la `Model.findAll()`, TypeORM-la `repository.find()`,
+  illa Prisma-la `prisma.todo.findMany()` pannura same job than — "every row-a kudu",
+  edhuvum filter apply pannama. Oru single todo id vechu fetch panna varumbodhu, idha nee
+  actual filters vechu narrow down pannuva.
 </Callout>
 
-## `main.py` so far [#mainpy-so-far]
+## `main.py` ippo varaikkum [#mainpy-ippo-varaikkum]
 
 ```python title="main.py"
 from fastapi import FastAPI, Depends
@@ -8332,11 +8370,11 @@ def read_todos(db:Session = Depends(get_db)):
 
 
 
-Fetching every todo is useful, but you also need to fetch **one specific** todo — by its id.
-This introduces two new ideas: reading a value straight out of the URL, and telling the
-client clearly when something doesn't exist.
+Every todo fetch panradhu useful, aana unakku **one specific** todo-a kooda fetch panna
+venum — adhoda id vechu. Idhu rendu puthu ideas introduce pannum: URL-la irundhu directly
+oru value read panradhu, and edhavadhu exist pannala-na client ku clear ah sollradhu.
 
-## The route [#the-route]
+## Route [#route]
 
 ```python
 @app.get("/todos/{todo_id}", response_model = TodoSchema)
@@ -8349,50 +8387,53 @@ def read_todo(todo_id: int,db:Session = Depends(get_db)):
 
 ## Path parameters [#path-parameters]
 
-**`@app.get("/todos/{todo_id}", ...)`** — the `{todo_id}` inside the path is a **path
-parameter**: a placeholder that matches whatever value actually appears there. Visit
-`/todos/5`, and `todo_id` becomes `5`.
+**`@app.get("/todos/{todo_id}", ...)`** — path-la irukkura `{todo_id}` oru **path
+parameter** — enga vandhalum andha value ku match aagura oru placeholder. `/todos/5`
+visit pannu, `todo_id` `5`-nu aagum.
 
-**`def read_todo(todo_id: int, ...)`** — the parameter name has to match the `{todo_id}` in
-the path exactly. FastAPI reads the value straight from the URL and converts it to whatever
-type you annotate — `int` here — validating it along the way. Visit `/todos/abc`, and
-FastAPI rejects the request automatically, before your function even runs, because `"abc"`
-isn't a valid `int`.
+**`def read_todo(todo_id: int, ...)`** — parameter name path-la irukkura `{todo_id}`-oda
+exact ah match aaganum. FastAPI URL-la irundhu directly value-a read pannum, and nee
+annotate pannura endha type-um (inga `int`) adha convert pannum — adha vazhi validate
+pannikittu. `/todos/abc` visit pannu, FastAPI automatic ah request-a reject pannidum,
+unnoda function run aaga munnadi than, en na `"abc"` oru valid `int` illa.
 
-## Filtering a query [#filtering-a-query]
+## Query filter panradhu [#query-filter-panradhu]
 
-Fetch All Todos used `.all()` — every row, no filtering. This route needs exactly one:
+Fetch All Todos-la `.all()` use pannirundhom — filtering edhuvum illama every row. Indha
+route ku exactly one venum:
 
 ```python
 todo = db.query(Todo).filter(Todo.id == todo_id).first()
 ```
 
-**`.filter(Todo.id == todo_id)`** narrows the query down to rows where the `id&#x60; column
-matches. &#x2A;*`.first()`** runs the query and returns just the first matching row — or `None` if
-nothing matched, instead of raising an error the way you might expect.
+**`.filter(Todo.id == todo_id)`** query-a `id&#x60; column match aagura rows-ku narrow down
+pannum. &#x2A;*`.first()`** query-a run panni, match aana first row mattum return pannum — illa
+onnume match aagalanadha, error raise pannuradhukku pathila `None` return pannum.
 
-## Handling "not found" [#handling-not-found]
+## "Not found" handle panradhu [#not-found-handle-panradhu]
 
 ```python
 if not todo:
     raise HTTPException(status_code=404, detail="Todo not found")
 ```
 
-Since `.first()` returns `None` for no match, and `None` is falsy, `if not todo:` reads as
-"if nothing was found." `HTTPException` is FastAPI's way of turning a `raise` (Phase 6 of
-Python Notes) into an actual HTTP error response: raising it here stops the function and
-sends the client a real `404` status code, with `{"detail": "Todo not found"}` as the body —
-instead of your API returning something confusing, or crashing.
+`.first()` no match ku `None` return pannurathala, and `None` falsy aanadhala, `if not
+todo:` "onnume find aagala na"-nu read aagum. `HTTPException` solradhu FastAPI oru `raise`-a
+(Python Notes Phase 6) oru real HTTP error response ah maatrura vazhi: idha raise
+pannradhu function-a stop panni, client ku oru real `404` status code send pannum,
+`{"detail": "Todo not found"}` body oda — unnoda API confusing edhavadhu return
+pannuradhukku, illa crash aaguradhukku pathila.
 
 <Callout title="For you, coming from Express/Nest">
-  A FastAPI path parameter is the same idea as Express's `req.params.id` or Nest's
-  `@Param('id') id: number` — except FastAPI also converts and validates the type for you
-  automatically, the way Nest's pipes do. Raising `HTTPException(status_code=404, ...)` is
-  exactly `throw new HttpException(...)` in Nest, or `res.status(404).json({...})` written by
-  hand in Express — a clean way to end a request early with a specific error response.
+  Oru FastAPI path parameter, Express oda `req.params.id` illa Nest oda `@Param('id') id:
+  number` pannura same idea than — except FastAPI adha type-a kooda automatic ah convert
+  and validate pannum, Nest oda pipes pannura maadhiri. `HTTPException(status_code=404,
+  ...)` raise panradhu, Nest-la `throw new HttpException(...)` illa Express-la hand-la
+  ezhudhura `res.status(404).json({...})` exact ah than — oru specific error response oda
+  oru request-a early ah end panna oru clean way.
 </Callout>
 
-## `main.py` so far [#mainpy-so-far]
+## `main.py` ippo varaikkum [#mainpy-ippo-varaikkum]
 
 ```python title="main.py"
 from fastapi import FastAPI, Depends, HTTPException
@@ -8440,49 +8481,53 @@ def read_todo(todo_id: int,db:Session = Depends(get_db)):
 
 
 
-You have a working endpoint. Time to actually run the server and try it.
+Unakku oru working endpoint irukku. Ippo actual ah server-a run panni try pannura time.
 
-## Starting the server [#starting-the-server]
+## Server start panradhu [#server-start-panradhu]
 
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Breaking this down:
+Idha break pannu paakalam:
 
-* **`uvicorn`** — the server program you installed back in Project Setup. Remember: your
-  FastAPI code doesn't run itself; `uvicorn` is what actually starts a server process.
-* **`main:app`** — tells `uvicorn` where to find your application: the module `main` (your
-  `main.py`), and the variable `app` inside it (`app = FastAPI()`).
-* **`--host 0.0.0.0`** — listen on all network interfaces, not just your own machine.
-  `127.0.0.1` (the default) only accepts connections from your own computer; `0.0.0.0` also
-  lets other devices on your network reach it — useful for testing from your phone, for
-  example.
-* **`--port 8000`** — which port to listen on. Your API is now reachable at
-  `http://localhost:8000`.
-* **`--reload`** — restarts the server automatically whenever you save a code change. Use
-  this constantly during development — you'll rarely want to be without it. &#x2A;*Never use it in
-  production.**
+* **`uvicorn`** — Project Setup-la nee install pannina server program. Ninaivula
+  vechuko: unnoda FastAPI code thaniya run aagadhu; `uvicorn` than actual ah server
+  process start pannum.
+* **`main:app`** — `uvicorn`-ku unnoda application enga irukku-nu sollum: `main` module
+  (unnoda `main.py`), and adhula irukkura `app` variable (`app = FastAPI()`).
+* **`--host 0.0.0.0`** — unnoda own machine mattum illa, every network interface-um
+  listen pannu. `127.0.0.1` (default) unnoda own computer-la irundhu vandha connections
+  mattum accept pannum; `0.0.0.0` unnoda network-la irukkura vera devices-um idha reach
+  panna vidum — unnoda phone-la irundhu test panna useful.
+* **`--port 8000`** — endha port-la listen pannanum. Unnoda API ippo
+  `http://localhost:8000`-la reachable ah irukku.
+* **`--reload`** — nee oru code change save pannumbodhu ella time-um automatic ah server-a
+  restart pannum. Development-la idha constantly use pannu — idhu illama rarely irukka
+  venum-nu nee nenaipa. &#x2A;*Production-la idha epozhume use pannadhu.**
 
-## Testing it — the interactive docs [#testing-it--the-interactive-docs]
+## Idha test panradhu — interactive docs [#idha-test-panradhu--interactive-docs]
 
-Recall from "What is FastAPI?": every FastAPI app automatically gets interactive API docs.
-Now you get to actually use them — open your browser to:
+"What is FastAPI?"-la irundhu recall pannu: every FastAPI app automatic ah interactive
+API docs vaangum. Ippo nee avatha actual ah use panna mudiyum — unnoda browser-a idha
+open pannu:
 
 ```text
 http://localhost:8000/docs
 ```
 
-You'll see every endpoint you've written listed here — right now, `POST /todos`. Expand it,
-click **Try it out**, fill in a sample `title` and `description`, and send a real request —
-straight from the browser, no separate tool required. You'll see the actual response your API
-sent back, including the `id` your database assigned.
+Nee ezhudhina every endpoint-um inga list aagirukkum — ippozhukku, `POST /todos`. Idha
+expand pannu, **Try it out** click pannu, oru sample `title` and `description` fill
+pannu, and oru real request send pannu — straight ah browser-la irundhu, separate tool
+edhuvum venaam. Unnoda API back send pannina actual response-a nee paapa, unnoda database
+assign pannina `id`-um including.
 
 <Callout title="For you, coming from Express/Nest">
-  In Express, you'd reach for Postman or `curl` to test an endpoint, since there's nothing
-  built in. Nest gets you close with `@nestjs/swagger`, but it takes manual setup — decorators
-  on every DTO and route. In FastAPI, this page exists the moment you write your first
-  endpoint, generated from the same type hints and schemas you already wrote.
+  Express-la, oru endpoint test panna Postman illa `curl`-ku poga, en na built-in ah edhuvum
+  illa. Nest `@nestjs/swagger` vechu close ah kudukkum, aana adhukku manual setup venum —
+  every DTO and route mela decorators. FastAPI-la, nee unnoda first endpoint ezhudhina
+  second-le indha page exist pannudhu, nee already ezhudhina same type hints and schemas-la
+  irundhu generate aagirukku.
 </Callout>
 
 
@@ -8490,11 +8535,11 @@ sent back, including the `id` your database assigned.
 
 
 
-Updating a resource can mean two different things: replacing it completely, or changing just
-one field. HTTP has a separate method for each — `PUT` and `PATCH` — and this lesson covers
-both.
+Oru resource update panradhu rendu different things solllalam: completely replace
+panradhu, illa just one field change panradhu. HTTP-kku ovvondrukkum oru separate method
+irukku — `PUT` and `PATCH` — indha lesson rendaiyum cover pannum.
 
-## PUT — replace the whole thing [#put--replace-the-whole-thing]
+## PUT — whole thing-a replace pannu [#put--whole-thing-a-replace-pannu]
 
 ```python
 # PUT - Update Todo
@@ -8510,29 +8555,31 @@ def update_todo(todo_id:int, updated: TodoCreate, db:Session = Depends(get_db)):
     return todo
 ```
 
-The lookup and not-found handling are exactly what you already saw in Fetch a Single Todo.
-What's new:
+Lookup and not-found handling Fetch a Single Todo-la nee already paatha exact ah than.
+Puthusa irukkura ondru:
 
-**`updated: TodoCreate`** — reusing the same schema from creating a todo. That's deliberate:
-`TodoCreate` requires `title`, so a client calling this route **must** send a full,
-complete todo — that's the definition of `PUT`.
+**`updated: TodoCreate`** — todo create pannina schema-a reuse pannirukkom. Idhu
+intentional than: `TodoCreate`-ku `title` require aagum, so indha route call pannura oru
+client oru full, complete todo **mandatory ah** send pannanum — adhu than `PUT` oda
+definition.
 
-**`for key, value in updated.dict().items(): setattr(todo, key, value)`** — this loops over
-every field in the incoming data and uses Python's built-in `setattr(object, name, value)` to
-set it on `todo`, one field at a time. It's the same as writing `todo.title = value`,
-`todo.description = value`, and `todo.completed = value` individually — just without
-repeating yourself for every field.
+**`for key, value in updated.dict().items(): setattr(todo, key, value)`** — incoming
+data-la irukkura every field mela idhu loop pannum, and Python oda built-in `setattr
+(object, name, value)` vechu `todo`-la adha one field at a time set pannum. `todo.title =
+value`, `todo.description = value`, and `todo.completed = value` ah separately ezhudhura
+maadhiri than — every field ku repeat pannama.
 
-**`db.commit()` / `db.refresh(todo)` / `return todo`** — save the changes, reload the
-instance, and return it, the same pattern as creating a todo.
+**`db.commit()` / `db.refresh(todo)` / `return todo`** — changes-a save pannum, instance-a
+reload pannum, and adha return pannum, todo create pannura same pattern than.
 
-## PATCH — change only what was sent [#patch--change-only-what-was-sent]
+## PATCH — send pannina mattum change pannu [#patch--send-pannina-mattum-change-pannu]
 
-`PUT` above always overwrites every field, because `TodoCreate` requires all of them. `PATCH`
-is for the opposite case: a client wants to update **just one field** — say, marking a todo
-`completed` — without having to resend the title and description too.
+Mேlе irukkura `PUT` epozhume every field-a overwrite pannum, en na `TodoCreate`-ku
+avanga ellam mandatory ah venum. `PATCH` opposite case ku than: oru client **just one
+field** update pannanum — solllu, oru todo-a `completed`-nu mark panna — title and
+description-a again resend pannama.
 
-This needs a schema where every field is optional:
+Idhukku every field optional ah irukkura oru schema venum:
 
 ```python title="schemas.py (new)"
 class TodoUpdate(BaseModel):
@@ -8541,7 +8588,7 @@ class TodoUpdate(BaseModel):
     completed: bool | None = None
 ```
 
-And a route that only touches the fields actually provided:
+And actual ah provide pannina fields-a mattum touch pannura oru route:
 
 ```python title="main.py (new)"
 # PATCH - Partially Update Todo
@@ -8557,43 +8604,45 @@ def partial_update_todo(todo_id: int, updated: TodoUpdate, db: Session = Depends
     return todo
 ```
 
-The one detail that makes this actually work as a *partial&#x2A; update is
-&#x2A;*`exclude_unset=True`**. Without it, `updated.dict()` would include every field on
-`TodoUpdate` — and any field the client didn't send would show up as `None`, wiping it out in
-the database. `exclude_unset=True` means "only include fields the client actually sent in the
-request" — so `{"completed": true}` updates just `completed`, and leaves `title` and
-`description` untouched.
+Idha actual ah oru *partial&#x2A; update ah work pannura detail than &#x2A;*`exclude_unset=True`**.
+Idhu illama, `updated.dict()` `TodoUpdate`-la irukkura every field-um include pannirukkum
+— and client send pannama vidra edhavadhu field database-la `None`-nu kaanum, adha wipe
+pannidum. `exclude_unset=True` meaning "client actual ah request-la send pannina fields
+mattum include pannu" — so `{"completed": true}` just `completed`-a update pannum, and
+`title` and `description`-a untouched ah vidum.
 
 <Callout title="This route isn't in your project yet">
-  Unlike the earlier lessons, this `TodoUpdate` schema and `partial_update_todo` route are a
-  worked example for this topic, not code pulled from your `fastapi-todo` project — add them
-  yourself if you want `PATCH` support, then let me know and I'll sync this lesson to your
-  actual code, the same as every other topic.
+  Earlier lessons vida different ah, indha `TodoUpdate` schema and `partial_update_todo`
+  route indha topic ku oru worked example than, unnoda `fastapi-todo` project-la irundhu
+  edutha code illa — `PATCH` support venum-na, idha nee thaniya add pannu, appuram enakku
+  sollu, naan indha lesson-a unnoda actual code oda sync pannuren, vera every topic
+  maadhiri than.
 </Callout>
 
 ## PUT vs PATCH [#put-vs-patch]
 
-|               | `PUT`                          | `PATCH`                             |
-| ------------- | ------------------------------ | ----------------------------------- |
-| Meaning       | Replace the entire resource    | Update part of it                   |
-| Client sends  | Every field                    | Only the fields changing            |
-| Schema needs  | Required fields (`TodoCreate`) | Every field optional (`TodoUpdate`) |
-| Omitted field | Overwritten (often cleared)    | Left unchanged                      |
+|                         | `PUT`                                 | `PATCH`                             |
+| ----------------------- | ------------------------------------- | ----------------------------------- |
+| Meaning                 | Entire resource-a replace pannu       | Adhula part-a update pannu          |
+| Client enna send pannum | Every field                           | Change aagura fields mattum         |
+| Schema ku venum         | Required fields (`TodoCreate`)        | Every field optional (`TodoUpdate`) |
+| Omitted field           | Overwrite aagum (usually clear aagum) | Unchanged ah irukkum                |
 
-A useful way to remember it: &#x2A;*PUT says "here's the whole new version"; PATCH says "here's
-what changed."**
+Idha remember panna oru useful way: &#x2A;*PUT solradhu "idha the whole new version"; PATCH
+solradhu "idha change aana thing."**
 
 <Callout title="For you, coming from Express/Nest">
-  Same distinction Nest already makes with `@Put()` versus `@Patch()` decorators, or Express's
-  `router.put()` versus `router.patch()` — the HTTP methods and their meaning don't change.
-  What's different is FastAPI leaning on two separate Pydantic schemas (required vs. all
-  `Optional`) to enforce the distinction, instead of validating a DTO's completeness by hand.
+  Nest already `@Put()` vs `@Patch()` decorators vechu, illa Express oda `router.put()` vs
+  `router.patch()` vechu pannura same distinction than — HTTP methods and avanga meaning
+  change aagadhu. Different ah irukkuradhu enna na, FastAPI rendu separate Pydantic schemas
+  (required vs every field `Optional`) mela lean pannudhu, distinction enforce panna — oru
+  DTO oda completeness-a hand-la validate pannradhukku pathila.
 </Callout>
 
-## `main.py` so far [#mainpy-so-far]
+## `main.py` ippo varaikkum [#mainpy-ippo-varaikkum]
 
-This reflects your actual project — the `PUT` route only. The `PATCH` example above isn't
-included here, since it's not part of `fastapi-todo` yet.
+Idhu unnoda actual project-a reflect pannudhu — `PUT` route mattum. Mேlе irukkura
+`PATCH` example idhula include pannala, en na idhu innum `fastapi-todo`-la part illa.
 
 ```python title="main.py"
 from fastapi import FastAPI, Depends, HTTPException
@@ -8653,39 +8702,39 @@ def update_todo(todo_id:int, updated: TodoCreate, db:Session = Depends(get_db)):
 
 
 
-You now know the pieces: client, backend, database. This lesson puts them together through a
-real example everyone already understands — **YouTube** — and along the way, uncovers one
-more piece you haven't met yet.
+Ippo pieces unakku theriyum: client, backend, database. Indha lesson avatha oru real
+example vechu together vekkum, ellarukkum already puriyum — **YouTube** — and andha vazhi,
+nee innum meet pannama irukkura innoru piece-a kandupidikkum.
 
-## Two very different kinds of data [#two-very-different-kinds-of-data]
+## Rendu romba different kind of data [#rendu-romba-different-kind-of-data]
 
-Think about everything YouTube needs to keep track of for a single video:
+Oru single video ku YouTube track pannanum-na enna ellam venum-nu nenachiko:
 
-* Its **title**, **description**, **upload date**, **view count**, **like count**
-* Its **comments**, and who posted each one
-* The **actual video file** itself — and its thumbnail image
+* Adhoda **title**, **description**, **upload date**, **view count**, **like count**
+* Adhoda **comments**, and yaar post pannaan-nu
+* **Actual video file** itself — and adhoda thumbnail image
 
-The first two are exactly what you just learned: rows in database tables. A `videos` table
-with a `title` column and a `view_count` column fits perfectly.
+Mudhal rendu, nee ippo dhaan kathukitta thing than: database tables-la rows. Oru
+`title` column and oru `view_count` column vecha `videos` table perfect ah fit aagum.
 
-But that video file? A single video can be hundreds of megabytes, even gigabytes. That raises
-a real question:
+Aana andha video file? Oru single video hundreds of megabytes, gigabytes kooda irukalam.
+Idhu oru real question raise pannum:
 
-**Can't we just save the video file in the database too, in some column?**
+**Video file-a kooda database-la, edhavadhu column-la save panna mudiyadha?**
 
-## Why databases aren't built for this [#why-databases-arent-built-for-this]
+## Databases idhukku ஏன் build aagala [#databases-idhukku-ஏன்-build-aagala]
 
-Technically, some databases can store large binary blobs — but doing this at YouTube's scale
-would be a bad idea:
+Technically, chila databases large binary blobs store panna mudiyum — aana idha YouTube
+scale-la panradhu bad idea:
 
-* Databases are built to be searched, filtered, and sorted quickly across *many small rows* —
-  not to hold enormous files that nobody "searches" the *contents* of
-* A database that also held every raw video file would become massive, making backups,
-  replication, and queries all dramatically slower
-* Databases aren't designed to **stream** a large file out to millions of viewers at once —
-  that's a completely different kind of workload
+* Databases build aagirukku, *many small rows* mela fast ah search, filter, sort panna —
+  yaarum *contents*-a "search" panna edhukkume vendaam, huge files-a hold panna illa
+* Every raw video file-a kooda hold pannura oru database massive ah aagidum, backups,
+  replication, and queries ellame dramatically slow aagidum
+* Databases oru large file-a millions of viewers ku onnu-la **stream** panna design
+  aagala — adhu completely different kind of workload than
 
-So real applications split the two apart:
+So real applications rendaiyum split pannuvanga:
 
 <Mermaid
   chart="
@@ -8697,20 +8746,22 @@ C --> E[Storage Server]
 "
 />
 
-## Meet the storage server [#meet-the-storage-server]
+## Storage server-a meet pannu [#storage-server-a-meet-pannu]
 
-A **storage server** (often called *object storage* — think AWS S3 or Google Cloud Storage)
-is a service whose only job is storing and serving large files efficiently. The database
-never holds the video itself — it only holds a **reference** to where that file lives on the
-storage server (a URL or file path).
+Oru **storage server** (often *object storage*-nu solluvanga — AWS S3 illa Google Cloud
+Storage nenachiko) oru service, adhoda mattum velai, large files-a efficient ah store
+panradhum, serve panradhum than. Database epozhume video itself-a hold pannadhu — adhu
+storage server-la andha file enge irukku-nu oru **reference** mattum than hold pannum
+(oru URL illa file path).
 
-Large platforms also place a **CDN** (Content Delivery Network) in front of their storage —
-copies of popular videos get cached on servers physically close to viewers all over the
-world, so someone in India isn't fetching every byte from a server on the other side of the
-planet. You don't need to build one of these yourself; it's a service you connect to, the
-same way you'd connect to a database.
+Large platforms avanga storage-oda munnadi oru **CDN** (Content Delivery Network) kooda
+vekkuvanga — popular videos oda copies, world ellam irukkura viewers ku physically close
+aana servers-la cache aagum, so India-la irukkura oruthanukku, world oda vera side-la
+irukkura server-la irundhu every byte fetch panna venaam. Idha nee thaniya build panna
+venaam; idhu nee connect pannura oru service than, database ku nee epadi connect
+pannuvayo, adha maadhiri than.
 
-## The full picture [#the-full-picture]
+## Full picture [#full-picture]
 
 <Mermaid
   chart="
@@ -8722,44 +8773,45 @@ D -. video/image bytes .-> A
 "
 />
 
-## Walking through: uploading a video [#walking-through-uploading-a-video]
+## Step-by-step: video upload panradhu [#step-by-step-video-upload-panradhu]
 
-1. You select a video file and hit upload in the client.
-2. The client sends the file to the **backend**.
-3. The backend sends the actual video file to the **storage server** to be saved.
-4. The storage server gives back a reference — where that file now lives.
-5. The backend saves the **metadata** (title, description, your user id, and that file
-   reference) as a new row in the **database**.
+1. Nee client-la oru video file select panni upload click pannu.
+2. Client andha file-a **backend**-ku send pannum.
+3. Backend actual video file-a **storage server**-ku save panna send pannum.
+4. Storage server oru reference back kudukkum — andha file ippo enge irukku-nu.
+5. Backend **metadata** (title, description, unnoda user id, and andha file reference)
+   **database**-la oru new row ah save pannum.
 
-## Walking through: watching a video [#walking-through-watching-a-video]
+## Step-by-step: video watch panradhu [#step-by-step-video-watch-panradhu]
 
-1. You open a video page in the client.
-2. The client asks the **backend** for that video's info.
-3. The backend reads the row from the **database** — title, description, view count, and the
+1. Nee client-la oru video page open pannu.
+2. Client **backend**-a andha video oda info kekkum.
+3. Backend **database**-la irundhu row read pannum — title, description, view count, and
    stored file reference.
-4. The backend sends that data back to the client, including where the actual video file
-   lives.
-5. The client's video player fetches the video bytes **directly from the storage server /
-   CDN** — not routed back through the backend — so playback is fast and doesn't load down
-   your API server.
+4. Backend andha data-a client ku back send pannum, actual video file enge irukku-nu
+   including.
+5. Client oda video player video bytes-a **storage server / CDN-la irundhu directly**
+   fetch pannum — backend vazhiya route aagama — so playback fast ah irukkum, unnoda API
+   server-a load pannadhu.
 
-## Why this matters going forward [#why-this-matters-going-forward]
+## Idhu future-ku enn mukkiyam [#idhu-future-ku-enn-mukkiyam]
 
-This same split shows up in almost every real app you'll build: a database for structured,
-searchable data, and a storage service for the files themselves (profile pictures, PDFs,
-audio, video). In this course, you'll build the backend and database side yourself with
-FastAPI; storage servers and CDNs are usually a cloud service you connect to, not something
-you build from scratch.
+Indha same split, nee build panra almost every real app-la varum: structured, searchable
+data ku oru database, and files themselves ku (profile pictures, PDFs, audio, video) oru
+storage service. Indha course-la, nee backend and database side-a FastAPI vechu thaniya
+build pannuva; storage servers and CDNs usually oru cloud service than, nee scratch-la
+irundhu build pannura thing illa.
 
-With client, backend, database, and storage all in place, you now have the complete mental
-map of how a real application is built — everything from here on is about learning the tools
-to build the backend piece of it, properly.
+Client, backend, database, and storage ellame place-la irukkumbodhu, oru real application
+epadi build aagum-nu unakku ippo complete mental map irukku — idhirundhu ella something-um
+backend piece-a properly build panna tools-a kathukura pathi than.
 
 <Callout title="For you, coming from Express/Nest">
-  Same architecture you already know — an Express/Nest API talking to Postgres/MongoDB for
-  structured data, and to S3 (or similar) for files, usually via a pre-signed upload URL or a
-  multipart upload endpoint. FastAPI will follow the identical pattern; you're not learning a
-  new architecture here, just new syntax for a shape you've already built before.
+  Nee already therinja same architecture than — oru Express/Nest API structured data ku
+  Postgres/MongoDB oda pesudhu, and files ku S3 (illa similar) oda, usually oru pre-signed
+  upload URL illa oru multipart upload endpoint vazhi. FastAPI identical pattern-a follow
+  pannum; nee inga puthu architecture kathukala, nee already munnadi build pannirukkura oru
+  shape ku puthu syntax mattum than kathukura.
 </Callout>
 
 
@@ -8767,30 +8819,31 @@ to build the backend piece of it, properly.
 
 
 
-Websites haven't always worked the way they do today. To understand why tools like React
-exist, you need to see the problem they were built to solve.
+Websites epozhume ippo work aagura maadhiri work aagala. React maadhiri tools ஏன்
+exist pannudhu-nu puriya, avanga solve panna build aana problem-a nee paakanum.
 
 ## Web 1.0 — read-only pages [#web-10--read-only-pages]
 
-The earliest websites (roughly the 1990s) were **static and read-only** — closer to a digital
-brochure than an app. A server had a folder of pre-written HTML files, and every visitor got
-exactly the same page. There was no login, no comments, no personalization. You looked, you
-didn't interact.
+Adhi earliest websites (roughly 1990s) **static and read-only** ah irundhuchu — oru app
+vida, oru digital brochure-ku close ah. Oru server-la pre-written HTML files oda oru
+folder irukkum, and every visitor ku exact ah same page than kidaikkum. Login illa,
+comments illa, personalization illa. Nee just paapa, interact panna mudiyadhu.
 
-## Web 2.0 — the interactive web [#web-20--the-interactive-web]
+## Web 2.0 — interactive web [#web-20--interactive-web]
 
-Starting in the 2000s, the web became **interactive and user-driven**: logins, comments,
-likes, posting your own content — think early Facebook, YouTube, blogs with comment sections.
-The server now generated a *different* page for every user, built from data stored in a
-database.
+2000s-la start aagi, web **interactive and user-driven** aachu: logins, comments, likes,
+unnoda own content post panradhu — early Facebook, YouTube, comment sections vecha blogs
+nenachiko. Server ippo every user ku *different* page generate pannum, database-la store
+pannirukkura data vechu build panni.
 
-This is a huge leap forward — but under the hood, most Web 2.0 sites still worked the exact
-same way as Web 1.0 for one crucial thing: &#x2A;*every click reloaded the entire page.**
+Idhu oru huge leap forward — aana hood-ku kelaya, most Web 2.0 sites innum oru crucial
+thing ku Web 1.0 maadhiri than work pannuchu: &#x2A;*every click entire page-a reload
+pannuchu.**
 
-## The full page reload problem [#the-full-page-reload-problem]
+## Full page reload problem [#full-page-reload-problem]
 
-Click a link on a traditional website (even a modern-looking one built with plain
-HTML/CSS/JS), and this happens:
+Oru traditional website-la (even oru modern-looking one, plain HTML/CSS/JS vechu build
+pannirukku), oru link click pannu, idhu nadakkum:
 
 <Mermaid
   chart="
@@ -8803,23 +8856,25 @@ E --> F[White flash, then the new page appears]
 "
 />
 
-Every single action — clicking a link, submitting a form, even liking a post — could mean
-throwing away the whole page and rebuilding it from nothing. That means:
+Every single action — oru link click pannradhu, oru form submit pannradhu, oru post
+like pannradhu kooda — meaning whole page-a throw away panni, zero-la irundhu rebuild
+pannalam. Adhu solradhu:
 
-* A visible **white flash** while the old page disappears and the new one loads
-* **Everything resets** — scroll position, an open dropdown, a half-filled form, a playing
-  video — all gone, because the browser is starting over completely
-* Re-downloading and re-running the *same* CSS and JS files you already had, every time
+* Old page disappear aagi, new one load aagumbodhu oru visible **white flash**
+* **Ellame reset aagum** — scroll position, oru open dropdown, half-filled form, playing
+  video — ellame pogum, en na browser completely start over pannudhu
+* Nee already vechirukkura *same* CSS and JS files-a, every time re-download and re-run
+  pannradhu
 
-Imagine a chat app where sending one message reloaded the entire page, wiped your scroll
-position, and re-downloaded the whole app — just to show one new message. That's not
-acceptable for the kind of apps people expect today.
+Oru chat app-a nenachiko, oru message send pannradhu entire page-a reload pannuchu,
+unnoda scroll position wipe pannuchu, and whole app-a re-download pannuchu — just oru
+new message kaatradhukku. Idhu ippo people expect pannura apps ku acceptable illa.
 
-## Why React [#why-react]
+## React ஏன் [#react-ஏன்]
 
-React (and similar tools) exist to fix exactly this. The core idea: **load the page once,
-then only update the small part that actually changed** — never throw away and rebuild the
-whole thing again.
+React (and similar tools) exist pannudhu exactly idha fix panna. Core idea: **page-a once
+load pannu, appuram actual ah change aana chinna part mattum update pannu** — whole
+thing-a epozhume throw away panni rebuild pannadhu.
 
 <Mermaid
   chart="
@@ -8831,32 +8886,32 @@ D --> E[React updates only the changed part of the page]
 "
 />
 
-Notice the key difference from the diagram above: the server isn't sending a full HTML page
-anymore — it's sending back **just the data**. That's the piece that matters most for this
-course.
+Mேlе irukkura diagram-oda key difference notice pannu: server ippo full HTML page send
+pannala — adhu **just data** than back send pannudhu. Indha course ku andha piece than
+mostly mukkiyam.
 
-## Why this matters for a backend developer [#why-this-matters-for-a-backend-developer]
+## Backend developer ku idhu ஏன் mukkiyam [#backend-developer-ku-idhu-ஏன்-mukkiyam]
 
-This shift changes what a backend server's job even is:
+Indha shift, backend server oda velai enna-nu than change pannudhu:
 
-|                             | Web 1.0 / 2.0 style  | Modern React-style            |
-| --------------------------- | -------------------- | ----------------------------- |
-| Server sends back           | A complete HTML page | Just data (usually JSON)      |
-| Who builds the page         | The server           | The browser (React), once     |
-| What happens on each action | Full page reload     | Only the changed part updates |
+|                               | Web 1.0 / 2.0 style    | Modern React-style             |
+| ----------------------------- | ---------------------- | ------------------------------ |
+| Server back send pannuradhu   | Oru complete HTML page | Just data (usually JSON)       |
+| Page-a yaar build pannuranga  | Server                 | Browser (React), once          |
+| Every action-la enna nadakkum | Full page reload       | Change aana part mattum update |
 
-**This is exactly why we're learning FastAPI**: FastAPI's job in this stack isn't to generate
-HTML pages — it's to answer requests with data. A separate React app (running in the
-browser) is responsible for turning that data into an actual page, and updating it without
-ever reloading. Backend and frontend become two separate programs that talk to each other
-purely through requests and responses of data.
+**Idhu than exactly namma FastAPI kathukura reason**: Indha stack-la FastAPI oda velai,
+HTML pages generate panradhu illa — adhu requests-ku data vechu answer pannuradhu than.
+(Browser-la run aagura) Oru separate React app, andha data-a oru actual page-a maatti,
+adha reload aagama update pannuradhukku responsible. Backend and frontend, requests and
+responses of data vazhi mattum pesikkura rendu separate programs aagum.
 
 <Callout title="For you, coming from Express/Nest">
-  You've almost certainly already done this: an Express route that calls `res.json({ ... })`
-  instead of rendering a template with something like EJS or Pug is *already* the "modern"
-  approach — server as a pure data API, frontend as a separate React app. FastAPI works on that
-  exact same principle, so this mental model isn't new to you at all — only the Python syntax
-  around it will be.
+  Nee almost certainly idha already pannirupa: EJS illa Pug maadhiri edhavadhu vechu oru
+  template render panradhukku pathila `res.json({ ... })` call pannura oru Express route,
+  *already* "modern" approach than — server oru pure data API ah, frontend oru separate
+  React app ah. FastAPI andha exact same principle-la work pannum, so indha mental model
+  unakku puthu illame illa — mattum adha sutthi irukkura Python syntax mattum puthu.
 </Callout>
 
 
@@ -8864,34 +8919,38 @@ purely through requests and responses of data.
 
 
 
-The last lesson established that the backend is a trusted boundary — the client never
-touches secrets, source code, or raw data directly. But the backend needs somewhere to
-actually **keep** that data. That's what a database is for.
+Last lesson establish pannichu, backend oru trusted boundary-nu — client epavume secrets,
+source code, illa raw data direct ah touch pannadhu. Aana backend ku andha data actual ah
+**vekka** oru place venum. Adhukku than database irukku.
 
-## Why not just store data in a variable? [#why-not-just-store-data-in-a-variable]
+## Data-a oru variable-la store panna koodadha? [#data-a-oru-variable-la-store-panna-koodadha]
 
-You could imagine a backend that keeps everything in a plain Python list, like the `users`
-list from your Final Practice exercise back in the Python Notes. That works while the program
-is running — but it has a fatal flaw: &#x2A;*the moment the server restarts, everything is gone.**
-A crash, a deploy, a simple reboot — all of it wipes the list clean.
+Nee nenachikalam, oru backend ellathayum plain Python list-la vechirukkum-nu, Python
+Notes-la unnoda Final Practice exercise-la irundha `users` list maadhiri. Program run
+aagumbodhu idhu velai seiyum — aana idhula oru fatal flaw irukku: &#x2A;*server restart aana
+udane, ellame poidum.** Oru crash, oru deploy, oru simple reboot — ellame list-a
+clean ah wipe pannidum.
 
-A real application needs data to:
+Oru real application ku data:
 
-* **Survive** restarts and crashes
-* Be **searched and filtered** quickly, even with millions of records
-* Be **shared safely** across many requests happening at the same time
+* Restarts and crashes-a **survive** panna venum
+* Millions of records irundha kooda fast ah **search and filter** aaganum
+* Same time-la nadakkura pala requests-la safe ah **share** aaganum
 
-That's a job for a dedicated piece of software — a **database**.
+Idhu oru dedicated software ku velai — oru **database**.
 
-## What a database actually is [#what-a-database-actually-is]
+## Database-nu actual ah enna [#database-nu-actual-ah-enna]
 
-A database is a separate program (often running as its own server) whose entire purpose is
-storing data reliably and retrieving it fast. Think of it as a very well-organized set of
-spreadsheets:
+Database solradhu oru separate program (usually adhoda own server ah run aagum), adhoda
+whole purpose data-a reliable ah store panradhum, fast ah retrieve panradhum than. Idha
+romba well-organized spreadsheets set-nu nenachiko:
 
-* A **table** is one spreadsheet — for example, a `users` table, or a `videos` table
-* A **row** is one record in that spreadsheet — one specific user, one specific video
-* A **column** defines one piece of information every row has — `id`, `name`, `email`
+* Oru **table** solradhu one spreadsheet — example ku, oru `users` table, illa oru
+  `videos` table
+* Oru **row** solradhu andha spreadsheet-la one record — one specific user, one specific
+  video
+* Oru **column** solradhu every row-kum irukkura one piece of information — `id`, `name`,
+  `email`
 
 ```text
 users table
@@ -8903,11 +8962,11 @@ users table
 └────┴─────────┴───────────────────┘
 ```
 
-This should look familiar — it's the same shape as the list-of-dicts you already worked with
-in Python Notes' Phase 2 and Final Practice. A database table is essentially that same idea,
-made permanent and searchable at scale.
+Idhu unakku familiar ah irukanum — Python Notes-oda Phase 2 mattrum Final Practice-la nee
+already work pannina list-of-dicts oda same shape than idhu. Oru database table
+essentially andha same idea than, permanent ah and scale-la searchable ah pannirukku.
 
-## Only the backend talks to the database [#only-the-backend-talks-to-the-database]
+## Backend mattum than database oda pesum [#backend-mattum-than-database-oda-pesum]
 
 <Mermaid
   chart="
@@ -8918,24 +8977,27 @@ B -- only the resulting data --> A
 "
 />
 
-The client never connects to the database directly — it never even knows the database
-exists. It only ever talks to the backend, and the backend decides what to read, what to
-write, and what to send back. This is the same trusted-boundary idea from the last lesson,
-just with a concrete example of what's actually being hidden.
+Client epavume database-ku direct ah connect aagadhu — database irukku-nu adhukku
+theriyavume theriyathu. Adhu epozhume backend oda mattum than pesum, and backend than
+enna read pannanum, enna write pannanum, enna back send pannanum-nu decide pannum. Idhu
+last lesson-la irundha same trusted-boundary idea than, actual ah enna hide pannirukkom-nu
+oru concrete example-oda.
 
-## The kind of database you'll use in this course [#the-kind-of-database-youll-use-in-this-course]
+## Indha course-la nee use pannura database type [#indha-course-la-nee-use-pannura-database-type]
 
-There are different families of databases, but the most common kind — and the one this course
-uses with FastAPI — is a **relational database** (like PostgreSQL or MySQL): data organized
-into clearly defined tables with columns, similar to the `users` table above. You'll get
-hands-on with this properly in a later lesson — for now, just hold onto the mental picture:
-&#x2A;*tables, rows, and columns, living inside a server only the backend can reach.**
+Different families of databases irukku, aana most common kind — indha course FastAPI
+oda use pannura kind — oru **relational database** (PostgreSQL illa MySQL maadhiri):
+data clearly defined tables-la columns-oda organize pannirukkanum, mேlе irukkura `users`
+table maadhiri. Idha properly hands-on ah future lesson-la paakuva — ippozhukku, just
+indha mental picture-a vechiko: &#x2A;*tables, rows, columns, backend mattum reach panna
+mudiyura oru server kulla irukku.**
 
 <Callout title="For you, coming from Express/Nest">
-  Exactly the same relationship as `pg`, Prisma, or TypeORM talking to a Postgres/MySQL
-  database from an Express/Nest server — the client still only ever calls your API, never the
-  database itself. FastAPI will use its own tools for this (you'll meet them soon), but the
-  architecture is identical to what you already do.
+  Exactly same relationship than `pg`, Prisma, illa TypeORM, oru Express/Nest server
+  irundhu oru Postgres/MySQL database oda pesuradhu — client epozhume unnoda API-a mattum
+  than call pannum, database-a never. FastAPI idhukku adhoda own tools use pannum (soon
+  avatha nee paapa), aana architecture nee already pannikkittu irukkurathu oda identical
+  than.
 </Callout>
 
 
@@ -8943,24 +9005,25 @@ hands-on with this properly in a later lesson — for now, just hold onto the me
 
 
 
-In the last lesson you saw that a **server** answers requests from a **client**. A website is
-simply what most servers send back as their answer.
+Last lesson-la nee paatha, oru **server**, oru **client**-oda requests ku answer pannum-nu.
+Oru website solradhu, most servers avanga answer ah back send pannura thing than.
 
-## The three building blocks [#the-three-building-blocks]
+## Moonu building blocks [#moonu-building-blocks]
 
-Every website, no matter how complex it looks, is built from three things:
+Ethana complex ah irundhalum, every website moonu things-la irundhu than build aagum:
 
-* **HTML** — the structure and content (the text, images, buttons — what's on the page)
-* **CSS** — the styling (colors, spacing, fonts — how it looks)
-* **JavaScript** — the behavior (what happens when you click, type, or scroll)
+* **HTML** — structure and content (text, images, buttons — page-la enna irukku)
+* **CSS** — styling (colors, spacing, fonts — idhu epadi kaanum)
+* **JavaScript** — behavior (nee click pannumbodhu, type pannumbodhu, scroll pannumbodhu
+  enna nadakkum)
 
-The server's job is to send these files to whichever browser asks for them. The browser's job
-is to read them and turn them into the page you actually see.
+Server oda velai, indha files-a edha browser kekkudho, adha send panradhu. Browser oda
+velai, avatha read panni, nee actual ah paakkura page ah convert panradhu.
 
-## What happens when you visit a page [#what-happens-when-you-visit-a-page]
+## Oru page visit pannumbodhu enna nadakkum [#oru-page-visit-pannumbodhu-enna-nadakkum]
 
-Opening a single webpage is rarely just *one* request — it's usually several, one after
-another:
+Oru single webpage open panradhu rarely-a just *one* request — usually adhu one after
+another, several requests ah irukkum:
 
 <Mermaid
   chart="
@@ -8974,54 +9037,58 @@ E --> F
 "
 />
 
-1. The browser asks for the page itself (`index.html`).
-2. While reading that HTML, the browser notices it references a stylesheet and a script file.
-3. It sends **separate requests** for those too.
-4. Once everything has arrived, the browser combines them into the page you see on screen.
+1. Browser page itself (`index.html`) kku kekkum.
+2. Andha HTML read pannumbodhu, browser adhula oru stylesheet mattrum oru script file
+   reference pannirukku-nu notice pannum.
+3. Adhukku kooda **separate requests** send pannum.
+4. Ellam vandha apparam, browser avatha ella combine panni, screen-la nee paakkura page ah
+   pannum.
 
-This matters later: every one of those arrows in the diagram is a full round trip across the
-internet — a request, then a response. Keeping that number small (and not repeating it
-unnecessarily) is a big part of why the web has evolved the way it has, which is exactly
-what the next lesson is about.
+Idhu aprom mukkiyam aagum: diagram-la irukkura andha ovvoru arrow-um internet mela oru full
+round trip — oru request, appuram oru response. Andha number-a chinna ah vecha (and
+unnecessary ah repeat pannama irundha), web indha vazhi evolve aana reasons-la oru periya
+part, adhu than exactly next lesson-la paakuradhu.
 
 
 # What is the Internet? (/tanglish/docs/fastapi/web-fundamentals/what-is-the-internet)
 
 
 
-Before writing a single line of backend code, you need a clear picture of what you're
-actually building on top of. So let's start at the very bottom: &#x2A;*what is the internet?**
+Backend code oru line kooda ezhuda munnadi, actual ah nee enna mela build panra-nu unakku
+clear ah theriyanum. So romba basic-la start pannalam: &#x2A;*internet-nu enna?**
 
-## A simple definition [#a-simple-definition]
+## Simple ah oru definition [#simple-ah-oru-definition]
 
-The internet is a huge network of computers all over the world, connected together so they
-can send information to each other.
+Internet-nu, world-la irukkura computers ellam oru huge network ah connect aayirukkardhu,
+avanga onnu vodu onnu information send panna mudiyum.
 
-That's really it. Your phone, your laptop, and the servers that run apps like Instagram or
-Netflix are all just computers on this same giant network — some asking for information,
-others answering.
+Adhu than actually. Unnoda phone, unnoda laptop, and Instagram illa Netflix maadhiri apps
+run pannura servers ellame indha same giant network-la irukkura computers than — chila
+information kekkum, chila answer pannum.
 
-## Every computer has an address [#every-computer-has-an-address]
+## Ovvoru computer ku oru address irukku [#ovvoru-computer-ku-oru-address-irukku]
 
-For one computer to send data to another, it needs to know where to send it. Every device on
-the internet has an **IP address** — a unique set of numbers that identifies it, the same way
-a house needs a postal address before anyone can deliver mail to it.
+Oru computer innoru computer ku data send panna, adhukku enge send pannanum-nu theriyanum.
+Internet-la irukkura every device ku oru **IP address** irukku — adha unique ah identify
+pannura oru set of numbers, oru house ku postal address venum, andha edhavadhu mail
+deliver panna mudiyum, adha maadhiri than.
 
 ```text
 192.168.1.1
 ```
 
-You'll rarely type an IP address yourself — that's what domain names like `google.com` are
-for, they're just a human-friendly label that gets translated into an IP address behind the
-scenes. But the underlying idea is the same: &#x2A;*every computer on the internet can be found at
-an address.**
+Nee rarely-a oru IP address-a nee typed pannuva — adhukku than `google.com` maadhiri
+domain names irukku, avanga just oru human-friendly label, hood-ku IP address ah
+translate aagum. Aana underlying idea same than: &#x2A;*internet-la irukkura every computer-a
+oru address-la find pannalam.**
 
-## Two roles: asking and answering [#two-roles-asking-and-answering]
+## Rendu roles: kekkardhum, answer pannradhum [#rendu-roles-kekkardhum-answer-pannradhum]
 
-Almost everything that happens on the internet comes down to two roles:
+Internet-la nadakkura almost ella something-um rendu roles-ku boil down aagum:
 
-* **Client** — the one asking for something (a browser, a mobile app)
-* **Server** — the one answering (a computer that's always on, waiting for questions)
+* **Client** — edhavadhu kekkuraan (oru browser, oru mobile app)
+* **Server** — answer pannuraan (epavum on-la irukkura oru computer, questions ku wait
+  panniyirukkum)
 
 <Mermaid
   chart="
@@ -9033,60 +9100,64 @@ B -- delivers it back --> A
 "
 />
 
-For example, when you open a browser and go to a website:
+Example ku, nee oru browser open panni oru website ku poga:
 
-1. Your browser (**client**) sends a **request** out onto the internet: "Please give me this
-   webpage."
-2. The request travels across the network to the right computer, based on its address.
-3. That computer (**server**) sends a **response** back: the actual webpage content.
-4. Your browser receives it and displays it on your screen.
+1. Unnoda browser (**client**) internet-ku oru **request** send pannum: "Indha webpage-a
+   please kudunga."
+2. Andha request network mela, adhoda address padi, correct computer ku travel pannum.
+3. Andha computer (**server**) oru **response** back-la send pannum: actual webpage
+   content.
+4. Unnoda browser idha receive panni unnoda screen-la display pannum.
 
-This request → response pattern is the single most important idea in this entire course.
-Everything you'll build runs on top of it.
+Indha request → response pattern than indha entire course-la mukkiyamana single idea.
+Nee build panra ella something-um idhoda mela than run aagum.
 
-## Why this matters for you [#why-this-matters-for-you]
+## Idhu unakku enn mukkiyam [#idhu-unakku-enn-mukkiyam]
 
-**Backend development means building the "server" side of this picture** — the program that
-sits there, always on, waiting for requests, and deciding what to send back.
+**Backend development-nu solradhu, indha picture-la "server" side build panradhu than** —
+oru program, epavum on-la irukkum, requests ku wait pannikittu irukkum, and enna back
+send pannanum-nu decide pannum.
 
-Everything you've learned in Python so far — functions, dictionaries, classes — is about to
-become the logic that runs *inside* that server, answering the requests your users' browsers
-and apps send in.
+Nee Python-la ippo varaikkum kathukitta ella something-um — functions, dictionaries,
+classes — indha server *kulla* run aagura logic-a maara pogudhu, unnoda users oda
+browsers and apps anuppura requests ku answer pannuradhukku.
 
 
 # What is the Backend, and Why Do We Need One? (/tanglish/docs/fastapi/web-fundamentals/why-we-need-a-backend)
 
 
 
-You already know the backend is the "server" side of the client/server picture. This lesson
-is about *why* it needs to exist at all — why can't a website just be HTML, CSS, and
-JavaScript, with everything happening in the browser?
+Backend, client/server picture-la "server" side-nu unakku already theriyum. Idhu lesson,
+*ஏன்* idhu exist aaganum-nu paakuradhu — enn oru website just HTML, CSS, and JavaScript-a
+mattum vechu, ellame browser-la nadakkanumnu irukka koodadhu?
 
-## The one rule that explains everything [#the-one-rule-that-explains-everything]
+## Ella something-ayum explain pannura oru rule [#ella-something-ayum-explain-pannura-oru-rule]
 
-**Anything you send to the browser, the user can see and change.**
+**Nee browser-ku enna send pannuraiyo, adha user paakalam, change pannalam.**
 
-Open any website, right-click, "View Source" or open DevTools — every line of HTML, CSS, and
-JavaScript is right there, fully readable. Nothing that reaches the browser stays private.
-Not "hard to find" — genuinely, completely visible, and editable, by anyone who opens it.
+Edhavadhu website open pannu, right-click pannu, "View Source" illa DevTools open pannu —
+every line of HTML, CSS, and JavaScript, adhu straight ah readable ah irukku. Browser-ku
+reach aagura edhuvum private ah irukkadhu. "Find panna kashtam" illa — genuinely,
+completely visible, and editable, adha open pannura yaaravadhu.
 
-The backend exists because some things must **never** be visible or editable by the user:
+Backend exist pannuradhukku reason, chila things user ku **epozhume** visible illa
+editable ah irukka koodadhu:
 
-* The actual logic that decides prices, discounts, permissions, or scores
-* Passwords, and how they're checked
-* Secret keys for payment providers, email services, or other paid APIs
-* The database itself — where everyone's data actually lives
+* Prices, discounts, permissions, illa scores decide pannura actual logic
+* Passwords, and avatha epadi check pannuranga-nu
+* Payment providers, email services, illa vera paid APIs ku secret keys
+* Database itself — everyone oda data actual ah enge irukku-nu
 
-## What the client is allowed to see [#what-the-client-is-allowed-to-see]
+## Client ku paakka allow pannradhu enna [#client-ku-paakka-allow-pannradhu-enna]
 
-A user only ever sees two things:
+Oru user rendu things than epozhume paakuran:
 
-1. The **URL** they called (e.g. `POST /orders`)
-2. Whatever **data** came back in the response
+1. Adhu call pannina **URL** (e.g. `POST /orders`)
+2. Response-la enna **data** vandhuchu-nu
 
-They never see the code that ran to produce that response. The backend's internal logic —
-how it validated the request, which database it checked, what business rules it applied — is
-completely invisible on the other side of that URL.
+Andha response produce panna run aana code avan/aval paakka mattaanga. Backend oda internal
+logic — adhu request-a epadi validate pannuchu, edha database check pannuchu, endha
+business rules apply pannuchu — andha URL-oda mele side-la completely invisible.
 
 <Mermaid
   chart="
@@ -9109,48 +9180,50 @@ C -- only the resulting data --> B
 "
 />
 
-This is the whole point of a backend: it's a boundary. Requests go in, responses come out,
-and everything that happens in between is the developer's business, not the user's.
+Backend oda whole point idhu than: idhu oru boundary. Requests uள்ள poidum, responses
+veliya varum, and adhukkula nadakkura ella something-um developer oda business than, user
+oda illa.
 
-## What if there were no backend at all? [#what-if-there-were-no-backend-at-all]
+## Backend edhuvume illa na enna aagum? [#backend-edhuvume-illa-na-enna-aagum]
 
-Imagine trying to build an online store with *only* HTML, CSS, and JavaScript running in the
-browser — no server, no database, nothing hidden.
+Nenachiko, *mattum* HTML, CSS, and JavaScript browser-la run aagura vechu oru online
+store build panna try panra — server illa, database illa, hide panna edhuvum illa.
 
-**Prices and discounts couldn't be trusted.** If the "final price" is calculated by
-JavaScript running in the user's own browser, the user can open DevTools and change it before
-checkout. There's no second, trusted opinion checking the real price — the browser *is* the
-only opinion, and the user fully controls it.
+**Prices and discounts trust panna mudiyadhu.** "Final price" user oda own browser-la run
+aagura JavaScript vechu calculate pannuna, user DevTools open panni checkout ku munnadi
+idha change pannikalam. Real price-a check pannura second, trusted opinion edhuvum illa —
+browser *than* the only opinion, and user adha fully control pannuran.
 
-**Logins couldn't be secure.** If checking a password is a line of JavaScript like
-`if (password === "admin123")`, that string is sitting right there in the page's source code
-for anyone to read. Worse, a user could just skip the check entirely by editing the code
-running in their own browser.
+**Logins secure ah irukka mudiyadhu.** Password check panradhu `if (password ===
+"admin123")` maadhiri oru JavaScript line ah irundha, andha string page oda source
+code-la right there, edhavadhu yaaravadhu read panna mudiyum. Worse, oru user, avan/aval
+own browser-la run aagura code-a edit panni, check-a entirely skip pannalam.
 
-**Data couldn't be shared or kept safe.** Without a database, data can only live in the
-browser itself (e.g. `localStorage`) — meaning it exists on *that one device, in that one
-browser*, invisible to everyone else. Two users could never see each other's posts. You
-couldn't check your own account from your phone. Clear your browser data, and everything is
-gone forever.
+**Data share panna illa safe ah vekka mudiyadhu.** Database illama, data browser-la than
+irukka mudiyum (e.g. `localStorage`) — meaning, adhu *andha one device-la, andha one
+browser-la* than exist pannum, vera yaarukkume invisible ah. Rendu users onnu vodu onnoda
+posts paakave mudiyadhu. Unnoda phone-la irundhu unnoda own account check panna mudiyadhu.
+Browser data clear pannu, ellame forever poidum.
 
-**Secrets couldn't stay secret.** Calling a paid third-party service (email, SMS, payments)
-requires a secret API key. If that key lives in browser JavaScript, it ships to every visitor
-— anyone can extract it from the page and use it as their own, at your expense.
+**Secrets secret ah irukka mudiyadhu.** Oru paid third-party service (email, SMS,
+payments) call panna oru secret API key venum. Andha key browser JavaScript-la irundha,
+adhu every visitor ku ship aagum — edhavadhu yaaravadhu page-la irundhu adha extract
+panni, unnoda cost-la avanga own maadhiri use pannikalam.
 
-None of this is a small inconvenience — it means **nothing on the site could actually be
-trusted**. A backend is what turns "a page that runs some code" into "a system whose rules
-actually hold."
+Idhu ellame oru small inconvenience illa — meaning &#x2A;*site-la edhuvume actual ah trust
+panna mudiyadhu.** "Konjam code run pannura oru page"-a "rules actually hold aagura oru
+system" ah maatradhu than oru backend.
 
-## The takeaway [#the-takeaway]
+## Takeaway [#takeaway]
 
-The backend is the one place in your entire application that only *you*, the developer,
-control. The user can call its URLs and see its responses — but never its code, its
-database, or its secrets. Everything you'll build with FastAPI from here on lives inside that
-trusted boundary.
+Backend than unnoda entire application-la, mattum *nee*, developer, control pannura oru
+single place. User adhoda URLs call pannalam, adhoda responses paakkalam — aana adhoda
+code, adhoda database, illa adhoda secrets epozhume illa. Idhirundhu FastAPI vechu nee
+build panra ella something-um andha trusted boundary-kulla than irukkum.
 
 <Callout title="For you, coming from Express/Nest">
-  This is precisely why an Express/Nest server exists in your past projects too — it's the same
-  "trusted boundary" idea, whether the request handler is written in a Express route, a Nest
-  controller method, or — starting now — a FastAPI path operation function. The concept doesn't
-  change; only the syntax will.
+  Idhu than exactly unnoda past projects-la kooda oru Express/Nest server enn irukku-nu — same
+  "trusted boundary" idea than, request handler oru Express route-la, oru Nest controller
+  method-la, illa — ippo start pannitu — oru FastAPI path operation function-la ezhudhinalum.
+  Concept change aagadhu; syntax mattum than change aagum.
 </Callout>

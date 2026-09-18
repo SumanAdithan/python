@@ -133,25 +133,25 @@
     - [def, async def & await](/tanglish/docs/phase-8/async-and-await): JS async/await panra same idea than — keywords-um almost same than
   - [Final Practice — Build a User Store](/tanglish/docs/final-practice): Tutorial-a close pannitu idha nee build pannu — FastAPI ku best prep
 - Backend with FastAPI
-  - [Backend Development with FastAPI](/tanglish/docs/fastapi): A syllabus for teaching backend development with FastAPI
+  - [Backend Development with FastAPI (Tanglish)](/tanglish/docs/fastapi): FastAPI vechu backend development teach panna oru syllabus
   - Web Fundamentals
-    - [What is the Internet?](/tanglish/docs/fastapi/web-fundamentals/what-is-the-internet): The network that makes backend development possible
-    - [What is a Website?](/tanglish/docs/fastapi/web-fundamentals/what-is-a-website): HTML, CSS, and JS — and what actually happens when a page loads
-    - [Web 1.0, Web 2.0 & Why React](/tanglish/docs/fastapi/web-fundamentals/web-evolution-and-why-react): The full page reload problem — and why modern apps stopped doing it
-    - [What is the Backend, and Why Do We Need One?](/tanglish/docs/fastapi/web-fundamentals/why-we-need-a-backend): Why business logic can't just live in the browser
-    - [What is a Database?](/tanglish/docs/fastapi/web-fundamentals/what-is-a-database): Where the backend keeps data that has to survive and stay organized
-    - [Putting It Together — How Does YouTube Work?](/tanglish/docs/fastapi/web-fundamentals/how-youtube-works): A real-world walkthrough that ties client, backend, database, and file storage together
+    - [What is the Internet?](/tanglish/docs/fastapi/web-fundamentals/what-is-the-internet): Backend development possible aakura network
+    - [What is a Website?](/tanglish/docs/fastapi/web-fundamentals/what-is-a-website): HTML, CSS, JS — and oru page load aagumbodhu actual ah enna nadakkum
+    - [Web 1.0, Web 2.0 & Why React](/tanglish/docs/fastapi/web-fundamentals/web-evolution-and-why-react): Full page reload problem — and modern apps ஏன் idha panna nirutha
+    - [What is the Backend, and Why Do We Need One?](/tanglish/docs/fastapi/web-fundamentals/why-we-need-a-backend): Business logic browser-la mattum ah irukka mudiyadhu ஏன்
+    - [What is a Database?](/tanglish/docs/fastapi/web-fundamentals/what-is-a-database): Survive aaganum, organized ah irukanum-nu backend edhula data vekkum
+    - [Putting It Together — How Does YouTube Work?](/tanglish/docs/fastapi/web-fundamentals/how-youtube-works): Client, backend, database, and file storage-a onna serkkura oru real-world walkthrough
   - Getting Started
-    - [What is FastAPI?](/tanglish/docs/fastapi/getting-started/what-is-fastapi): A modern Python framework built for writing APIs fast, with less code
-    - [Project Setup](/tanglish/docs/fastapi/getting-started/project-setup): Virtual environments, and installing FastAPI's core dependencies
-    - [Environment Configuration](/tanglish/docs/fastapi/getting-started/environment-configuration): Keeping database credentials out of your code with a .env file
-    - [Database Connection](/tanglish/docs/fastapi/getting-started/database-connection): Turning your connection string into a real connection with SQLAlchemy
+    - [What is FastAPI?](/tanglish/docs/fastapi/getting-started/what-is-fastapi): APIs-a fast ah, less code-la ezhuda build panna oru modern Python framework
+    - [Project Setup](/tanglish/docs/fastapi/getting-started/project-setup): Virtual environments, and FastAPI oda core dependencies install pannradhu
+    - [Environment Configuration](/tanglish/docs/fastapi/getting-started/environment-configuration): Database credentials-a oru .env file vechu unnoda code-la irundhu velila vekradhu
+    - [Database Connection](/tanglish/docs/fastapi/getting-started/database-connection): Unnoda connection string-a SQLAlchemy vechu oru real connection ah maatradhu
   - Building the Todo API
-    - [Creating the Todo Model](/tanglish/docs/fastapi/todo-api/creating-the-todo-model): Describing a database table as a Python class
-    - [Creating the Todo Schema](/tanglish/docs/fastapi/todo-api/creating-the-todo-schema): Pydantic schemas — the shape of data at the API boundary, separate from the database model
-    - [Create Todo — Your First Endpoint](/tanglish/docs/fastapi/todo-api/create-todo-endpoint): The FastAPI app, the database session dependency, and your first route
-    - [Running & Testing Your API](/tanglish/docs/fastapi/todo-api/running-and-testing): Starting uvicorn, and trying your endpoint through the interactive docs
-    - [Fetch All Todos](/tanglish/docs/fastapi/todo-api/fetch-all-todos): A GET endpoint that returns a list, and querying every row with SQLAlchemy
-    - [Fetch a Single Todo](/tanglish/docs/fastapi/todo-api/fetch-single-todo): Path parameters, filtering a query, and returning a proper 404
-    - [Update Todo — PUT vs PATCH](/tanglish/docs/fastapi/todo-api/update-todo): Replacing a todo entirely, updating it partially, and the real difference between the two
-    - [Delete Todo](/tanglish/docs/fastapi/todo-api/delete-todo): Removing a row, and returning a plain message instead of the resource
+    - [Creating the Todo Model](/tanglish/docs/fastapi/todo-api/creating-the-todo-model): Oru database table-a oru Python class ah describe panradhu
+    - [Creating the Todo Schema](/tanglish/docs/fastapi/todo-api/creating-the-todo-schema): Pydantic schemas — API boundary-la data oda shape, model-la irundhu separate ah
+    - [Create Todo — Your First Endpoint](/tanglish/docs/fastapi/todo-api/create-todo-endpoint): FastAPI app, database session dependency, and unnoda first route
+    - [Running & Testing Your API](/tanglish/docs/fastapi/todo-api/running-and-testing): uvicorn start panradhu, and interactive docs vazhi unnoda endpoint try panradhu
+    - [Fetch All Todos](/tanglish/docs/fastapi/todo-api/fetch-all-todos): Oru list return pannura GET endpoint, and SQLAlchemy vechu every row query panradhu
+    - [Fetch a Single Todo](/tanglish/docs/fastapi/todo-api/fetch-single-todo): Path parameters, oru query filter panradhu, and oru proper 404 return panradhu
+    - [Update Todo — PUT vs PATCH](/tanglish/docs/fastapi/todo-api/update-todo): Oru todo-a completely replace panradhu, partially update panradhu, and rendukum irukkura real difference
+    - [Delete Todo](/tanglish/docs/fastapi/todo-api/delete-todo): Oru row-a remove panradhu, and resource ku pathila oru plain message return panradhu
