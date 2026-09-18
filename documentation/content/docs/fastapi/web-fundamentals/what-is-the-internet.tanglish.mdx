@@ -1,0 +1,72 @@
+---
+title: What is the Internet?
+description: Backend development possible aakura network
+---
+
+Backend code oru line kooda ezhuda munnadi, actual ah nee enna mela build panra-nu unakku
+clear ah theriyanum. So romba basic-la start pannalam: **internet-nu enna?**
+
+## Simple ah oru definition
+
+Internet-nu, world-la irukkura computers ellam oru huge network ah connect aayirukkardhu,
+avanga onnu vodu onnu information send panna mudiyum.
+
+Adhu than actually. Unnoda phone, unnoda laptop, and Instagram illa Netflix maadhiri apps
+run pannura servers ellame indha same giant network-la irukkura computers than — chila
+information kekkum, chila answer pannum.
+
+## Ovvoru computer ku oru address irukku
+
+Oru computer innoru computer ku data send panna, adhukku enge send pannanum-nu theriyanum.
+Internet-la irukkura every device ku oru **IP address** irukku — adha unique ah identify
+pannura oru set of numbers, oru house ku postal address venum, andha edhavadhu mail
+deliver panna mudiyum, adha maadhiri than.
+
+```text
+192.168.1.1
+```
+
+Nee rarely-a oru IP address-a nee typed pannuva — adhukku than `google.com` maadhiri
+domain names irukku, avanga just oru human-friendly label, hood-ku IP address ah
+translate aagum. Aana underlying idea same than: **internet-la irukkura every computer-a
+oru address-la find pannalam.**
+
+## Rendu roles: kekkardhum, answer pannradhum
+
+Internet-la nadakkura almost ella something-um rendu roles-ku boil down aagum:
+
+- **Client** — edhavadhu kekkuraan (oru browser, oru mobile app)
+- **Server** — answer pannuraan (epavum on-la irukkura oru computer, questions ku wait
+  panniyirukkum)
+
+<Mermaid
+  chart="
+graph LR
+  A[Client<br/>your browser or app] -- 1. Request --> B((The Internet))
+  B -- forwards it to --> C[Server<br/>a computer that is always on]
+  C -- 2. Response --> B
+  B -- delivers it back --> A
+"
+/>
+
+Example ku, nee oru browser open panni oru website ku poga:
+
+1. Unnoda browser (**client**) internet-ku oru **request** send pannum: "Indha webpage-a
+   please kudunga."
+2. Andha request network mela, adhoda address padi, correct computer ku travel pannum.
+3. Andha computer (**server**) oru **response** back-la send pannum: actual webpage
+   content.
+4. Unnoda browser idha receive panni unnoda screen-la display pannum.
+
+Indha request → response pattern than indha entire course-la mukkiyamana single idea.
+Nee build panra ella something-um idhoda mela than run aagum.
+
+## Idhu unakku enn mukkiyam
+
+**Backend development-nu solradhu, indha picture-la "server" side build panradhu than** —
+oru program, epavum on-la irukkum, requests ku wait pannikittu irukkum, and enna back
+send pannanum-nu decide pannum.
+
+Nee Python-la ippo varaikkum kathukitta ella something-um — functions, dictionaries,
+classes — indha server *kulla* run aagura logic-a maara pogudhu, unnoda users oda
+browsers and apps anuppura requests ku answer pannuradhukku.

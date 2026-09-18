@@ -1,0 +1,48 @@
+---
+title: What is a Website?
+description: HTML, CSS, JS — and oru page load aagumbodhu actual ah enna nadakkum
+---
+
+Last lesson-la nee paatha, oru **server**, oru **client**-oda requests ku answer pannum-nu.
+Oru website solradhu, most servers avanga answer ah back send pannura thing than.
+
+## Moonu building blocks
+
+Ethana complex ah irundhalum, every website moonu things-la irundhu than build aagum:
+
+- **HTML** — structure and content (text, images, buttons — page-la enna irukku)
+- **CSS** — styling (colors, spacing, fonts — idhu epadi kaanum)
+- **JavaScript** — behavior (nee click pannumbodhu, type pannumbodhu, scroll pannumbodhu
+  enna nadakkum)
+
+Server oda velai, indha files-a edha browser kekkudho, adha send panradhu. Browser oda
+velai, avatha read panni, nee actual ah paakkura page ah convert panradhu.
+
+## Oru page visit pannumbodhu enna nadakkum
+
+Oru single webpage open panradhu rarely-a just *one* request — usually adhu one after
+another, several requests ah irukkum:
+
+<Mermaid
+  chart="
+graph TD
+  A[Browser requests index.html] --> B[Server sends the HTML file]
+  B --> C[Browser reads the HTML]
+  C --> D[Browser sees a link to style.css and requests it]
+  C --> E[Browser sees a link to script.js and requests it]
+  D --> F[Page is styled and interactive]
+  E --> F
+"
+/>
+
+1. Browser page itself (`index.html`) kku kekkum.
+2. Andha HTML read pannumbodhu, browser adhula oru stylesheet mattrum oru script file
+   reference pannirukku-nu notice pannum.
+3. Adhukku kooda **separate requests** send pannum.
+4. Ellam vandha apparam, browser avatha ella combine panni, screen-la nee paakkura page ah
+   pannum.
+
+Idhu aprom mukkiyam aagum: diagram-la irukkura andha ovvoru arrow-um internet mela oru full
+round trip — oru request, appuram oru response. Andha number-a chinna ah vecha (and
+unnecessary ah repeat pannama irundha), web indha vazhi evolve aana reasons-la oru periya
+part, adhu than exactly next lesson-la paakuradhu.

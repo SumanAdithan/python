@@ -1,0 +1,113 @@
+---
+title: Project Setup
+description: Virtual environments, and FastAPI oda core dependencies install pannradhu
+---
+
+Edhavadhu FastAPI code ezhudura munnadi, unakku properly isolated aana oru project venum.
+Idha set up panradhu than indha lesson.
+
+## Virtual environment ஏன் venum?
+
+Nee oru Python package install pannumbodhu, adhu normally unnoda machine-la **globally**
+install aagum — just one project ku mattum illa. Project A ku package oda version 1 venum,
+Project B ku version 2 venum-na, globally install panradhu ellam rendu project-um oru
+odana conflict aagum.
+
+Oru **virtual environment** idha fix pannum: idhu oru self-contained folder, adhula thani
+Python copy and thani packages irukkum, unnoda system-wide Python-la irundhum, vera every
+project-la irundhum completely separate ah.
+
+<Callout title="For you, coming from Express/Nest">
+
+Node-la, idhu free-ah kidaikkum — every project ku automatic ah adhoda own `node_modules`
+folder irukkum. Python-la default ah idhu maadhiri edhuvum kidayathu, adhukkaga than indha
+extra step irukku: oru virtual environment than Python project-a, Node project oda
+`node_modules` maadhiri, per project isolated ah behave panna vekkum.
+
+</Callout>
+
+## Virtual environment create panradhu
+
+Unnoda project folder kulla, idha run pannu:
+
+```bash
+python -m venv venv
+```
+
+Idhu `venv`-nu peru vecha oru new folder create pannum, adhula oru isolated Python
+environment irukkum. (`venv` peru just oru convention — command peru `venv`, adhu create
+pannura folder-ku technically edhavadhu peru vechikalam, aana almost everywhere `venv`-nu
+than nee paapa.)
+
+## Idha activate panradhu
+
+Virtual environment create panradhu podhathu illa — unnoda terminal-la idha **activate**
+pannanum, so that `pip` (Python oda package installer) mattrum `python` rendume unnoda
+system-wide environment ku pathila indha isolated environment-a than point pannum.
+
+Windows-la:
+
+```bash
+.\venv\Scripts\activate
+```
+
+macOS/Linux-la:
+
+```bash
+source venv/bin/activate
+```
+
+Once activate pannina apparam, unnoda terminal prompt line start-la `(venv)`-nu kaatum —
+adhu than confirmation, next-la nee install pannura edhuvum indha project oda isolated
+environment-ku than pogudhu-nu, unnoda entire system-ku illa.
+
+Indha project mela work panna, oru fresh terminal open pannum bodhu ella time-um virtual
+environment-a again activate pannanum.
+
+## Core dependencies install panradhu
+
+Virtual environment active ah irukkumbodhu, FastAPI oda core toolkit install pannu:
+
+```bash
+pip install fastapi uvicorn sqlalchemy psycopg2-binary python-dotenv mysqlclient pydantic
+```
+
+Ovvondrum enna pannum-nu paakalam:
+
+| Package | Purpose |
+| --- | --- |
+| `fastapi` | Web framework than — routing, request handling, validation |
+| `uvicorn` | Unnoda FastAPI app-a actual ah run pannura server |
+| `sqlalchemy` | Database vechu velai panna nee use pannura ORM |
+| `psycopg2-binary` | Oru PostgreSQL driver — SQLAlchemy Postgres oda pesa help pannum |
+| `python-dotenv` | `.env` file-la irundhu configuration load pannum |
+| `mysqlclient` | Oru MySQL driver — SQLAlchemy MySQL oda pesa help pannum |
+| `pydantic` | Data validate pannum, unnoda API accept and return pannura schemas define pannum |
+
+`pydantic` actually ah `fastapi`-oda part ah automatic ah install aagidum — nee strictly
+adha separately list panna venam. Idha inga explicit ah include panradhu, en na nee adhula
+irundhu directly and often import pannuva (idhu ஏன்-nu "What is FastAPI?"-la already
+paatha), so idha FastAPI oda hidden detail-a vida adhoda own dependency-a nenaikardhu
+better.
+
+List-la PostgreSQL driver **and** MySQL driver rendume irukardha nee notice pannirupa.
+SQLAlchemy-kku thaniya edhavadhu specific database oda pesa theriyathu — nee actual ah
+connect pannura database matching oru driver adhukku venum. Indha course oda project
+**MySQL** use pannudhu, so `mysqlclient` than ippo mukkiyam; `psycopg2-binary`, epavadhu
+nee same project-a Postgres ku point pannina use aagum-nu apdiye vechirukkom.
+
+Pause pannanum-nu irukkura one dhan **`uvicorn`**. FastAPI code thaniya server ah run
+aagadhu — adhu just routes and logic describe pannura Python code than. `uvicorn` than
+actual ah server process start pannum, requests-ku listen pannum, avatha unnoda FastAPI
+app-ku feed pannum program.
+
+<Callout title="For you, coming from Express/Nest">
+
+`uvicorn`, Node.js itself Express app ku pannura role-a, illa `nest start` unakku hood-ku
+kelaya pannura velaya than pannudhu — actual ah oru port open panni requests serve panna
+start pannura thing. `sqlalchemy`, TypeORM/Prisma/Sequelize (oru ORM) oda maps aagum,
+database drivers andha tools ku hood-la venum `pg` illa `mysql2` packages oda same idea
+than, and `python-dotenv`, Node oda `dotenv` package pannura exact same velai than pannum —
+peru kooda match aagudhu.
+
+</Callout>

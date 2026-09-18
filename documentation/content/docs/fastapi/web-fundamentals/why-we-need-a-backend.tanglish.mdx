@@ -1,0 +1,107 @@
+---
+title: What is the Backend, and Why Do We Need One?
+description: Business logic browser-la mattum ah irukka mudiyadhu ஏன்
+---
+
+Backend, client/server picture-la "server" side-nu unakku already theriyum. Idhu lesson,
+*ஏன்* idhu exist aaganum-nu paakuradhu — enn oru website just HTML, CSS, and JavaScript-a
+mattum vechu, ellame browser-la nadakkanumnu irukka koodadhu?
+
+## Ella something-ayum explain pannura oru rule
+
+**Nee browser-ku enna send pannuraiyo, adha user paakalam, change pannalam.**
+
+Edhavadhu website open pannu, right-click pannu, "View Source" illa DevTools open pannu —
+every line of HTML, CSS, and JavaScript, adhu straight ah readable ah irukku. Browser-ku
+reach aagura edhuvum private ah irukkadhu. "Find panna kashtam" illa — genuinely,
+completely visible, and editable, adha open pannura yaaravadhu.
+
+Backend exist pannuradhukku reason, chila things user ku **epozhume** visible illa
+editable ah irukka koodadhu:
+
+- Prices, discounts, permissions, illa scores decide pannura actual logic
+- Passwords, and avatha epadi check pannuranga-nu
+- Payment providers, email services, illa vera paid APIs ku secret keys
+- Database itself — everyone oda data actual ah enge irukku-nu
+
+## Client ku paakka allow pannradhu enna
+
+Oru user rendu things than epozhume paakuran:
+
+1. Adhu call pannina **URL** (e.g. `POST /orders`)
+2. Response-la enna **data** vandhuchu-nu
+
+Andha response produce panna run aana code avan/aval paakka mattaanga. Backend oda internal
+logic — adhu request-a epadi validate pannuchu, edha database check pannuchu, endha
+business rules apply pannuchu — andha URL-oda mele side-la completely invisible.
+
+<Mermaid
+  chart="
+graph LR
+  subgraph Client [Client - fully visible to the user]
+    A[HTML / CSS / JS you sent]
+    B[Whatever data arrives back]
+  end
+  subgraph Backend [Backend - fully hidden from the user]
+    C[Your source code]
+    D[Database]
+    E[Secret keys]
+    F[Business rules: pricing, permissions, validation]
+  end
+  A -- request to a URL --> C
+  C --> D
+  C --> E
+  C --> F
+  C -- only the resulting data --> B
+"
+/>
+
+Backend oda whole point idhu than: idhu oru boundary. Requests uள்ள poidum, responses
+veliya varum, and adhukkula nadakkura ella something-um developer oda business than, user
+oda illa.
+
+## Backend edhuvume illa na enna aagum?
+
+Nenachiko, *mattum* HTML, CSS, and JavaScript browser-la run aagura vechu oru online
+store build panna try panra — server illa, database illa, hide panna edhuvum illa.
+
+**Prices and discounts trust panna mudiyadhu.** "Final price" user oda own browser-la run
+aagura JavaScript vechu calculate pannuna, user DevTools open panni checkout ku munnadi
+idha change pannikalam. Real price-a check pannura second, trusted opinion edhuvum illa —
+browser *than* the only opinion, and user adha fully control pannuran.
+
+**Logins secure ah irukka mudiyadhu.** Password check panradhu `if (password ===
+"admin123")` maadhiri oru JavaScript line ah irundha, andha string page oda source
+code-la right there, edhavadhu yaaravadhu read panna mudiyum. Worse, oru user, avan/aval
+own browser-la run aagura code-a edit panni, check-a entirely skip pannalam.
+
+**Data share panna illa safe ah vekka mudiyadhu.** Database illama, data browser-la than
+irukka mudiyum (e.g. `localStorage`) — meaning, adhu *andha one device-la, andha one
+browser-la* than exist pannum, vera yaarukkume invisible ah. Rendu users onnu vodu onnoda
+posts paakave mudiyadhu. Unnoda phone-la irundhu unnoda own account check panna mudiyadhu.
+Browser data clear pannu, ellame forever poidum.
+
+**Secrets secret ah irukka mudiyadhu.** Oru paid third-party service (email, SMS,
+payments) call panna oru secret API key venum. Andha key browser JavaScript-la irundha,
+adhu every visitor ku ship aagum — edhavadhu yaaravadhu page-la irundhu adha extract
+panni, unnoda cost-la avanga own maadhiri use pannikalam.
+
+Idhu ellame oru small inconvenience illa — meaning **site-la edhuvume actual ah trust
+panna mudiyadhu.** "Konjam code run pannura oru page"-a "rules actually hold aagura oru
+system" ah maatradhu than oru backend.
+
+## Takeaway
+
+Backend than unnoda entire application-la, mattum *nee*, developer, control pannura oru
+single place. User adhoda URLs call pannalam, adhoda responses paakkalam — aana adhoda
+code, adhoda database, illa adhoda secrets epozhume illa. Idhirundhu FastAPI vechu nee
+build panra ella something-um andha trusted boundary-kulla than irukkum.
+
+<Callout title="For you, coming from Express/Nest">
+
+Idhu than exactly unnoda past projects-la kooda oru Express/Nest server enn irukku-nu — same
+"trusted boundary" idea than, request handler oru Express route-la, oru Nest controller
+method-la, illa — ippo start pannitu — oru FastAPI path operation function-la ezhudhinalum.
+Concept change aagadhu; syntax mattum than change aagum.
+
+</Callout>

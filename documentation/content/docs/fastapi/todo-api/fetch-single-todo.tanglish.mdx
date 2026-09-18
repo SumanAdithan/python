@@ -1,0 +1,112 @@
+---
+title: Fetch a Single Todo
+description: Path parameters, oru query filter panradhu, and oru proper 404 return panradhu
+---
+
+Every todo fetch panradhu useful, aana unakku **one specific** todo-a kooda fetch panna
+venum — adhoda id vechu. Idhu rendu puthu ideas introduce pannum: URL-la irundhu directly
+oru value read panradhu, and edhavadhu exist pannala-na client ku clear ah sollradhu.
+
+## Route
+
+```python
+@app.get("/todos/{todo_id}", response_model = TodoSchema)
+def read_todo(todo_id: int,db:Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return todo
+```
+
+## Path parameters
+
+**`@app.get("/todos/{todo_id}", ...)`** — path-la irukkura `{todo_id}` oru **path
+parameter** — enga vandhalum andha value ku match aagura oru placeholder. `/todos/5`
+visit pannu, `todo_id` `5`-nu aagum.
+
+**`def read_todo(todo_id: int, ...)`** — parameter name path-la irukkura `{todo_id}`-oda
+exact ah match aaganum. FastAPI URL-la irundhu directly value-a read pannum, and nee
+annotate pannura endha type-um (inga `int`) adha convert pannum — adha vazhi validate
+pannikittu. `/todos/abc` visit pannu, FastAPI automatic ah request-a reject pannidum,
+unnoda function run aaga munnadi than, en na `"abc"` oru valid `int` illa.
+
+## Query filter panradhu
+
+Fetch All Todos-la `.all()` use pannirundhom — filtering edhuvum illama every row. Indha
+route ku exactly one venum:
+
+```python
+todo = db.query(Todo).filter(Todo.id == todo_id).first()
+```
+
+**`.filter(Todo.id == todo_id)`** query-a `id` column match aagura rows-ku narrow down
+pannum. **`.first()`** query-a run panni, match aana first row mattum return pannum — illa
+onnume match aagalanadha, error raise pannuradhukku pathila `None` return pannum.
+
+## "Not found" handle panradhu
+
+```python
+if not todo:
+    raise HTTPException(status_code=404, detail="Todo not found")
+```
+
+`.first()` no match ku `None` return pannurathala, and `None` falsy aanadhala, `if not
+todo:` "onnume find aagala na"-nu read aagum. `HTTPException` solradhu FastAPI oru `raise`-a
+(Python Notes Phase 6) oru real HTTP error response ah maatrura vazhi: idha raise
+pannradhu function-a stop panni, client ku oru real `404` status code send pannum,
+`{"detail": "Todo not found"}` body oda — unnoda API confusing edhavadhu return
+pannuradhukku, illa crash aaguradhukku pathila.
+
+<Callout title="For you, coming from Express/Nest">
+
+Oru FastAPI path parameter, Express oda `req.params.id` illa Nest oda `@Param('id') id:
+number` pannura same idea than — except FastAPI adha type-a kooda automatic ah convert
+and validate pannum, Nest oda pipes pannura maadhiri. `HTTPException(status_code=404,
+...)` raise panradhu, Nest-la `throw new HttpException(...)` illa Express-la hand-la
+ezhudhura `res.status(404).json({...})` exact ah than — oru specific error response oda
+oru request-a early ah end panna oru clean way.
+
+</Callout>
+
+## `main.py` ippo varaikkum
+
+```python title="main.py"
+from fastapi import FastAPI, Depends, HTTPException
+from schemas import Todo as TodoSchema, TodoCreate
+from sqlalchemy.orm import Session
+from database import SessionLocal, Base, engine
+from models import Todo
+
+Base.metadata.create_all(bind = engine)
+app = FastAPI()
+
+# Dependency for DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# POST - Create TODO
+@app.post("/todos", response_model=TodoSchema)
+def create(todo: TodoCreate, db:Session = Depends(get_db)):
+    db_todo = Todo(**todo.dict())
+    db.add(db_todo)
+    db.commit()
+    db.refresh(db_todo)
+    return db_todo
+
+# GET - All Todos
+@app.get("/todos", response_model = list[TodoSchema])
+def read_todos(db:Session = Depends(get_db)):
+    return db.query(Todo).all()
+
+@app.get("/todos/{todo_id}", response_model = TodoSchema)
+def read_todo(todo_id: int,db:Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return todo
+```

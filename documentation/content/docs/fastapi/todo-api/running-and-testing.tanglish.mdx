@@ -1,0 +1,55 @@
+---
+title: Running & Testing Your API
+description: uvicorn start panradhu, and interactive docs vazhi unnoda endpoint try panradhu
+---
+
+Unakku oru working endpoint irukku. Ippo actual ah server-a run panni try pannura time.
+
+## Server start panradhu
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Idha break pannu paakalam:
+
+- **`uvicorn`** — Project Setup-la nee install pannina server program. Ninaivula
+  vechuko: unnoda FastAPI code thaniya run aagadhu; `uvicorn` than actual ah server
+  process start pannum.
+- **`main:app`** — `uvicorn`-ku unnoda application enga irukku-nu sollum: `main` module
+  (unnoda `main.py`), and adhula irukkura `app` variable (`app = FastAPI()`).
+- **`--host 0.0.0.0`** — unnoda own machine mattum illa, every network interface-um
+  listen pannu. `127.0.0.1` (default) unnoda own computer-la irundhu vandha connections
+  mattum accept pannum; `0.0.0.0` unnoda network-la irukkura vera devices-um idha reach
+  panna vidum — unnoda phone-la irundhu test panna useful.
+- **`--port 8000`** — endha port-la listen pannanum. Unnoda API ippo
+  `http://localhost:8000`-la reachable ah irukku.
+- **`--reload`** — nee oru code change save pannumbodhu ella time-um automatic ah server-a
+  restart pannum. Development-la idha constantly use pannu — idhu illama rarely irukka
+  venum-nu nee nenaipa. **Production-la idha epozhume use pannadhu.**
+
+## Idha test panradhu — interactive docs
+
+"What is FastAPI?"-la irundhu recall pannu: every FastAPI app automatic ah interactive
+API docs vaangum. Ippo nee avatha actual ah use panna mudiyum — unnoda browser-a idha
+open pannu:
+
+```text
+http://localhost:8000/docs
+```
+
+Nee ezhudhina every endpoint-um inga list aagirukkum — ippozhukku, `POST /todos`. Idha
+expand pannu, **Try it out** click pannu, oru sample `title` and `description` fill
+pannu, and oru real request send pannu — straight ah browser-la irundhu, separate tool
+edhuvum venaam. Unnoda API back send pannina actual response-a nee paapa, unnoda database
+assign pannina `id`-um including.
+
+<Callout title="For you, coming from Express/Nest">
+
+Express-la, oru endpoint test panna Postman illa `curl`-ku poga, en na built-in ah edhuvum
+illa. Nest `@nestjs/swagger` vechu close ah kudukkum, aana adhukku manual setup venum —
+every DTO and route mela decorators. FastAPI-la, nee unnoda first endpoint ezhudhina
+second-le indha page exist pannudhu, nee already ezhudhina same type hints and schemas-la
+irundhu generate aagirukku.
+
+</Callout>

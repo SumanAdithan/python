@@ -1,0 +1,85 @@
+---
+title: Fetch All Todos
+description: Oru list return pannura GET endpoint, and SQLAlchemy vechu every row query panradhu
+---
+
+Todo create panradhu work aaguthu, next endpoint avatha back read pannum — database-la
+irukkura every todo-a.
+
+## Route
+
+```python
+# GET - All Todos
+@app.get("/todos", response_model = list[TodoSchema])
+def read_todos(db:Session = Depends(get_db)):
+    return db.query(Todo).all()
+```
+
+## Idha step-by-step paakalam
+
+**`@app.get("/todos", ...)`** — `create`-la irundha same decorator pattern than, aana
+`@app.post`-ku pathila `@app.get`. Oru `GET` request oru request body kondu varadhu, adhukku
+than `create` maadhiri `read_todos`, `todo` parameter edukkadhu.
+
+**`response_model = list[TodoSchema]`** — Python Notes Phase 7-la irundha container type
+hints, ippo real velai pannudhu: `list[TodoSchema]` FastAPI ku sollum "response oru list,
+adhula every item-um oru `TodoSchema`". Single `response_model=TodoSchema` oru item
+handle pannura maadhiri than, return aagura list-la irukkura every item-um idhu validate
+and serialize pannum.
+
+**`db:Session = Depends(get_db)`** — `create` route-la irundha same database dependency
+than. Data read panna kooda oru session venum, write pannina maadhiri exact ah.
+
+**`db.query(Todo).all()`** — SQLAlchemy oda query syntax: `db.query(Todo)` `todo` table ku
+oru query start pannum, and `.all()` adha run panni, match aana every row-a, `Todo`
+(SQLAlchemy) instances oda oru list ah return pannum. Filtering edhuvum add pannalanadha,
+meaning table-la irukkura every row-um.
+
+**`return db.query(Todo).all()`** — `create` maadhiri than: SQLAlchemy objects-a directly
+return pannudhu, and (schema lesson-la irundha) `orm_mode` than FastAPI ku ovvondrayum
+automatic ah oru `TodoSchema` ah convert panna vidum.
+
+<Callout title="For you, coming from Express/Nest">
+
+`db.query(Todo).all()`, Sequelize-la `Model.findAll()`, TypeORM-la `repository.find()`,
+illa Prisma-la `prisma.todo.findMany()` pannura same job than — "every row-a kudu",
+edhuvum filter apply pannama. Oru single todo id vechu fetch panna varumbodhu, idha nee
+actual filters vechu narrow down pannuva.
+
+</Callout>
+
+## `main.py` ippo varaikkum
+
+```python title="main.py"
+from fastapi import FastAPI, Depends
+from schemas import Todo as TodoSchema, TodoCreate
+from sqlalchemy.orm import Session
+from database import SessionLocal, Base, engine
+from models import Todo
+
+Base.metadata.create_all(bind = engine)
+app = FastAPI()
+
+# Dependency for DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# POST - Create TODO
+@app.post("/todos", response_model=TodoSchema)
+def create(todo: TodoCreate, db:Session = Depends(get_db)):
+    db_todo = Todo(**todo.dict())
+    db.add(db_todo)
+    db.commit()
+    db.refresh(db_todo)
+    return db_todo
+
+# GET - All Todos
+@app.get("/todos", response_model = list[TodoSchema])
+def read_todos(db:Session = Depends(get_db)):
+    return db.query(Todo).all()
+```

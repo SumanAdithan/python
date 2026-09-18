@@ -1,0 +1,78 @@
+---
+title: What is FastAPI?
+description: APIs-a fast ah, less code-la ezhuda build panna oru modern Python framework
+---
+
+Backend enna-nu ippo unakku *why* level-la puriyum. Ippo idhirundhu, nee ondha build panna
+kathukapora — **FastAPI** vechu, APIs ezhuda specific ah build pannina oru Python framework.
+
+## Oru micro framework
+
+FastAPI oru **micro framework** — idhu unakku oru small, focused core (routing, request
+handling) kudukkum, rigid structure vecha oru huge all-in-one system illa. Nee unnoda own
+project layout choose pannikalam, unakku actual ah venum na piece mattum add pannikalam.
+Idhu vechu FastAPI **flexible** aagidhu: FastAPI unnoda code-a force panni "idhu than correct
+way"-nu oru single method-la push pannadhu.
+
+## Validation and docs, built-in ah irukku
+
+FastAPI innoru two libraries mela build aagirukku, avanga peru theriyardhu useful, epavum
+avaanga kanpippanga:
+
+- **Starlette** — FastAPI kula irukkura actual web layer-a handle pannudhu: requests
+  receive pannradhu, correct function ku route pannradhu, response send pannradhu
+- **Pydantic** — data validation handle pannudhu, Python Notes-la Phase 7-la nee
+  kathukitta type hints vechu
+
+Andha second point than periya deal. Unnoda endpoint data mela oru type hint ezhudhu, like
+`age: int`, appuram FastAPI automatic ah:
+
+1. Incoming data-a andha type mela **validate** pannum — `age: "abc"`-nu ஒரு request
+   varradhuna, unnoda code run aaguradhukku munnadiye automatic ah reject pannidum
+2. Adhukku **interactive documentation** **generate** pannum — every endpoint, adhukku
+   expect aagura data, live-a try pannradhu ellathayum kaatura oru page, unakku extra
+   code edhuvum ezhudama.
+
+Andha second point genuinely FastAPI oda best features-la ondru: nee type hints vechu oru
+endpoint define pannina second-la, free-ah oru working documentation page kidaikkum.
+
+## Fast — genuinely fast
+
+"FastAPI" just oru peru illa. Idhu **Starlette** mela build aagirukkardhala, adhu Python
+oda `async`/`await` (Python Notes Phase 8) support pannudhu, FastAPI oru very high volume
+requests-a efficient ah handle pannum. Real benchmarks-la, idhu Node.js and Go-oda
+competitive ah — sometimes andha rendaiyum vida fast ah — perform pannudhu, idhu oru Python
+framework ku unusual than.
+
+## Less code, more power
+
+Type hints validation and documentation rendaiyum automatic ah drive pannradhala, separate,
+hand-written validation schemas venum vera frameworks vida nee romba kammi repetitive code
+than ezhudanum. Nee edholadhu unnoda data describe panna ezhuda pora type hints than, adhuve
+*than* validation rules.
+
+## ML and data apps ku perfect
+
+Machine learning and data science ku (NumPy, Pandas, PyTorch, etc.) Python than dominant
+language. FastAPI Python nala irukkardhala, oru trained ML model illa oru data pipeline-a
+edhuthu, adha API ah expose panna idhu oru natural way — cross-language bridge edhuvum
+venaam.
+
+## OpenAPI standard mela build aagirukku
+
+FastAPI unnoda entire API ku automatic ah oru **OpenAPI** specification generate pannum —
+every endpoint-a describe pannura oru industry-standard, machine-readable description. Idhu
+than mேlе mention pannina interactive **Swagger UI** docs-a power pannudhu, nee build panna
+edhavadhu FastAPI app-la `/docs`-la out of the box available irukkum, setup edhuvum venaam.
+
+<Callout title="For you, coming from Express/Nest">
+
+Starlette-a, Express thane kudukkura HTTP layer oda FastAPI equivalent-a nenachikko, and
+Pydantic manual validation-a (`express-validator`, Zod) illa Nest oda DTOs +
+`class-validator`-a replace pannudhu-nu nenachikko — except idhu unnoda type hints-la
+irundhu automatic ah aagum, extra decorators illa nee hand-la ezhudura schemas illa. And
+auto-generated Swagger docs, Express-la `swagger-jsdoc`/`swagger-ui-express` illa Nest-la
+`@nestjs/swagger` vechu nee usually setup pannuradha replace pannudhu — FastAPI-la, nee
+ezhudura first endpoint-la irundhe idhu automatic ah irukkum.
+
+</Callout>

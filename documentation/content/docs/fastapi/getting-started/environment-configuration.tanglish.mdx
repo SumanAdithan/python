@@ -1,0 +1,83 @@
+---
+title: Environment Configuration
+description: Database credentials-a oru .env file vechu unnoda code-la irundhu velila vekradhu
+---
+
+Web Fundamentals-la, database credentials maadhiri secrets oru user ku epozhume visible ah
+irukka koodadhu-nu nee kathukiten. Adhula irundhu varura innoru rule irukku: avanga
+unnoda source code-la kooda **hardcode** pannakoodadhu — code git-ku commit aagum,
+teammates-oda share aagum, hosting providers-ku push aagum, and unnoda code paakura
+everyone unnoda production database password paakanum-nu illa.
+
+## Environment variables
+
+Idhukku fix enna na, configuration-a unnoda code-ku **veliya** vekradhu, **environment
+variables** ah — oru file-la ezhudradhu ku pathila, adha run pannura edhavadhu program
+runtime-la unnoda program ku kudukkura values.
+
+Local development-la, idha manage panna standard way oru `.env` file — `KEY=VALUE` pairs
+irukkura oru plain text file, unnoda project root-la irukkum, unnoda program startup-la
+idha read pannum. Idhu than last lesson-la nee install pannina `python-dotenv` package
+ku exact ah purpose.
+
+## Unnoda .env file create panradhu
+
+Unnoda project root-la `.env`-nu peru vecha oru file create pannu, unnoda database
+connection string add pannu:
+
+```text title=".env"
+DATABASE_URL=mysql://app_user:test@localhost:3306/todo
+```
+
+## Connection string read panradhu
+
+Andha `DATABASE_URL` value-a **connection string**-nu solluvom — oru specific database ku
+reach aaga venum na venum ella details-um oru single line-la pack panniruppanga. Idha
+break pannunga:
+
+```text
+mysql://app_user:test@localhost:3306/todo
+ │        │        │     │        │      │
+ │        │        │     │        │      └─ database name
+ │        │        │     │        └──────── port (3306 is MySQL's default)
+ │        │        │     └───────────────── host (where the database server runs)
+ │        │        └─────────────────────── password
+ │        └──────────────────────────────── username
+ └───────────────────────────────────────── which database engine to use
+```
+
+So indha line solradhu enna na: *"indha machine-la run aagura oru MySQL server ku connect
+pannu, port 3306-la, `app_user`-nu login pannu password `test` vechu, and `todo`-nu peru
+vecha database use pannu."*
+
+## `.env`-a epozhume git-ku commit pannadhu
+
+Unnoda `.env` file-la real credentials irukku — idha version control-ku **epozhume**
+commit pannakoodadhu. Idha uடane `.gitignore`-la add pannu:
+
+```text title=".gitignore"
+.env
+```
+
+Project-a fresh ah set up pannura yaar-yaaravadhu, avanga own local `.env`-a avanga own
+database details vechu create pannuvanga — idhu ovvoru developer oda local setup-la
+part than, shared codebase oda part illa.
+
+<Callout title="For you, coming from Express/Nest">
+
+Node-la irundha same pattern than: oru `.env` file, adhukku oru `.gitignore` entry, and
+startup-la `dotenv` idha load pannudhu. Ippa-idhirundhu change aagura ondru enna na, code-la
+oru value-a *epadi* read pannuraradhu than — Node oda `process.env.DATABASE_URL`, Python
+oda `os.getenv("DATABASE_URL")`-a maarum, adha next lesson-la than nee paapa.
+
+</Callout>
+
+## `.env` ippa varaikkum
+
+```text title=".env"
+DATABASE_URL=mysql://app_user:test@localhost:3306/todo
+```
+
+```text title=".gitignore"
+.env
+```

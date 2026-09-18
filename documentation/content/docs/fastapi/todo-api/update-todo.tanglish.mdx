@@ -1,0 +1,170 @@
+---
+title: Update Todo — PUT vs PATCH
+description: Oru todo-a completely replace panradhu, partially update panradhu, and rendukum irukkura real difference
+---
+
+Oru resource update panradhu rendu different things solllalam: completely replace
+panradhu, illa just one field change panradhu. HTTP-kku ovvondrukkum oru separate method
+irukku — `PUT` and `PATCH` — indha lesson rendaiyum cover pannum.
+
+## PUT — whole thing-a replace pannu
+
+```python
+# PUT - Update Todo
+@app.put("/todos/{todo_id}", response_model=TodoSchema)
+def update_todo(todo_id:int, updated: TodoCreate, db:Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    for key, value in updated.dict().items():
+        setattr(todo, key, value)
+    db.commit()
+    db.refresh(todo)
+    return todo
+```
+
+Lookup and not-found handling Fetch a Single Todo-la nee already paatha exact ah than.
+Puthusa irukkura ondru:
+
+**`updated: TodoCreate`** — todo create pannina schema-a reuse pannirukkom. Idhu
+intentional than: `TodoCreate`-ku `title` require aagum, so indha route call pannura oru
+client oru full, complete todo **mandatory ah** send pannanum — adhu than `PUT` oda
+definition.
+
+**`for key, value in updated.dict().items(): setattr(todo, key, value)`** — incoming
+data-la irukkura every field mela idhu loop pannum, and Python oda built-in `setattr
+(object, name, value)` vechu `todo`-la adha one field at a time set pannum. `todo.title =
+value`, `todo.description = value`, and `todo.completed = value` ah separately ezhudhura
+maadhiri than — every field ku repeat pannama.
+
+**`db.commit()` / `db.refresh(todo)` / `return todo`** — changes-a save pannum, instance-a
+reload pannum, and adha return pannum, todo create pannura same pattern than.
+
+## PATCH — send pannina mattum change pannu
+
+Mேlе irukkura `PUT` epozhume every field-a overwrite pannum, en na `TodoCreate`-ku
+avanga ellam mandatory ah venum. `PATCH` opposite case ku than: oru client **just one
+field** update pannanum — solllu, oru todo-a `completed`-nu mark panna — title and
+description-a again resend pannama.
+
+Idhukku every field optional ah irukkura oru schema venum:
+
+```python title="schemas.py (new)"
+class TodoUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    completed: bool | None = None
+```
+
+And actual ah provide pannina fields-a mattum touch pannura oru route:
+
+```python title="main.py (new)"
+# PATCH - Partially Update Todo
+@app.patch("/todos/{todo_id}", response_model=TodoSchema)
+def partial_update_todo(todo_id: int, updated: TodoUpdate, db: Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    for key, value in updated.dict(exclude_unset=True).items():
+        setattr(todo, key, value)
+    db.commit()
+    db.refresh(todo)
+    return todo
+```
+
+Idha actual ah oru *partial* update ah work pannura detail than **`exclude_unset=True`**.
+Idhu illama, `updated.dict()` `TodoUpdate`-la irukkura every field-um include pannirukkum
+— and client send pannama vidra edhavadhu field database-la `None`-nu kaanum, adha wipe
+pannidum. `exclude_unset=True` meaning "client actual ah request-la send pannina fields
+mattum include pannu" — so `{"completed": true}` just `completed`-a update pannum, and
+`title` and `description`-a untouched ah vidum.
+
+<Callout title="This route isn't in your project yet">
+
+Earlier lessons vida different ah, indha `TodoUpdate` schema and `partial_update_todo`
+route indha topic ku oru worked example than, unnoda `fastapi-todo` project-la irundhu
+edutha code illa — `PATCH` support venum-na, idha nee thaniya add pannu, appuram enakku
+sollu, naan indha lesson-a unnoda actual code oda sync pannuren, vera every topic
+maadhiri than.
+
+</Callout>
+
+## PUT vs PATCH
+
+| | `PUT` | `PATCH` |
+| --- | --- | --- |
+| Meaning | Entire resource-a replace pannu | Adhula part-a update pannu |
+| Client enna send pannum | Every field | Change aagura fields mattum |
+| Schema ku venum | Required fields (`TodoCreate`) | Every field optional (`TodoUpdate`) |
+| Omitted field | Overwrite aagum (usually clear aagum) | Unchanged ah irukkum |
+
+Idha remember panna oru useful way: **PUT solradhu "idha the whole new version"; PATCH
+solradhu "idha change aana thing."**
+
+<Callout title="For you, coming from Express/Nest">
+
+Nest already `@Put()` vs `@Patch()` decorators vechu, illa Express oda `router.put()` vs
+`router.patch()` vechu pannura same distinction than — HTTP methods and avanga meaning
+change aagadhu. Different ah irukkuradhu enna na, FastAPI rendu separate Pydantic schemas
+(required vs every field `Optional`) mela lean pannudhu, distinction enforce panna — oru
+DTO oda completeness-a hand-la validate pannradhukku pathila.
+
+</Callout>
+
+## `main.py` ippo varaikkum
+
+Idhu unnoda actual project-a reflect pannudhu — `PUT` route mattum. Mேlе irukkura
+`PATCH` example idhula include pannala, en na idhu innum `fastapi-todo`-la part illa.
+
+```python title="main.py"
+from fastapi import FastAPI, Depends, HTTPException
+from schemas import Todo as TodoSchema, TodoCreate
+from sqlalchemy.orm import Session
+from database import SessionLocal, Base, engine
+from models import Todo
+
+Base.metadata.create_all(bind = engine)
+app = FastAPI()
+
+# Dependency for DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# POST - Create TODO
+@app.post("/todos", response_model=TodoSchema)
+def create(todo: TodoCreate, db:Session = Depends(get_db)):
+    db_todo = Todo(**todo.dict())
+    db.add(db_todo)
+    db.commit()
+    db.refresh(db_todo)
+    return db_todo
+
+# GET - All Todos
+@app.get("/todos", response_model = list[TodoSchema])
+def read_todos(db:Session = Depends(get_db)):
+    return db.query(Todo).all()
+
+@app.get("/todos/{todo_id}", response_model = TodoSchema)
+def read_todo(todo_id: int,db:Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return todo
+
+# PUT - Update Todo
+@app.put("/todos/{todo_id}", response_model=TodoSchema)
+def update_todo(todo_id:int, updated: TodoCreate, db:Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    for key, value in updated.dict().items():
+        setattr(todo, key, value)
+    db.commit()
+    db.refresh(todo)
+    return todo
+```

@@ -1,0 +1,101 @@
+---
+title: Web 1.0, Web 2.0 & Why React
+description: Full page reload problem — and modern apps ஏன் idha panna nirutha
+---
+
+Websites epozhume ippo work aagura maadhiri work aagala. React maadhiri tools ஏன்
+exist pannudhu-nu puriya, avanga solve panna build aana problem-a nee paakanum.
+
+## Web 1.0 — read-only pages
+
+Adhi earliest websites (roughly 1990s) **static and read-only** ah irundhuchu — oru app
+vida, oru digital brochure-ku close ah. Oru server-la pre-written HTML files oda oru
+folder irukkum, and every visitor ku exact ah same page than kidaikkum. Login illa,
+comments illa, personalization illa. Nee just paapa, interact panna mudiyadhu.
+
+## Web 2.0 — interactive web
+
+2000s-la start aagi, web **interactive and user-driven** aachu: logins, comments, likes,
+unnoda own content post panradhu — early Facebook, YouTube, comment sections vecha blogs
+nenachiko. Server ippo every user ku *different* page generate pannum, database-la store
+pannirukkura data vechu build panni.
+
+Idhu oru huge leap forward — aana hood-ku kelaya, most Web 2.0 sites innum oru crucial
+thing ku Web 1.0 maadhiri than work pannuchu: **every click entire page-a reload
+pannuchu.**
+
+## Full page reload problem
+
+Oru traditional website-la (even oru modern-looking one, plain HTML/CSS/JS vechu build
+pannirukku), oru link click pannu, idhu nadakkum:
+
+<Mermaid
+  chart="
+graph TD
+  A[You click a link or submit a form] --> B[Browser throws away the entire current page]
+  B --> C[Browser sends a request for a brand new page]
+  C --> D[Server builds and sends a full HTML page]
+  D --> E[Browser reloads everything from scratch: HTML, CSS, JS, images]
+  E --> F[White flash, then the new page appears]
+"
+/>
+
+Every single action — oru link click pannradhu, oru form submit pannradhu, oru post
+like pannradhu kooda — meaning whole page-a throw away panni, zero-la irundhu rebuild
+pannalam. Adhu solradhu:
+
+- Old page disappear aagi, new one load aagumbodhu oru visible **white flash**
+- **Ellame reset aagum** — scroll position, oru open dropdown, half-filled form, playing
+  video — ellame pogum, en na browser completely start over pannudhu
+- Nee already vechirukkura *same* CSS and JS files-a, every time re-download and re-run
+  pannradhu
+
+Oru chat app-a nenachiko, oru message send pannradhu entire page-a reload pannuchu,
+unnoda scroll position wipe pannuchu, and whole app-a re-download pannuchu — just oru
+new message kaatradhukku. Idhu ippo people expect pannura apps ku acceptable illa.
+
+## React ஏன்
+
+React (and similar tools) exist pannudhu exactly idha fix panna. Core idea: **page-a once
+load pannu, appuram actual ah change aana chinna part mattum update pannu** — whole
+thing-a epozhume throw away panni rebuild pannadhu.
+
+<Mermaid
+  chart="
+graph TD
+  A[You click a button] --> B[JavaScript intercepts the click - no reload]
+  B --> C[JavaScript asks the server for just the data it needs]
+  C --> D[Server sends back data - not a full HTML page]
+  D --> E[React updates only the changed part of the page]
+"
+/>
+
+Mேlе irukkura diagram-oda key difference notice pannu: server ippo full HTML page send
+pannala — adhu **just data** than back send pannudhu. Indha course ku andha piece than
+mostly mukkiyam.
+
+## Backend developer ku idhu ஏன் mukkiyam
+
+Indha shift, backend server oda velai enna-nu than change pannudhu:
+
+| | Web 1.0 / 2.0 style | Modern React-style |
+| --- | --- | --- |
+| Server back send pannuradhu | Oru complete HTML page | Just data (usually JSON) |
+| Page-a yaar build pannuranga | Server | Browser (React), once |
+| Every action-la enna nadakkum | Full page reload | Change aana part mattum update |
+
+**Idhu than exactly namma FastAPI kathukura reason**: Indha stack-la FastAPI oda velai,
+HTML pages generate panradhu illa — adhu requests-ku data vechu answer pannuradhu than.
+(Browser-la run aagura) Oru separate React app, andha data-a oru actual page-a maatti,
+adha reload aagama update pannuradhukku responsible. Backend and frontend, requests and
+responses of data vazhi mattum pesikkura rendu separate programs aagum.
+
+<Callout title="For you, coming from Express/Nest">
+
+Nee almost certainly idha already pannirupa: EJS illa Pug maadhiri edhavadhu vechu oru
+template render panradhukku pathila `res.json({ ... })` call pannura oru Express route,
+*already* "modern" approach than — server oru pure data API ah, frontend oru separate
+React app ah. FastAPI andha exact same principle-la work pannum, so indha mental model
+unakku puthu illame illa — mattum adha sutthi irukkura Python syntax mattum puthu.
+
+</Callout>

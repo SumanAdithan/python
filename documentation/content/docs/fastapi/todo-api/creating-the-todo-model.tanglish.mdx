@@ -1,0 +1,93 @@
+---
+title: Creating the Todo Model
+description: Oru database table-a oru Python class ah describe panradhu
+---
+
+`database.py` unakku oru `Base` class kudutha, aana ippo varaikkum edhuvum adhula irundhu
+inherit pannala — enga oru table describe pannala. Indha lesson mudhal ondra create
+pannum: oru `Todo` model, indha course build panra app ku.
+
+## Model-nu actual ah enna
+
+Oru ORM-la, oru **model** solradhu oru Python class, adhu database table-la one table-a
+represent pannum. Ovvoru class **attribute**-um andha table-la one **column**-a
+represent pannum. Aprom nee indha class oda instances create panni actual rows create
+pannuva — aana class itself just table oda *shape*-a describe pannum.
+
+## models.py
+
+```python title="models.py"
+from sqlalchemy import Column, Integer, String, Boolean;
+from database import Base;
+
+class Todo(Base):
+    __tablename__ = "todo"
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(200), nullable=False)
+    description = Column(String(500))
+    completed = Column(Boolean, default=False)
+```
+
+## Idha step-by-step paakalam
+
+**`class Todo(Base):`** — (`database.py`-la irundhu) `Base`-la irundhu inherit
+panradhu than SQLAlchemy ku sollum "indha class oru database table-a describe
+pannudhu"-nu, normal Python class illa-nu.
+
+**`__tablename__ = "todo"`** — database-la SQLAlchemy use pannura actual table name.
+
+**Ovvoru `Column(...)`**-um one field describe pannum:
+
+- `id = Column(Integer, primary_key=True, index=True)` — ovvoru row-a uniquely identify
+  pannura oru whole number. `primary_key=True` meaning, database adha unique-nu
+  guarantee pannum, and adha automatic ah fill pannum (1, 2, 3, ...) — nee epozhume
+  thaniya set pannama.
+- `title = Column(String(200), nullable=False)` — text, 200 characters ku cap
+  pannirukku, and `nullable=False` meaning every todo ku title **mandatory ah** irukanum —
+  title illama oru row-a database reject pannidum.
+- `description = Column(String(500))` — idhu kooda text than, 500 characters ku cap
+  pannirukku, aana optional: `nullable` set pannalanadha, default ah `True`-nu irukkum,
+  so oru todo description illama exist pannalam.
+- `completed = Column(Boolean, default=False)` — true/false, and every new todo, nee
+  vera edhavadhu sollala na `False`-nu start aagum.
+
+<Callout title="Why String needs a length here">
+
+MySQL oda `VARCHAR` type ku **explicit maximum length** vendiyadhu than — chila vera
+databases pola illa, adhu length illama oru text column create panna simply let pannadhu.
+Length-a vittuduna, SQLAlchemy actual ah indha table create panna try pannumbodhu than nee
+enna wrong-nu notice pannuva, `VARCHAR requires a length on dialect mysql`-nu adhu fail
+aagum. Field ku edhu makes sense-nu andha limit-a pick pannu — 200 illa 500 idhula special
+edhuvum illa, title and description ku reasonable caps than.
+
+</Callout>
+
+## Idhu ippo varaikkum panradhu illa
+
+Indha class ezhudradhu, unnoda actual MySQL database-la `todo` table create pannadhu —
+adha just *describe* pannudhu than. SQLAlchemy ku table-a actual ah create pannu-nu
+sollradhu, oru separate step, adhu next varum.
+
+<Callout title="For you, coming from Express/Nest">
+
+Idhu than TypeORM `@Entity()` class oda `@Column()` decorators, illa oru Mongoose
+schema pannura same job — table oda shape-a describe pannura oru class, adha ORM aprom
+SQL generate panna use pannum. `primary_key=True`, TypeORM oda
+`@PrimaryGeneratedColumn()` same idea than, and `nullable=False`, oru column `NOT NULL`
+mark panradhu (illa Mongoose schema-la oru required field) match pannum.
+
+</Callout>
+
+## `models.py` ippo varaikkum
+
+```python title="models.py"
+from sqlalchemy import Column, Integer, String, Boolean;
+from database import Base;
+
+class Todo(Base):
+    __tablename__ = "todo"
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(200), nullable=False)
+    description = Column(String(500))
+    completed = Column(Boolean, default=False)
+```

@@ -1,0 +1,97 @@
+---
+title: Database Connection
+description: Unnoda connection string-a SQLAlchemy vechu oru real connection ah maatradhu
+---
+
+`.env`-la unakku oru `DATABASE_URL` irukku. Ippo idha read panni database-ku oru
+connection prepare pannura actual code venum. Idhu adhoda own file-la irukkum,
+`database.py` — indha project-la database venum na vera every file, thaniya connect
+pannadhu, idhula irundhu than import pannum.
+
+## SQLAlchemy ku venum moonu pieces
+
+Code paakura munnadi, nee enna build panra-nu therinjuko:
+
+- **Engine** — database ku actual connection. Nee endha database oda pesuraan-nu idhukku
+  theriyum, and background-la connections oda oru pool manage pannum.
+- **Session** — idha database oda one conversation-nu nenachiko, queries run panna and
+  changes save panna use pannuva. Aprom, per request oru puthu session create pannuva.
+- **Base** — nee future lesson-la define pannura every database model (table) idhu
+  irundhu than inherit pannum, oru base class.
+
+## database.py
+
+```python title="database.py"
+from sqlalchemy import create_engine; # to connect python and database
+from sqlalchemy.orm import sessionmaker, declarative_base; # each session lets you talk to the database, declarative_base is base class for your orm models
+from dotenv import load_dotenv;
+import os;
+
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(bind=engine, autoflush=False)
+Base = declarative_base()
+```
+
+## Idha step-by-step paakalam
+
+**`load_dotenv()`** unnoda `.env` file read pannum, adhoda values `os.getenv()`-la
+irundhu available ah pannum — adhula irundhu edhachum read panna munnadi idhu run
+aaganum.
+
+**`os.getenv("DATABASE_URL")`** last lesson-la nee set up pannina exact connection
+string-a read pannum.
+
+**`create_engine(DATABASE_URL)`** andha connection string-a SQLAlchemy-ku kudukkum. Idhu
+`mysql://` part-a parse pannum, adha pesa MySQL driver (`mysqlclient`, Project Setup-la
+install pannirukkom) use pannanum-nu therinjikkum. Idha therinjuko: indha line actual ah
+oru connection open pannadhu — engine lazy-ah connect aagum, adha first time actually use
+pannumbodhu than.
+
+**`sessionmaker(bind=engine, autoflush=False)`** kooda oru session create pannadhu — idhu
+oru *factory* create pannum, `SessionLocal`, oru function, appuram edhavadhu code-ku
+queries run panna real session venum-na nee adha call pannuva (`SessionLocal()`).
+`bind=engine`, idhu create pannura ovvoru session-ayum mela irukkura engine oda tie
+pannum; `autoflush=False` meaning, ovvoru query munnadi-yum SQLAlchemy pending changes-a
+automatic ah database-ku send pannadhu — adhu eppo nadakkum-nu nee decide pannuva.
+
+**`declarative_base()`** `Base` class create pannum. Future lesson-la nee Python class ah
+define pannura every table, indha `Base`-la irundhu than inherit pannum, adhu than andha
+classes database tables-nu SQLAlchemy-kku theriyum.
+
+## Ippo enna nadakkala
+
+Indha file just connection-a *prepare* pannudhu — unnoda app-la ippo edhuvum idha use
+pannadhu. Future lesson-la, nee oru chinna function ezhudhuva, adhu session venum na
+ovvoru request-ku `SessionLocal()` session kudukkum, and request mudinjadhum automatic ah
+close pannum. Ippozhukku, database-ku actual ah reach aaga unnoda project-kku venum ella
+irukku.
+
+<Callout title="For you, coming from Express/Nest">
+
+Idhu TypeORM `DataSource` illa Prisma `PrismaClient` set up pannura same role than — oru
+shared connection object, once create pannirukkum, adha app-oda rest-um import pannitu
+reuse pannum, per request oru puthu database connection open pannradhukku pathila.
+`engine` connection than, `SessionLocal` nee call panni oru usable client/query-runner
+vaanga use pannuva, and `Base`, future table classes ku TypeORM oda `@Entity()` base illa
+Prisma oda generated model types pannura role-a than play pannum.
+
+</Callout>
+
+## `database.py` ippo varaikkum
+
+```python title="database.py"
+from sqlalchemy import create_engine; # to connect python and database
+from sqlalchemy.orm import sessionmaker, declarative_base; # each session lets you talk to the database, declarative_base is base class for your orm models
+from dotenv import load_dotenv;
+import os;
+
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(bind=engine, autoflush=False)
+Base = declarative_base()
+```

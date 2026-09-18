@@ -1,0 +1,165 @@
+---
+title: "Create Todo — Your First Endpoint"
+description: FastAPI app, database session dependency, and unnoda first route
+---
+
+Unakku oru model and oru schema irukku. Ippo actual ah requests serve panna time — `main.py`
+than unnoda FastAPI app onna varradhu, and ippo than nee unnoda first real endpoint
+ezhuduva.
+
+## App
+
+```python
+from fastapi import FastAPI, Depends
+from schemas import Todo as TodoSchema, TodoCreate
+from sqlalchemy.orm import Session
+from database import SessionLocal, Base, engine
+from models import Todo
+
+Base.metadata.create_all(bind = engine)
+app = FastAPI()
+```
+
+`app = FastAPI()` actual application object create pannudhu. Nee ezhudhura every route
+indha `app`-la attach aagum, and `uvicorn` (Project Setup-la install pannirukkom) idha
+than actual ah server ah run pannum.
+
+## Table-a actual ah create panradhu
+
+`models.py` `todo` table-a describe pannina mattum than — idhu varaikkum database ku adha
+actual ah create pannu-nu evanume sollala:
+
+```python
+Base.metadata.create_all(bind = engine)
+```
+
+`Base.metadata`-ku `Base`-la irundhu inherit pannura every model-um theriyum — indha case-la
+`Todo`, `main.py` mேlе adha import pannurathala just register aaguchu. `create_all(bind
+=engine)` andha `engine`-oda database-a check pannum, and innum exist pannama irukkura
+edhavadhu tables-a create pannum. App start aagum every time idha run pannalam safe ah
+irukku: already irukkura tables-a touch pannadhu, missing-a mattum create pannum.
+
+<Callout title="MySQL and column lengths">
+
+Oru model oda `String` columns length specify pannalanadha, indha exact line-la than nee
+idha find aaguva — MySQL every `VARCHAR` column ku explicit length require pannum, so
+`models.py`-la every `String` ku oru length (`String(200)`, example ku) kudukkura
+varaikkum `create_all`, `VARCHAR requires a length on dialect mysql`-nu fail aagum.
+
+</Callout>
+
+## Database session dependency
+
+```python
+# Dependency for DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+```
+
+Idhu than Database Connection lesson promise pannina function. Idhu oru **FastAPI
+dependency** — oru function, oru route adhula irundhu edhavadhu vaanga kekkalam, adhu
+epadi create aagum, epadi clean up aagum-nu worry pannama.
+
+`return`-ku pathila `yield` use pannirukku-nu notice pannu (Python Notes-la Phase 5 and
+8 generators and `async`/`await` cover pannirukku — idhu oru related idea than): `SessionLocal()`
+call panradhu oru new session create pannum, `yield db` andha session-a kekkura route
+ku hand pannum, and andha route mudinja apparam — successfully *illa* oru error-oda —
+execution `yield`-ku apparam than resume aagum, and `finally: db.close()` rendu
+ways-layum session close aagum-nu guarantee pannum.
+
+## Depends — dependency-a route-la wire panradhu
+
+```python
+def create(todo: TodoCreate, db: Session = Depends(get_db)):
+```
+
+`db: Session = Depends(get_db)` FastAPI ku sollum: *indha route run panna munnadi,
+`get_db()`-a call pannu, adhoda `yield`-ku wait pannu, and adhu yield pannuradha `db`-nu
+kudu.* Nee epozhume `get_db()`-a thaniya call panna maatta — FastAPI than adha unnoda
+place-la call pannum, database session venum na every request ku.
+
+## Route
+
+```python
+# POST - Create TODO
+@app.post("/todos", response_model=TodoSchema)
+def create(todo: TodoCreate, db:Session = Depends(get_db)):
+    db_todo = Todo(**todo.dict())
+    db.add(db_todo)
+    db.commit()
+    db.refresh(db_todo)
+    return db_todo
+```
+
+**`@app.post("/todos", response_model=TodoSchema)`** — oru decorator, idhu indha
+function-a `POST` requests-a `/todos`-ku handle panna register pannum. `response_model=
+TodoSchema` FastAPI ku sollum, return aagura data enna shape-la validate and serialize
+aaganum-nu — and idhu than indha endpoint ku unnoda auto-generated docs-la kooda kaanum.
+
+**`todo: TodoCreate`** — request body. FastAPI incoming JSON-a read panni, `TodoCreate`
+oda automatic ah validate pannum — first FastAPI lesson-la irundha same automatic
+validation, ippo oru real request-ku apply pannirukku. Idhu than Creating the Todo Schema
+lesson-oda payoff: **input** type (`TodoCreate`) ku `id` illa, so oru client adha send
+panna mudiyadhu — aana **output** type (`response_model=TodoSchema`) ku irukku, en na
+database mattum than adha assign panna mudiyum. Input and output, finally, rendu different
+shapes use pannudhu, exactly plan pannina maadhiri.
+
+**`db_todo = Todo(**todo.dict())`** — `todo` oru Pydantic schema instance; `.dict()` adha
+plain dict ah maatrum, and `**` andha dict-a keyword arguments ah `Todo(...)`-la unpack
+pannum — validated request data-a oru actual SQLAlchemy model instance ah maatrum, save
+panna ready ah.
+
+**`db.add(db_todo)`** new row-a stage pannum. **`db.commit()`** actual ah adha database-la
+write pannum. **`db.refresh(db_todo)`** commit time-la database assign pannina values
+vechu `db_todo`-a reload pannum — mukkiyamana, auto-generated `id`, idhu line run
+aagardhukku munnadi `db_todo`-kku irukkadhu.
+
+**`return db_todo`** — SQLAlchemy object-a directly return pannudhu, adha FastAPI back
+JSON ah send panna munnadi `response_model` shape ah convert pannum.
+
+<Callout title="For you, coming from Express/Nest">
+
+`Depends(get_db)` FastAPI oda dependency injection version than — oru Nest controller oda
+constructor-la inject pannirukkura oru Nest provider, illa unnoda handler run aaga munnadi
+`req.db` attach pannura oru Express middleware pannura same idea than. `@app.post("/todos")`
+Nest oda `@Post()` decorator illa Express oda `router.post()` pannura same job than. And
+`response_model`, oru Nest response DTO (illa manual `class-transformer` serialization)
+pannuradha pannum — unnoda internal database object-la irundhu separate ah, unnoda API-la
+irundhu exact ah enna leave aagum-nu control panradhu.
+
+</Callout>
+
+## `main.py` ippo varaikkum
+
+```python title="main.py"
+from fastapi import FastAPI, Depends
+from schemas import Todo as TodoSchema, TodoCreate
+from sqlalchemy.orm import Session
+from database import SessionLocal, Base, engine
+from models import Todo
+
+Base.metadata.create_all(bind = engine)
+app = FastAPI()
+
+# Dependency for DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# POST - Create TODO
+@app.post("/todos", response_model=TodoSchema)
+def create(todo: TodoCreate, db:Session = Depends(get_db)):
+    db_todo = Todo(**todo.dict())
+    db.add(db_todo)
+    db.commit()
+    db.refresh(db_todo)
+    return db_todo
+```

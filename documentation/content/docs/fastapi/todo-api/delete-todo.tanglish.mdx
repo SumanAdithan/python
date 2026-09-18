@@ -1,0 +1,120 @@
+---
+title: Delete Todo
+description: Oru row-a remove panradhu, and resource ku pathila oru plain message return panradhu
+---
+
+Last CRUD operation: oru todo-a entirely remove panradhu.
+
+## Route
+
+```python
+#DELETE - Delete Todo
+@app.delete("/todos/{todo_id}")
+def delete_todo(todo_id:int,  db:Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    db.delete(todo)
+    db.commit()
+    return {"message":"Todo deleted successfully"}
+```
+
+## Idha step-by-step paakalam
+
+**`@app.delete("/todos/{todo_id}")`** — `DELETE` method than, oru single todo fetch illa
+update panradhu-la irundha same path parameter pattern. Indha time `response_model`
+edhuvum illa-nu notice pannu — oru todo delete aana apparam, response-a shape panna
+`Todo` edhuvum illa.
+
+**Find pannu, illana 404** — Fetch a Single Todo and Update Todo-la irundha same
+lookup-then-check pattern than: id vechu query pannu, and onnume match aagalana
+`HTTPException(404, ...)` raise pannu. Ippozhukku idha exact ah pattern-a three
+times ezhudhirukka — idha future-la, `Depends()` epadi work aagum-nu unakku comfortable
+aana apparam, oru single shared dependency-la pull panna mudiyum-nu oru good sign than.
+
+**`db.delete(todo)`** row-a removal ku stage pannum — `db.add()`-oda delete equivalent
+than. **`db.commit()`** actual ah adha database-la irundhu remove pannum.
+
+**`return {"message":"Todo deleted successfully"}`** — oru plain Python dict than, `Todo`
+illa. Indha route-la `response_model` illama irukkardhala, FastAPI nee return pannura
+edhuvum directly JSON ah serialize pannum. Idha maadhiri oru chinna confirmation message
+return panradhu, oru delete endpoint ku normal choice than — back kudukka meaningful ah
+onnume illa.
+
+<Callout title="For you, coming from Express/Nest">
+
+`db.delete(todo)` + `db.commit()`, Sequelize-la `todo.destroy()`, TypeORM-la
+`repository.remove(todo)`, illa Prisma-la `prisma.todo.delete()` pannura same job than.
+And deleted resource-ku pathila plain `{"message": "..."}` return panradhu, Express-la
+`res.json({ message: 'Deleted' })` pannura exact ah same thing than — idhula FastAPI
+specific ah edhuvum illa.
+
+</Callout>
+
+## `main.py` ippo varaikkum
+
+Ippo every CRUD operation-um place-la irukku: create, read all, read one, update,
+delete.
+
+```python title="main.py"
+from fastapi import FastAPI, Depends, HTTPException
+from schemas import Todo as TodoSchema, TodoCreate
+from sqlalchemy.orm import Session
+from database import SessionLocal, Base, engine
+from models import Todo
+
+Base.metadata.create_all(bind = engine)
+app = FastAPI()
+
+# Dependency for DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# POST - Create TODO
+@app.post("/todos", response_model=TodoSchema)
+def create(todo: TodoCreate, db:Session = Depends(get_db)):
+    db_todo = Todo(**todo.dict())
+    db.add(db_todo)
+    db.commit()
+    db.refresh(db_todo)
+    return db_todo
+
+# GET - All Todos
+@app.get("/todos", response_model = list[TodoSchema])
+def read_todos(db:Session = Depends(get_db)):
+    return db.query(Todo).all()
+
+@app.get("/todos/{todo_id}", response_model = TodoSchema)
+def read_todo(todo_id: int,db:Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return todo
+
+# PUT - Update Todo
+@app.put("/todos/{todo_id}", response_model=TodoSchema)
+def update_todo(todo_id:int, updated: TodoCreate, db:Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    for key, value in updated.dict().items():
+        setattr(todo, key, value)
+    db.commit()
+    db.refresh(todo)
+    return todo
+
+#DELETE - Delete Todo
+@app.delete("/todos/{todo_id}")
+def delete_todo(todo_id:int,  db:Session = Depends(get_db)):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    db.delete(todo)
+    db.commit()
+    return {"message":"Todo deleted successfully"}
+```

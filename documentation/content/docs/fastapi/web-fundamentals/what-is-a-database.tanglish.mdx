@@ -1,0 +1,87 @@
+---
+title: What is a Database?
+description: Survive aaganum, organized ah irukanum-nu backend edhula data vekkum
+---
+
+Last lesson establish pannichu, backend oru trusted boundary-nu — client epavume secrets,
+source code, illa raw data direct ah touch pannadhu. Aana backend ku andha data actual ah
+**vekka** oru place venum. Adhukku than database irukku.
+
+## Data-a oru variable-la store panna koodadha?
+
+Nee nenachikalam, oru backend ellathayum plain Python list-la vechirukkum-nu, Python
+Notes-la unnoda Final Practice exercise-la irundha `users` list maadhiri. Program run
+aagumbodhu idhu velai seiyum — aana idhula oru fatal flaw irukku: **server restart aana
+udane, ellame poidum.** Oru crash, oru deploy, oru simple reboot — ellame list-a
+clean ah wipe pannidum.
+
+Oru real application ku data:
+
+- Restarts and crashes-a **survive** panna venum
+- Millions of records irundha kooda fast ah **search and filter** aaganum
+- Same time-la nadakkura pala requests-la safe ah **share** aaganum
+
+Idhu oru dedicated software ku velai — oru **database**.
+
+## Database-nu actual ah enna
+
+Database solradhu oru separate program (usually adhoda own server ah run aagum), adhoda
+whole purpose data-a reliable ah store panradhum, fast ah retrieve panradhum than. Idha
+romba well-organized spreadsheets set-nu nenachiko:
+
+- Oru **table** solradhu one spreadsheet — example ku, oru `users` table, illa oru
+  `videos` table
+- Oru **row** solradhu andha spreadsheet-la one record — one specific user, one specific
+  video
+- Oru **column** solradhu every row-kum irukkura one piece of information — `id`, `name`,
+  `email`
+
+```text
+users table
+┌────┬─────────┬───────────────────┐
+│ id │ name    │ email             │
+├────┼─────────┼───────────────────┤
+│ 1  │ John    │ john@example.com  │
+│ 2  │ David   │ david@example.com │
+└────┴─────────┴───────────────────┘
+```
+
+Idhu unakku familiar ah irukanum — Python Notes-oda Phase 2 mattrum Final Practice-la nee
+already work pannina list-of-dicts oda same shape than idhu. Oru database table
+essentially andha same idea than, permanent ah and scale-la searchable ah pannirukku.
+
+## Backend mattum than database oda pesum
+
+<Mermaid
+  chart="
+graph LR
+  A[Client] -- request to a URL --> B[Backend]
+  B -- reads / writes data --> C[(Database)]
+  B -- only the resulting data --> A
+"
+/>
+
+Client epavume database-ku direct ah connect aagadhu — database irukku-nu adhukku
+theriyavume theriyathu. Adhu epozhume backend oda mattum than pesum, and backend than
+enna read pannanum, enna write pannanum, enna back send pannanum-nu decide pannum. Idhu
+last lesson-la irundha same trusted-boundary idea than, actual ah enna hide pannirukkom-nu
+oru concrete example-oda.
+
+## Indha course-la nee use pannura database type
+
+Different families of databases irukku, aana most common kind — indha course FastAPI
+oda use pannura kind — oru **relational database** (PostgreSQL illa MySQL maadhiri):
+data clearly defined tables-la columns-oda organize pannirukkanum, mேlе irukkura `users`
+table maadhiri. Idha properly hands-on ah future lesson-la paakuva — ippozhukku, just
+indha mental picture-a vechiko: **tables, rows, columns, backend mattum reach panna
+mudiyura oru server kulla irukku.**
+
+<Callout title="For you, coming from Express/Nest">
+
+Exactly same relationship than `pg`, Prisma, illa TypeORM, oru Express/Nest server
+irundhu oru Postgres/MySQL database oda pesuradhu — client epozhume unnoda API-a mattum
+than call pannum, database-a never. FastAPI idhukku adhoda own tools use pannum (soon
+avatha nee paapa), aana architecture nee already pannikkittu irukkurathu oda identical
+than.
+
+</Callout>

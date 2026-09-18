@@ -1,0 +1,118 @@
+---
+title: Putting It Together — How Does YouTube Work?
+description: Client, backend, database, and file storage-a onna serkkura oru real-world walkthrough
+---
+
+Ippo pieces unakku theriyum: client, backend, database. Indha lesson avatha oru real
+example vechu together vekkum, ellarukkum already puriyum — **YouTube** — and andha vazhi,
+nee innum meet pannama irukkura innoru piece-a kandupidikkum.
+
+## Rendu romba different kind of data
+
+Oru single video ku YouTube track pannanum-na enna ellam venum-nu nenachiko:
+
+- Adhoda **title**, **description**, **upload date**, **view count**, **like count**
+- Adhoda **comments**, and yaar post pannaan-nu
+- **Actual video file** itself — and adhoda thumbnail image
+
+Mudhal rendu, nee ippo dhaan kathukitta thing than: database tables-la rows. Oru
+`title` column and oru `view_count` column vecha `videos` table perfect ah fit aagum.
+
+Aana andha video file? Oru single video hundreds of megabytes, gigabytes kooda irukalam.
+Idhu oru real question raise pannum:
+
+**Video file-a kooda database-la, edhavadhu column-la save panna mudiyadha?**
+
+## Databases idhukku ஏன் build aagala
+
+Technically, chila databases large binary blobs store panna mudiyum — aana idha YouTube
+scale-la panradhu bad idea:
+
+- Databases build aagirukku, *many small rows* mela fast ah search, filter, sort panna —
+  yaarum *contents*-a "search" panna edhukkume vendaam, huge files-a hold panna illa
+- Every raw video file-a kooda hold pannura oru database massive ah aagidum, backups,
+  replication, and queries ellame dramatically slow aagidum
+- Databases oru large file-a millions of viewers ku onnu-la **stream** panna design
+  aagala — adhu completely different kind of workload than
+
+So real applications rendaiyum split pannuvanga:
+
+<Mermaid
+  chart="
+graph TD
+  A[Everything about a video] --> B[Structured data:<br/>title, description,<br/>views, comments]
+  A --> C[The actual files:<br/>video, thumbnail]
+  B --> D[(Database)]
+  C --> E[Storage Server]
+"
+/>
+
+## Storage server-a meet pannu
+
+Oru **storage server** (often *object storage*-nu solluvanga — AWS S3 illa Google Cloud
+Storage nenachiko) oru service, adhoda mattum velai, large files-a efficient ah store
+panradhum, serve panradhum than. Database epozhume video itself-a hold pannadhu — adhu
+storage server-la andha file enge irukku-nu oru **reference** mattum than hold pannum
+(oru URL illa file path).
+
+Large platforms avanga storage-oda munnadi oru **CDN** (Content Delivery Network) kooda
+vekkuvanga — popular videos oda copies, world ellam irukkura viewers ku physically close
+aana servers-la cache aagum, so India-la irukkura oruthanukku, world oda vera side-la
+irukkura server-la irundhu every byte fetch panna venaam. Idha nee thaniya build panna
+venaam; idhu nee connect pannura oru service than, database ku nee epadi connect
+pannuvayo, adha maadhiri than.
+
+## Full picture
+
+<Mermaid
+  chart="
+graph LR
+  A[Client<br/>browser or app] -- requests --> B[Backend]
+  B -- structured data --> C[(Database)]
+  B -- file references --> D[Storage Server + CDN]
+  D -. video/image bytes .-> A
+"
+/>
+
+## Step-by-step: video upload panradhu
+
+1. Nee client-la oru video file select panni upload click pannu.
+2. Client andha file-a **backend**-ku send pannum.
+3. Backend actual video file-a **storage server**-ku save panna send pannum.
+4. Storage server oru reference back kudukkum — andha file ippo enge irukku-nu.
+5. Backend **metadata** (title, description, unnoda user id, and andha file reference)
+   **database**-la oru new row ah save pannum.
+
+## Step-by-step: video watch panradhu
+
+1. Nee client-la oru video page open pannu.
+2. Client **backend**-a andha video oda info kekkum.
+3. Backend **database**-la irundhu row read pannum — title, description, view count, and
+   stored file reference.
+4. Backend andha data-a client ku back send pannum, actual video file enge irukku-nu
+   including.
+5. Client oda video player video bytes-a **storage server / CDN-la irundhu directly**
+   fetch pannum — backend vazhiya route aagama — so playback fast ah irukkum, unnoda API
+   server-a load pannadhu.
+
+## Idhu future-ku enn mukkiyam
+
+Indha same split, nee build panra almost every real app-la varum: structured, searchable
+data ku oru database, and files themselves ku (profile pictures, PDFs, audio, video) oru
+storage service. Indha course-la, nee backend and database side-a FastAPI vechu thaniya
+build pannuva; storage servers and CDNs usually oru cloud service than, nee scratch-la
+irundhu build pannura thing illa.
+
+Client, backend, database, and storage ellame place-la irukkumbodhu, oru real application
+epadi build aagum-nu unakku ippo complete mental map irukku — idhirundhu ella something-um
+backend piece-a properly build panna tools-a kathukura pathi than.
+
+<Callout title="For you, coming from Express/Nest">
+
+Nee already therinja same architecture than — oru Express/Nest API structured data ku
+Postgres/MongoDB oda pesudhu, and files ku S3 (illa similar) oda, usually oru pre-signed
+upload URL illa oru multipart upload endpoint vazhi. FastAPI identical pattern-a follow
+pannum; nee inga puthu architecture kathukala, nee already munnadi build pannirukkura oru
+shape ku puthu syntax mattum than kathukura.
+
+</Callout>

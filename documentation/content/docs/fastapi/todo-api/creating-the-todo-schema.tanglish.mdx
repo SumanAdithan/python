@@ -1,0 +1,127 @@
+---
+title: Creating the Todo Schema
+description: Pydantic schemas — API boundary-la data oda shape, model-la irundhu separate ah
+---
+
+`models.py`, unnoda database-la `todo` table describe pannudhu. Ippo unakku vera edhavadhu
+venum: data **unnoda API-la in and out** HTTP mela travel pannumbodhu adhu epadi kaanum-nu
+describe panna oru vazhi. Adhu than oru **schema** — and purpose-a vechu, idhu model-la
+irundhu oru separate concept than.
+
+## Model-a enne reuse pannakoodadha?
+
+"Naan already oru `Todo`-a describe pannirukken, enna adha again describe pannanum" nu
+nenaikardhu tempting than. Idhu ஏன் work aagadhu-nu chila real reasons:
+
+- **Different situations ku different fields.** Oru client oru todo *create* pannumbodhu,
+  avanga `id` send panna venaam — database than adha assign pannum, and adhu innum exist
+  pannala. Aana API oru todo *return* pannumbodhu, `id` include aaganum-nu venum. Oru
+  shape rendaiyum represent panna mudiyadhu.
+- **Unnoda API-la irundhu enna leave aagum-nu control.** Oru database model-la, client
+  epozhume paakka koodadha fields kooda irukkalam. Actual ah enna back send aagum-nu
+  explicit ah decide pannura place than schema.
+- **Different jobs ku different tools.** `models.py`, SQLAlchemy oda `Base` use pannudhu
+  — idhu database oda pesa build pannirukku. Schemas **Pydantic**-oda `BaseModel` use
+  pannum — first FastAPI lesson-la irundha same validation library — and FastAPI actual
+  ah idha than requests validate panna and unnoda API docs generate panna use pannum.
+
+## schemas.py
+
+```python title="schemas.py"
+from pydantic import BaseModel
+
+class TodoBase(BaseModel):
+    title: str
+    description: str | None = None
+    completed: bool = False
+
+# create
+class TodoCreate(TodoBase):
+    pass
+
+# response
+class Todo(TodoBase):
+    id: int
+    class Config:
+        orm_mode = True # for automatic json parsing
+```
+
+## Idha step-by-step paakalam
+
+**`TodoBase`** oru todo take pannalam-nu irukkura every shape-um share pannura
+fields-a vechirukku — `title`, `description`, and `completed`, ovvondrum once mattum
+ezhudhi. Kelu irukkura rendu schemas-um idha mela build aagum. `completed`-ku oru
+default (`False`) irukkardhala, adhu inherit aagura endha place-layum optional than — oru
+client adha entirely leave out pannalam, still oru valid todo kidaikkum.
+
+**`TodoCreate(TodoBase)`** oru client puthu todo create panna send pannuradhu. `TodoBase`
+vida idhu edhuvum extra add pannala — client provide panna allowed aana ella something-um
+(`title`, `description`, optionally `completed`) already adhula irukku. Idha adhoda own
+class ah vekkardhu, meaning aprom creation-only fields add pannalam, todo back read
+panna use pannura shape-a touch pannama.
+
+**`Todo(TodoBase)`** API **back** send pannuradhu. Idhu `id` add pannum — oru todo
+actual ah database-la save aana apparam than exist pannura field, adhukku than idhu
+`TodoCreate`-la illa.
+
+**`class Config: orm_mode = True`** idha unnoda SQLAlchemy model-oda back connect
+pannura detail. Default ah, oru Pydantic schema oru plain dict-la irundhu build aagum-nu
+expect pannum. `orm_mode = True` adhukku sollum "matching attributes vecha oru object-la
+irundhum idha build pannalam" — adhu than exactly oru `models.Todo` instance. Idhu than
+oru SQLAlchemy object-a route-la irundhu straight ah return panna, and FastAPI adha
+automatic ah, field by field, indha schema ah convert panna vidum — comment-la irukkura
+"automatic json parsing".
+
+<Callout title="Pydantic version note">
+
+`orm_mode` idha setting ku Pydantic v1 name than. Newer Pydantic versions idha
+`from_attributes`-nu rename pannirukku (`model_config = ConfigDict(from_attributes=True)`
+vazhi set pannuvanga), aana rendume exact same job than pannum — oru project use pannura
+Pydantic version-a vechu, nee edhavadhu spelling paakkalam.
+
+</Callout>
+
+## Rendu `Todo`s, purpose vechu
+
+`models.py`-la oru `Todo` class irukku, ippo `schemas.py`-lam kooda ondru irukku-nu
+notice pannu. Idhu intentional than and completely safe than — avanga separate files-la
+irukkuranga, so nee avatha `models.Todo` and `schemas.Todo`-nu refer pannuva. Idhu oru
+common pattern than, nee once paatha udane recognize pannuva:
+
+| | `models.py` (SQLAlchemy) | `schemas.py` (Pydantic) |
+| --- | --- | --- |
+| Describe pannuradhu | Oru database table | Oru API request/response shape |
+| Yaar use pannuranga | ORM, MySQL oda pesa | FastAPI, validate and serialize panna |
+| Base class | `Base` | `BaseModel` |
+
+<Callout title="For you, coming from Express/Nest">
+
+Idhu than exactly Nest already unnaya push pannura separation: oru `CreateTodoDto`
+(`class-validator` vechu validate pannirukku) vs oru TypeORM `@Entity()` — "API accept /
+return pannuradhu" "table epadi irukku"-la irundhu separate ah vekkardhu. Plain
+Express-la, oru Zod illa Joi validation schema vs oru Sequelize/TypeORM model-oda
+difference than idhu. Oru Pydantic schema, FastAPI oda DTO version than — same idea,
+same exist pannura reason.
+
+</Callout>
+
+## `schemas.py` ippo varaikkum
+
+```python title="schemas.py"
+from pydantic import BaseModel
+
+class TodoBase(BaseModel):
+    title: str
+    description: str | None = None
+    completed: bool = False
+
+# create
+class TodoCreate(TodoBase):
+    pass
+
+# response
+class Todo(TodoBase):
+    id: int
+    class Config:
+        orm_mode = True # for automatic json parsing
+```
